@@ -3,18 +3,11 @@ session_start();
 
 // Utilisation du fichier Database et MongoDB pour les base de données relationelle et non relationelle, ainsi que functions pour toutes les autres méthodes préparées
 
-require 'Database.php';
 require 'functions.php';
 require 'MongoDB.php';
 
 // Connexion à la base de données
 $db = (new Database())->connect();
-
-// Si la connexion à la base de données ne passe pas alors le message apparaît
-
-if (!$db) {
-    die("Erreur de connexion à la base de données");
-}
 
 // Connexion à la base de donnée MongoDB
 
