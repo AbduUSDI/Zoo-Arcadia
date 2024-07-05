@@ -8,9 +8,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     exit;
 }
 
-// Utilisation du fichier Database et MongoDB pour les base de données relationelle et non relationelle, ainsi que functions pour toutes les autres méthodes préparées
-
-require '../Database.php';
 require '../MongoDB.php';
 require '../functions.php';
 
@@ -18,14 +15,6 @@ require '../functions.php';
 
 $db = new Database();
 $conn = $db->connect();
-
-// Si la connexion à la base de données ne passe pas alors le message apparaît
-
-if (!$conn) {
-    die("Erreur de connexion à la base de données");
-}
-
-// Utilisation d'un try/catch pour se connecter à la base de données MongoDB grâce à une nouvelle instance MongoDB
 
 try {
     $mongoClient = new MongoDB();
