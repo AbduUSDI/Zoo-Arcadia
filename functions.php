@@ -487,23 +487,55 @@ class User {
     }
     // Méthode (CRUD) préparée pour ajouter un nouvel utilisateur (create)
     public function addUser($email, $password, $role_id, $username) {
+        // Hacher le mot de passe
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    
         $stmt = $this->db->prepare("INSERT INTO users (email, password, role_id, username) VALUES (:email, :password, :role_id, :username)");
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-        $stmt->bindParam(':password', $password, PDO::PARAM_STR);
+        $stmt->bindParam(':password', $hashed_password, PDO::PARAM_STR);
         $stmt->bindParam(':role_id', $role_id, PDO::PARAM_INT);
         $stmt->bindParam(':username', $username, PDO::PARAM_STR);
         $stmt->execute();
         return $this->db->lastInsertId();
     }
     // Méthode (CRUD) préparée pour mettre à jour les informations d'un utilisateur (update)
-    public function updateUser($id, $email, $role_id, $username, $password) {
-        $stmt = $this->db->prepare("UPDATE users SET email = :email, role_id = :role_id, username = :username, password = :password WHERE id = :id");
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-        $stmt->bindParam(':role_id', $role_id, PDO::PARAM_INT);
-        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-        $stmt->bindParam(':password', $password, PDO::PARAM_STR);
-        $stmt->execute();
+    public function updateUser($id, $email, $role_id, $username, $password = null) {
+        // Commencer la requête SQL
+        $sql = "UPDATE users SET email = :email, role_id = :role_id, username = :username";
+        
+        // Créer le tableau des paramètres
+        $params = [
+            ':id' => $id,
+            ':email' => $email,
+            ':role_id' => $role_id,
+            ':username' => $username
+        ];
+    
+        // Si un nouveau mot de passe est fourni, l'ajouter à la requête
+        if (!empty($password)) {
+            $sql .= ", password = :password";
+            $params[':password'] = password_hash($password, PASSWORD_DEFAULT);
+        }
+    
+        // Terminer la requête SQL
+        $sql .= " WHERE id = :id";
+    
+        // Préparer et exécuter la requête
+        $stmt = $this->db->prepare($sql);
+    
+        // Lier les paramètres
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val, is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR);
+        }
+    
+        // Exécuter la requête
+        try {
+            $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la mise à jour de l'utilisateur : " . $e->getMessage());
+            return false;
+        }
+        return true;
     }
     // Méthode (CRUD) préparée pour supprimer un utilisateur existant (delete)
     public function deleteUser($id) {
