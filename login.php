@@ -62,16 +62,14 @@ body {
             <div class="input-group">
                 <input type="password" class="form-control" id="password" name="password" autocomplete="current-password" required>
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="togglePassword"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-outline-primary" type="button" id="togglePassword"><i class="fas fa-eye"></i></button>
                 </div>
             </div>
         </div>
         <button type="submit" class="btn btn-primary" name="login">Se connecter</button>
     </form>
     <hr>
-    <button class="btn btn-outline-danger" data-toggle="modal" data-target="#registerModal">S'inscrire</button>
-    <hr>
-    <button class="btn btn-link btn-outline-secondary" data-toggle="modal" data-target="#forgotPasswordModal">Mot de passe oublié ?</button>   
+    <button class="btn btn-outline-danger" data-toggle="modal" data-target="#forgotPasswordModal">Mot de passe oublié ?</button>   
 </div>
 
 <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
@@ -96,53 +94,27 @@ body {
     </div>
 </div>
 
-<div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="registerModalLabel">S'inscrire</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="registerForm" method="post" action="register.php">
-                    <div class="form-group">
-                        <label for="nom_utilisateur">Nom d'utilisateur</label>
-                        <input type="text" class="form-control" id="nom_utilisateur" name="nom_utilisateur" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="mot_de_passe">Mot de passe</label>
-                        <input type="password" class="form-control" id="mot_de_passe" name="mot_de_passe" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="role_id">Rôle</label>
-                        <select class="form-control" id="role_id" name="role_id" required>
-                            <option value="3">Vétérinaire</option>
-                            <option value="2">Employé</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">S'inscrire</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
+
+   // Exécute le script une fois que le DOM est entièrement chargé
+
 document.addEventListener('DOMContentLoaded', function() {
+
+    // Obtenir les éléments par leur ID
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
 
+    // Ajouter un écouteur d'événements pour le clic sur l'icône
+
     togglePassword.addEventListener('click', function() {
+        // Modifie le type de l'input entre 'password' et 'text' quand on clic sur l'icône
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
 
+        // Chargement de l'icône FontAwesome à l'intérieur de l'élément cliqué grâce à une balise nommée "i"
         const eyeIcon = this.querySelector('i');
+        
+        // Modifications des classes FontAwesome pour l'icône de l'œil (barré/non barré)
         if (type === 'password') {
             eyeIcon.classList.remove('fa-eye');
             eyeIcon.classList.add('fa-eye-slash');
@@ -152,8 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-</script>
 
-<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</script>
 
 <?php include_once 'templates/footer.php'; ?>
