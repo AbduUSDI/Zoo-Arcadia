@@ -31,7 +31,7 @@ Zoo Arcadia permet aux visiteurs de découvrir les animaux et leurs habitats, et
 
 ## Installation
 
-1. Clonez le dépôt : `git clone https://github.com/AbduUSDI/zoo_arcadia`.
+1. Clonez le dépôt : `git clone https://github.com/AbduUSDI/Zoo-Arcadia-New`.
 3. Configurez XAMPP après l'avoir installé sur le site officiel.
 4. Après avoir configuré XAMPP, vous avez besoin de créer la variable d'environnement dans vos réglages Windows
 5. Une fois fait, il faut aller sur l'application XAMPP Control Panel et l'executer en tant qu'administrateur pour éviter tout conflit, le logiciel affichera alors plusieurs logiciels à ouvrir, ouvrez Apache (le serveur) ensuite ouvrez MySQL. Cliquez ensuite sur "Admin" sur la ligne MySQL.
