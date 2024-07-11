@@ -32,13 +32,13 @@ body {
 <footer id="footerId" class="bg-light text-center text-lg-start mt-5 fixed-bottom" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" style="color: black;" href="contact.php">Nous contacter</a>
+                <a class="nav-link" style="color: black;" href="../contact.php">Nous contacter</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" style="color: black;" href="index.php#openhours">Nos horaires</a>
+                <a class="nav-link" style="color: black;" href="../index.php#openhours">Nos horaires</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" style="color: black;" href="index.php#apropos">A propos de nous</a>
+                <a class="nav-link" style="color: black;" href="../index.php#apropos">A propos de nous</a>
             </li>
             </ul>
         <div class="container p-4">

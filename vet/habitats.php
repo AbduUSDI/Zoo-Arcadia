@@ -77,4 +77,4 @@ h1, .mt-5, .mb-4 {
     </div>
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

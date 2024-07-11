@@ -1,38 +1,6 @@
-<?php
-
-// Vérification de l'identification de l'utiliateur, il doit être role 2 donc employé, sinon page login.php
-
-session_start();
-if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
-    header('Location: ../login.php');
-    exit;
-}
-
-include '../templates/header.php';
-include 'navbar_employee.php';
-?>
-<style>
-
-h1,h2,h3 {
-    text-align: center;
-}
-
-body {
-    background-image: url('../image/background.jpg');
-}
-.mt-5 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-<!-- Conteneur pour afficher tout simplement que c'est bien l'espace Employé -->
-
-<div class="container mt-5">
-    <h1 class="my-4">Espace Employé</h1>
-    <p>Bienvenue dans votre espace personnel. Utilisez le menu pour gérer les avis et les services.</p>
-</div>
-
-<footer id="footerId" class="bg-light text-center text-lg-start mt-5 fixed-bottom" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+<!-- Utilisation d'un footer template, pareil pour faciliter la lecture de la page  -->
+    
+<footer id="footerId" class="bg-light text-center text-lg-start mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <ul class="navbar-nav">
             <li class="nav-item">
                 <a class="nav-link" style="color: black;" href="../contact.php">Nous contacter</a>

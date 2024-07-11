@@ -156,4 +156,4 @@ body {
     </div>
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

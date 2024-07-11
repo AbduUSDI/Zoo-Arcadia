@@ -3,10 +3,8 @@ session_start();
 
 require 'functions.php';
 
-// Connexion à la base de données
 $db = (new Database())->connect();
 
-// Création d'une instance $service pour utiliser la méthode pour afficher les services
 $service = new Service($db);
 $services = $service->getServices();
 
@@ -21,7 +19,7 @@ h1,h2,h3 {
 
 body {
     background-image: url('image/background.jpg');
-    padding-top: 48px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
+    padding-top: 48px;
 }
 </style>
 <div class="container">
