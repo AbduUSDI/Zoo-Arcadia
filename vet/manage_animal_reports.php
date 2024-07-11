@@ -21,10 +21,19 @@ $reports = $reportManager->getReports();
 include '../templates/header.php';
 include 'navbar_vet.php';
 ?>
+<style>
+body {
+    background-image: url('../image/background.jpg');
+}
 
+h1, .mt-5, .mb-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Utilisation d'un tableau responsive pour afficher les rapports vétérinaires -->
 
-<div class="container">
+<div class="container mt-5">
     <h1 class="my-4">Gérer les Rapports Animaux</h1>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
@@ -47,7 +56,7 @@ include 'navbar_vet.php';
                         <td><?php echo htmlspecialchars($report['health_status']); ?></td>
                         <td><?php echo htmlspecialchars($report['food_given']); ?></td>
                         <td><?php echo htmlspecialchars($report['food_quantity']); ?></td>
-                        <td><?php echo htmlspecialchars($report['details']); ?></td>
+                        <td><?php echo $report['details']; ?></td>
                         <td>
                             <a href="delete_vet_report.php?id=<?php echo $report['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rapport ?');">Supprimer</a>
                         </td>

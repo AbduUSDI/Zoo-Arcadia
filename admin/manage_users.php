@@ -26,10 +26,23 @@ $users = $user->getAllUtilisateurs();
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher le tableau des utilisateurs -->
 
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Gérer les utilisateurs</h1>
     <div class="table-responsive">
         <a href="add_user.php" class="btn btn-success mb-4">Ajouter un utilisateur</a>

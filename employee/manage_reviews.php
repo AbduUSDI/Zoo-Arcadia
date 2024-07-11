@@ -66,10 +66,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../templates/header.php';
 include 'navbar_employee.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher dans des tableaux toutes les informations des avis et commentaires -->
 
-<div class="container">
+<div class="container mt-4">
 
     <!-- Tableau des avis visiteurs -->
 
@@ -103,7 +116,7 @@ include 'navbar_employee.php';
                                 <input type="hidden" name="review_id" value="<?php echo $review['id']; ?>">
                                 <button type="submit" name="delete" class="btn btn-danger">Supprimer</button>
                             </form>
-                            <a href="edit_review.php?id=<?php echo $review['id']; ?>" class="btn btn-primary">Modifier</a>
+                            <a href="edit_review.php?id=<?php echo $review['id']; ?>" class="btn btn-warning">Modifier</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

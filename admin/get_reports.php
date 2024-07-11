@@ -8,6 +8,7 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     exit;
 }
 
+require '../Database.php';
 require '../functions.php';
 
 // Connexion à la base de données
@@ -20,7 +21,7 @@ $conn = $db->connect();
 $visit_date = $_GET['visit_date'] ?? null;
 $animal_id = $_GET['animal_id'] ?? null;
 
-// Requête SQL de base pour récupérer les rapports vétérinaires*
+// Requête SQL de base pour récupérer les rapports vétérinaires : vr = vet_reports
 
 $query = "SELECT vr.id, a.name as animal_name, vr.health_status, vr.food_given, vr.food_quantity, vr.visit_date, vr.details 
           FROM vet_reports vr

@@ -60,10 +60,9 @@ class Animal {
         $stmt->execute();
     }
     // Méthode préparée pour qu'un visiteur puisse ajouter un avis qui devra être approuver par l'employé(e)
-    public function ajouterAvis($visitorName, $subject, $reviewText, $animalId) {
-        $stmt = $this->db->prepare("INSERT INTO reviews (visitor_name, subject, review_text, animal_id) VALUES (:visitor_name, :subject, :review_text, :animal_id)");
+    public function ajouterAvis($visitorName, $reviewText, $animalId) {
+        $stmt = $this->db->prepare("INSERT INTO reviews (visitor_name, review_text, animal_id) VALUES (:visitor_name, :review_text, :animal_id)");
         $stmt->bindParam(':visitor_name', $visitorName, PDO::PARAM_STR);
-        $stmt->bindParam(':subject', $subject, PDO::PARAM_STR);
         $stmt->bindParam(':review_text', $reviewText, PDO::PARAM_STR);
         $stmt->bindParam(':animal_id', $animalId, PDO::PARAM_INT);
         $stmt->execute();
@@ -88,7 +87,7 @@ class Animal {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode pour appliquer les filtres par date et/ou par animal : ar = animal reports ; a = animals
+    // Méthode pour appliquer les filtres par date et/ou par animal 
     public function appliquerFiltres($selectedDate, $selectedAnimalId) {
         $query = "SELECT ar.*, a.name as animal_name FROM vet_reports ar JOIN animals a ON ar.animal_id = a.id";
         $conditions = [];
@@ -191,7 +190,6 @@ class Animal {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     // Méthode préparée pour récupérer toutes les nourritures données dans une <div> propre à l'animal qui apparaît sous forme d'un accordéon Bootstrap
-    /** f = food */
     public function getNourritureAnimaux($animal_id) {
         $query = "
             SELECT f.food_given, f.food_quantity, f.date_given 
@@ -315,7 +313,7 @@ class Service {
     }
     // Méthode préparée reliée au "create" pour ajouter une image
     public function ajouterImage($file) {
-        $fileTempPath = $file['tmp_name'];
+        $fileTmpPath = $file['tmp_name'];
         $fileName = $file['name'];
         $fileNameCmps = explode(".", $fileName);
         $fileExtension = strtolower(end($fileNameCmps));
@@ -325,7 +323,7 @@ class Service {
             $uploadFileDirection = '../uploads/';
             $dest_path = $uploadFileDirection . $fileName;
 
-            if (move_uploaded_file($fileTempPath, $dest_path)) {
+            if (move_uploaded_file($fileTmpPath, $dest_path)) {
                 return $fileName;
             } else {
                 throw new Exception('Une erreur est survenue au moment de l\'enregistrement de l\'image. Assurez vous que le dossier upload existe bien dans votre répertoire.');
@@ -537,6 +535,7 @@ class User {
         }
         return true;
     }
+    
     // Méthode (CRUD) préparée pour supprimer un utilisateur existant (delete)
     public function deleteUser($id) {
         $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");

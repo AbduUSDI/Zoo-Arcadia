@@ -56,8 +56,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../templates/header.php';
 include 'navbar_employee.php';
 ?>
+<style>
+
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher le formulaire POST pour modifier l'avis sélectionné -->
-<div class="container">
+<div class="container mt-4">
     <h1>Modifier l'avis</h1>
     <form action="edit_review.php?id=<?php echo htmlspecialchars($reviewId); ?>" method="POST">
         <div class="mb-3">
@@ -72,7 +86,7 @@ include 'navbar_employee.php';
             <label for="review_text" class="form-label">Texte de l'avis:</label>
             <textarea class="form-control" id="review_text" name="review_text" rows="3" required><?php echo htmlspecialchars($review['review_text']); ?></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+        <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
     </form>
 </div>
 

@@ -1,5 +1,7 @@
 <?php
 session_start();
+
+require '../Database.php';
 require '../functions.php';
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 3) {
@@ -46,10 +48,19 @@ $animals = $animal->getAll();
 include '../templates/header.php';
 include 'navbar_vet.php';
 ?>
+<style>
+body {
+    background-image: url('../image/background.jpg');
+}
 
+h1, .mt-5, .mb-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur du formulaire POST pour ajouter un rapport vétérinaire -->
 
-<div class="container">
+<div class="container mt-5">
     <h1 class="my-4">Ajouter un Rapport Animal</h1>
     <form action="add_animal_report.php" method="POST">
         <div class="form-group">

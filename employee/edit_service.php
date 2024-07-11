@@ -8,6 +8,7 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
     exit;
 }
 
+require '../Database.php';
 require '../functions.php';
 
 // Connexion à la base de données
@@ -71,10 +72,23 @@ if (!$serviceData) {
 include '../templates/header.php';
 include 'navbar_employee.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher le formulaire (POST) de modification d'un service  -->
 
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Modifier le Service</h1>
     <form action="edit_service.php?id=<?php echo $id; ?>" method="POST" enctype="multipart/form-data">
         <div class="form-group">

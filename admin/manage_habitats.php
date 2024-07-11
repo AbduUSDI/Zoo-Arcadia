@@ -26,17 +26,24 @@ $habitats = $habitat->getToutHabitats();
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
-<!-- Bouton pour ajouter un Habitat redirigeant à "add_habitat.php" -->
+h1,h2,h3 {
+    text-align: center;
+}
 
-<div class="container">
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
+
+<div class="container mt-4">
     <h1 class="my-4">Gestion des Habitats</h1>
     <a href="add_habitat.php" class="btn btn-success mb-4">Ajouter un habitat</a>
-</div>
-
-<!-- Tableau pour afficher les habitats -->
-
-<div class="container">
 <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover">
                     <thead class="thead-dark">
@@ -59,9 +66,6 @@ include 'navbar_admin.php';
                     </td>
                     <td><?php echo htmlspecialchars($habitat['description']); ?></td>
                     <td>
-
-                        <!-- Boutons pour modifer et supprimer (avec un message de confirmation avant de supprimer) un habitat -->
-
                         <a href="edit_habitat.php?id=<?php echo $habitat['id']; ?>" class="btn btn-warning">Modifier</a>
                         <a href="delete_habitat.php?id=<?php echo $habitat['id']; ?>" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet habitat ?');">Supprimer</a>
                     </td>

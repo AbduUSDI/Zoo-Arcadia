@@ -23,8 +23,18 @@ $habitats = $habitatManager->getToutHabitats();
 include '../templates/header.php';
 include 'navbar_vet.php';
 ?>
+<style>
+body {
+    background-image: url('../image/background.jpg');
+}
+
+h1, .mt-5, .mb-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur regroupant tout les habitats existants -->
-<div class="container">
+<div class="container mt-5">
     <h1 class="my-4">Habitats</h1>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">

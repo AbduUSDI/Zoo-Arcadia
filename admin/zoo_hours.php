@@ -38,10 +38,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher le formulaire tableau (POST) affichant les horaires du zoo modifiable -->
 
-<div class="container">
+<div class="container mt-4">
     <h2>Modifier les horaires d'ouverture du Zoo</h2>
     <form method="POST">
     <div class="table-responsive">

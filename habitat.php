@@ -9,6 +9,12 @@ require 'MongoDB.php';
 // Connexion à la base de données
 $db = (new Database())->connect();
 
+// Si la connexion à la base de données ne passe pas alors le message apparaît
+
+if (!$db) {
+    die("Erreur de connexion à la base de données");
+}
+
 // Connexion à la base de donnée MongoDB
 
 try {
@@ -107,7 +113,7 @@ body {
                         <h5 class="card-title"><?php echo htmlspecialchars($animal['name']); ?></h5>
 
                         <!-- Onclick event to register click using AJAX -->
-                        <button onclick="registerClick(<?php echo $animal['id']; ?>)" class="btn btn-success">Voir les détails</button>
+                        <button onclick="registerClick(<?php echo $animal['id']; ?>)" class="btn btn-success">Plus de détails</button>
                     </div>
                 </div>
             </div>

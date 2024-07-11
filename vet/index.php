@@ -8,12 +8,55 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 3) {
 include '../templates/header.php';
 include 'navbar_vet.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Simple conteneur pour préciser que c'est bien l'espace vétérinaire -->
 
-<div class="container">
-    <h1 class="my-4">Espace Vétérinaire</h1>
+<div class="container mt-4">
+    <h1 class="mt-4">Espace Vétérinaire</h1>
     <p>Bienvenue dans votre espace personnel. Utilisez le menu pour gérer les rapports des animaux et des habitats.</p>
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<footer id="footerId" class="bg-light text-center text-lg-start mt-5 fixed-bottom" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+    <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" style="color: black;" href="contact.php">Nous contacter</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" style="color: black;" href="index.php#openhours">Nos horaires</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" style="color: black;" href="index.php#apropos">A propos de nous</a>
+            </li>
+            </ul>
+        <div class="container p-4">
+            <p>&copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
+        </div>
+    </footer>
+    <!-- Inclusion de jQuery (version complète, pas la version 'slim' qui ne supporte pas AJAX) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Inclusion de Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+
+    <!-- Inclusion de Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Inclusion de AXIOS -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="../js/scripts.js"></script>
+</body>
+</html>

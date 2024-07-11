@@ -21,13 +21,19 @@ include 'templates/header.php';
 include 'templates/navbar_visitor.php';
 ?>
 <style>
-h1,h2 {
+
+h1,h2,h3 {
     text-align: center;
 }
 
 body {
+    background-image: url('image/background.jpg');
     padding-top: 48px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
 }
+.mt-4 {
+        max-height: 500px;
+        overflow-y: auto;
+    }
 </style>
 
 <!-- Contenu principal (HTML) de la page -->
@@ -35,13 +41,16 @@ body {
 <div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <div class="container">
         <h1>Bienvenue au Zoo Arcadia</h1>
+        <br>
+        <br>
         <p>Situé depuis 1960 à proximité de la légendaire forêt de Brocéliande, dans la région enchanteresse de la Bretagne, le Zoo Arcadia s'est établi comme un sanctuaire dédié à la conservation et à la préservation de la faune mondiale. Depuis ses modestes débuts, il a évolué pour devenir un pilier de l'éducation environnementale et de la sensibilisation à la biodiversité.</p>
         <p>Les vastes étendues du Zoo Arcadia abritent une myriade d'animaux, offrant aux visiteurs une immersion totale dans les merveilles de la nature. Avec des habitats soigneusement aménagés pour refléter les environnements naturels d'origine, dont la savane africaine, la jungle amazonienne et les marais tropicaux, chaque coin du zoo est une invitation à l'aventure.</p>
         <p>Les vastes plaines de la savane accueillent les majestueux lions, les éléphants paisibles et les girafes gracieuses, offrant aux visiteurs un aperçu de la vie sauvage africaine. Dans la jungle dense, les singes espiègles se balancent d'arbre en arbre, les jaguars se faufilent dans les ombres et les oiseaux tropicaux colorent le ciel de leurs plumes éclatantes.</p>
         <p>Les marais tranquilles abritent une multitude d'espèces, des crocodiles somnolents aux hérons élégants, tandis que les tortues glissent silencieusement à travers les eaux calmes. Chaque habitat est conçu pour offrir aux animaux un environnement naturel et stimulant, favorisant leur bien-être et leur épanouissement.</p>
         <p>À travers des initiatives de conservation et des programmes éducatifs, le Zoo Arcadia s'efforce de sensibiliser le public à l'importance de la protection de la faune et de la flore. Des visites guidées, des présentations interactives et des rencontres avec les gardiens permettent aux visiteurs de découvrir de près la beauté et la diversité du monde animal, tout en apprenant les défis auxquels ces espèces sont confrontées dans la nature.</p>
         <p>Que vous soyez un amateur de la nature passionné ou simplement en quête d'une escapade familiale inoubliable, le Zoo Arcadia promet une expérience immersive et enrichissante pour les visiteurs de tous âges. Entrez dans un monde où la magie de la nature prend vie et où chaque visite est une aventure à part entière.</p>
-    
+        <br>
+        <br>
 
         <!-- Utilisation de card bootstrap pour afficher les habitats avec la description et le bouton pour aller sur la page de l'habitat -->
 
@@ -54,7 +63,7 @@ body {
                         <div class="card-body">
                             <h5 class="card-title"><?php echo htmlspecialchars($habitat['name']); ?></h5>
                             <p class="card-text"><?php echo htmlspecialchars($habitat['description']); ?></p>
-                            <a href="habitat.php?id=<?php echo $habitat['id']; ?>" class="btn btn-success">Voir les détails</a>
+                            <a href="habitat.php?id=<?php echo $habitat['id']; ?>" class="btn btn-success">Voir les habitants</a>
                         </div>
                     </div>
                 </div>
@@ -80,6 +89,8 @@ body {
                 </tbody>
             </table>
         </div>
+        <br>
+        <br>
         <!-- Formulaire pour laisser un avis, utilisant la méthode POST  pour le fichier submit_review.php -->
 
         <h2>Laissez un avis</h2>
@@ -100,7 +111,8 @@ body {
                 <button type="submit" class="btn btn-success">Envoyer</button>
             </form>
         </div>
-        
+        <br>
+        <br>
         <!-- Tableau pour afficher les avis approuvés des visiteurs -->
 
         <h2>Avis des visiteurs</h2>
