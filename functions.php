@@ -33,8 +33,6 @@ class Database {
  */
 class Animal {
     private $db;
-    private $nourriture = 'food';
-    private $table = 'vet_reports';
     public function __construct($db) {
         $this->db = $db;
     }
@@ -153,13 +151,6 @@ class Animal {
         $stmt->bindParam(':date_given', $date_given, PDO::PARAM_STR);
         $stmt->execute();
     }
-    // Méthode préparée pour récupérer les animaux existants afin de le faire apparaître sur le formulaire pour donner la nourriture
-    public function getAnimaux() {
-        $query = "SELECT id, name FROM animals ORDER BY name";
-        $stmt = $this->db->query($query);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    // Méthode préparée pour récupérer toutes les nourritures données dans une <div> propre à l'animal qui apparaît sous forme d'un accordéon Bootstrap
     public function getNourritureAnimaux($animal_id) {
         $query = "
             SELECT f.food_given, f.food_quantity, f.date_given 
@@ -174,13 +165,11 @@ class Animal {
  * Classe pour les définitions et les méthodes en rapport avec les avis et commentaires des visiteurs
  */
 class Review {
-    // Définition du constructeur qui est relié à la base de données
     private $db;
 
     public function __construct($db) {
         $this->db = $db;
     }
-    // Méthode préparée pour ajouter un avis
     public function addAvis($visitor_name, $subject, $review_text, $animal_id = null) {
         $stmt = $this->db->prepare("INSERT INTO reviews (animal_id, visitor_name, subject, review_text, approved) VALUES (:animal_id, :visitor_name, :subject, :review_text, 0)");
         $stmt->bindParam(':animal_id', $animal_id, PDO::PARAM_INT);
@@ -189,38 +178,33 @@ class Review {
         $stmt->bindParam(':review_text', $review_text, PDO::PARAM_STR);
         $stmt->execute();
     }
-    // Méthode préparée pour que l'employé Approuve le commentaire ou l'avis
     public function approve($id) {
         $stmt = $this->db->prepare("UPDATE reviews SET approved = 1 WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
     }
-    // Méthode préparée pour supprimer le commentaire ou l'avis
     public function deleteAvis($id) {
         $stmt = $this->db->prepare("DELETE FROM reviews WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
     }
-    // Méthode préparée pour récupérer les commentaires et avis approuvés par un employé, par ordre décroissant de la date de soumission
     public function getAvisApprouvés() {
         $stmt = $this->db->prepare("SELECT * FROM reviews WHERE approved = TRUE ORDER BY created_at DESC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour afficher les commentaires et avis approuvés ou non, c'est avec cette méthode qu'on obtient les avis en attente
+
     public function getAvisTout() {
         $stmt = $this->db->prepare("SELECT * FROM reviews ORDER BY created_at DESC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour récupérer un avis ou un commentaire approuvé
     public function getAvisById($id) {
         $stmt = $this->db->prepare("SELECT * FROM reviews WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Méthode préparée pour modifier un avis ou un commentaire existant déjà approuvés
     public function updateAvis($id, $visitorName, $subject, $reviewText) {
         $stmt = $this->db->prepare("UPDATE reviews SET visitor_name = ?, subject = ?, review_text = ? WHERE id = ?");
         $stmt->execute([$visitorName, $subject, $reviewText, $id]);
@@ -230,20 +214,17 @@ class Review {
  * Classe Service qui regroupe toutes les méthodes et définitions en rapport avec les services du zoo
  */
 class Service {
-    // Définition du constructeur qui est relié à la base de données
     private $db;
 
     public function __construct($db) {
         $this->db = $db;
     }
-    // Méthode préparée pour afficher tout les services existants 
     public function getServices() {
         $stmt = $this->db->prepare("SELECT * FROM services");
         $stmt->execute();
         return $stmt->fetchAll
         (PDO::FETCH_ASSOC);
     }
-    // Méthode (CRUD) préparée pour ajouter un Service : Nom, description et image ; Grâce à un formulaire POST (create)
     public function ajouterService($name, $description, $image) {
         $stmt = $this->db->prepare("INSERT INTO services (name, description, image) VALUES (:name, :description, :image)");
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
@@ -251,7 +232,6 @@ class Service {
         $stmt->bindParam(':image', $image, PDO::PARAM_STR);
         return $stmt->execute();
     }
-    // Méthode (CRUD) préparée pour mettre à jour les infos d'un service sans modifier l'image (update)
     public function updateServiceSansImage($id, $name, $description) {
         $stmt = $this->db->prepare("UPDATE services SET name = :name, description = :description WHERE id = :id");
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
@@ -259,7 +239,6 @@ class Service {
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
-    // Méthode (CRUD) préparée pour mettre à jour toutes les infos d'un services y compris l'image (update)
     public function updateServiceAvecImage($id, $name, $description, $imageName) {
         $stmt = $this->db->prepare("UPDATE services SET name = :name, description = :description, image = :image WHERE id = :id");
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
@@ -268,30 +247,26 @@ class Service {
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
-    // Méthode (CRUD) préparée pour supprimer un service (delete)
     public function deleteService($id) {
         $stmt = $this->db->prepare("DELETE FROM services WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
     }
-    // Méthode (CRUD) préparée pour afficher les services (read)
     public function getServiceById($id) {
         $stmt = $this->db->prepare("SELECT * FROM services WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée reliée au "create" pour ajouter une image
     public function ajouterImage($file) {
         $fileTmpPath = $file['tmp_name'];
         $fileName = $file['name'];
         $fileNameCmps = explode(".", $fileName);
         $fileExtension = strtolower(end($fileNameCmps));
-        // Définition d'un bloqueur qui accepte seulement les image en format jpg, gif, png, jpeg
-        $allowedfileExtensions = array('jpg', 'gif', 'png', 'jpeg');
+        $allowedfileExtensions = ['jpg', 'gif', 'png', 'jpeg'];
         if (in_array($fileExtension, $allowedfileExtensions)) {
             $uploadFileDirection = '../uploads/';
-            $dest_path = $uploadFileDirection . $fileName;
+            $dest_path = "{$uploadFileDirection}{$fileName}";
 
             if (move_uploaded_file($fileTmpPath, $dest_path)) {
                 return $fileName;
@@ -307,26 +282,22 @@ class Service {
  * Classe regroupant toutes les méthodes et définitions en rapport avec les habitats du zoo
  */
 class Habitat {
-    // Définition de la base de données et du constructeur
     private $db;
 
     public function __construct($db) {
         $this->db = $db;
     }
-    // Méthode (CRUD) préparée pour récupérer tout les habitats existants (read)
     public function getToutHabitats() {
         $stmt = $this->db->prepare("SELECT * FROM habitats");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour afficher l'habitat sélectionné par son ID
     public function getParId($id) {
         $stmt = $this->db->prepare("SELECT * FROM habitats WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    // Méthode (CRUD) préparée pour mettre à jour les infos d'un habitat sélectionné (update)
     public function updateHabitat($id, $name, $description, $image) {
         $stmt = $this->db->prepare("UPDATE habitats SET name = :name, description = :description, image = :image WHERE id = :id");
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
@@ -335,7 +306,6 @@ class Habitat {
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
     }
-        // Sous méthode préparée pour ajouter une image à l'habitat, l'image sera répertorié dans le dossier "uploads"
     public function uploadImage($file) {
         if ($file['error'] == UPLOAD_ERR_OK) {
             $image = time() . '_' . $file['name'];
@@ -344,25 +314,21 @@ class Habitat {
         }
         return null;
     }
-    // Méthode (CRUD) préparée pour ajouter un nouvel habitat (create)
     public function addHabitat($name, $description, $image) {
         $stmt = $this->db->prepare("INSERT INTO habitats (name, description, image) VALUES (?, ?, ?)");
         return $stmt->execute([$name, $description, $image]);
     }
-    // Méthode (CRUD) préparée pour supprimer un habitat existant (delete)
     public function deleteHabitat($id) {
         $stmt = $this->db->prepare("DELETE FROM habitats WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
     }
-    // Méthode préparée pour afficher tout les animaux d'un habitat
     public function getAnimauxParHabitat($id) {
         $stmt = $this->db->prepare("SELECT * FROM animals WHERE habitat_id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour afficher le commentaires approuvés d'un habitat
     public function getCommentsApprouvés($id) {
         $stmt = $this->db->prepare("SELECT habitat_comments.comment, habitat_comments.created_at, users.username 
                                     FROM habitat_comments 
@@ -374,25 +340,21 @@ class Habitat {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour afficher tout les commentaires sur les habitats
     public function getToutHabitatsComments() {
         $stmt = $this->db->prepare("SELECT * FROM habitat_comments ORDER BY created_at DESC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour supprimer un commentaire habitat en prenant l'id du commentaire
     public function deleteHabitatComment($comment_id) {
         $stmt = $this->db->prepare("DELETE FROM habitat_comments WHERE id = :id");
         $stmt->bindParam(':id', $comment_id, PDO::PARAM_INT);
         $stmt->execute();
     }
-    // Méthode préparée pour approuver un commentaire sur un habitat
     public function approveHabitatComment($comment_id) {
         $stmt = $this->db->prepare("UPDATE habitat_comments SET approved = 1 WHERE id = :id");
         $stmt->bindParam(':id', $comment_id, PDO::PARAM_INT);
         $stmt->execute();
     }
-    // Méthode préparée pour ajouter (vétérinaire) un commentaire sur l'habitat 
     public function submitHabitatComment($habitatId, $vetId, $comment) {
         $stmt = $this->db->prepare("INSERT INTO habitat_comments (habitat_id, vet_id, comment, approved) VALUES (:habitat_id, :vet_id, :comment, 0)");
         $stmt->bindParam(':habitat_id', $habitatId, PDO::PARAM_INT);
@@ -405,19 +367,16 @@ class Habitat {
  * Classe regroupant toutes les définitions et méthodes en rapport avec les horaires du zoo
  */
 class ZooHours {
-    // Définition de la base de données et du constructeur
     private $db;
 
     public function __construct($db) {
         $this->db = $db;
     }
-    // Méthode préparée pour récupérer tout les horaires existants du zoo
     public function getAllHours() {
         $stmt = $this->db->prepare("SELECT * FROM zoo_hours ORDER BY id ASC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour mettre à jour les horaires du zoo
     public function updateHours($open, $close, $id) {
         $stmt = $this->db->prepare("UPDATE zoo_hours SET open_time = ?, close_time = ? WHERE id = ?");
         $stmt->execute([$open, $close, $id]);
@@ -428,34 +387,28 @@ class ZooHours {
  * Classe User regroupant toutes les méthodes et définitions en rapport avec les utilisateurs
  */
 class User {
-    // Définition de la base de données et du constructeur
     private $db;
 
     public function __construct($db) {
         $this->db = $db;
     }
-    // Méthode (CRUD) préparée pour récupérer tout les comptes utilisateurs existants du site (read)
     public function getAllUtilisateurs() {
         $stmt = $this->db->prepare("SELECT * FROM users");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour sélectionner un compte existant en se servant de son email comme paramètre
     public function getUtilisateurParEmail($email) {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour récupérer les informations de l'utilisateur par son id
     public function getUtilisateurParId($id) {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    // Méthode (CRUD) préparée pour ajouter un nouvel utilisateur (create)
     public function addUser($email, $password, $role_id, $username) {
-        // Hacher le mot de passe
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
         $stmt = $this->db->prepare("INSERT INTO users (email, password, role_id, username) VALUES (:email, :password, :role_id, :username)");
@@ -466,12 +419,9 @@ class User {
         $stmt->execute();
         return $this->db->lastInsertId();
     }
-    // Méthode (CRUD) préparée pour mettre à jour les informations d'un utilisateur (update)
     public function updateUser($id, $email, $role_id, $username, $password = null) {
-        // Commencer la requête SQL
         $sql = "UPDATE users SET email = :email, role_id = :role_id, username = :username";
-        
-        // Créer le tableau des paramètres
+    
         $params = [
             ':id' => $id,
             ':email' => $email,
@@ -479,38 +429,25 @@ class User {
             ':username' => $username
         ];
     
-        // Si un nouveau mot de passe est fourni, l'ajouter à la requête
         if (!empty($password)) {
             $sql .= ", password = :password";
             $params[':password'] = password_hash($password, PASSWORD_DEFAULT);
         }
     
-        // Terminer la requête SQL
         $sql .= " WHERE id = :id";
     
-        // Préparer et exécuter la requête
         $stmt = $this->db->prepare($sql);
-    
-        // Lier les paramètres
         foreach ($params as $key => $val) {
             $stmt->bindValue($key, $val, is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR);
         }
     
-        // Exécuter la requête
         try {
             $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Erreur lors de la mise à jour de l'utilisateur : " . $e->getMessage());
+            return true;
+        } catch (PDOException $erreur) {
+            error_log("Erreur lors de la mise à jour de l'utilisateur : " . $erreur->getMessage());
             return false;
         }
-        return true;
-    }
-    
-    // Méthode (CRUD) préparée pour supprimer un utilisateur existant (delete)
-    public function deleteUser($id) {
-        $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
     }
 }
 
@@ -518,13 +455,11 @@ class User {
  * Classe Contact qui stocke toutes les méthodes et définitions en rapport avec le formulaire de contact
  */
 class Contact {
-    // Définition de la base de données et du constructeur
     private $conn;
 
     public function __construct($db) {
         $this->conn = $db;
     }
-    // Méthode préparée pour stocker le message envoyé dans la base de données
     public function saveMessage($name, $email, $message) {
         $stmt = $this->conn->prepare("INSERT INTO contact_messages (name, email, message) VALUES (:name, :email, :message)");
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);

@@ -18,22 +18,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         $mail->Port = 465;
 
-        $mail->SMTPOptions = array(
-            'ssl' => array(
+        $mail->SMTPOptions = [
+            'ssl' => [
                 'verify_peer' => false,
                 'verify_peer_name' => false,
                 'allow_self_signed' => true
-            )
-        );
+            ]
+        ];
 
         $mail->setFrom('abdu.usdi@gmail.com', 'USDI Abdurahman');
         $mail->addAddress($email);
         $mail->Subject = 'Réinitialisation de mot de passe';
-        $mail->msgHTML('Bonjour, pour réinitialiser votre mot de passe, veuillez cliquer sur ce lien : <a href="lien_de_réinitialisation">Réinitialiser mot de passe</a>');
+        $mail->msgHTML('Bonjour, pour réinitialiser votre mot de passe, veuillez cliquer sur ce lien : <a href="randompasswordcreate.php">Réinitialiser mot de passe</a>');
 
         $mail->send();
         echo 'Email envoyé avec succès.';
-    } catch (Exception $e) {
-        echo 'Erreur lors de l\'envoi de l\'email : ' . $mail->ErrorInfo;
+    } catch (Exception $erreur) {
+        echo "Erreur lors de l'envoi de l'email : {$mail->ErrorInfo}";
     }
 }
