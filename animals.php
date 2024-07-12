@@ -21,6 +21,9 @@ try {
     die('Connexion à la base de données MongoDB échouée : ' . $erreur->getMessage());
 }
 
+// Instance de la classe Habitat pour récupérer les détails de l'habitat de l'animal
+$habitatDef = new Habitat($conn);
+
 // Récupération des informations envoyées par le bouton like
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['like'])) {
@@ -57,6 +60,9 @@ h1, .mt-5, .mb-4 {
     <div class="row">
         <?php if (count($animals) > 0): ?>
             <?php foreach ($animals as $animal): ?>
+                <?php
+                // Récupérer l'habitat pour chaque animal
+                $habitatName = $animal['habitat_id'] ? htmlspecialchars($habitatDef->getParId($animal['habitat_id'])['name']) : 'Habitat indisponible'; ?>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card">
                         <img src="uploads/<?php echo htmlspecialchars($animal['image']); ?>" 
@@ -67,7 +73,7 @@ h1, .mt-5, .mb-4 {
                         <div class="card-body">
                             <h5 class="card-title"><?php echo htmlspecialchars($animal['name']); ?></h5>
                             <p class="card-text">Race: <?php echo htmlspecialchars($animal['species']); ?></p>
-                            <p class="card-text">Habitat: <?php echo htmlspecialchars($animal['habitat_id']); ?></p>
+                            <p class="card-text">Habitat: <?php echo $habitatName; ?></p>
                             <p class="card-text">Likes: <?php echo $animal['likes']; ?></p>
                             <form action="animals.php" method="POST">
                                 <input type="hidden" name="animal_id" value="<?php echo $animal['id']; ?>">
@@ -78,7 +84,6 @@ h1, .mt-5, .mb-4 {
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <!-- Ce petit <p> s'affiche uniquement s'il n'y a pas d'animaux dans l'habitat -->
             <p>Aucun animal trouvé.</p>
         <?php endif; ?>
     </div>

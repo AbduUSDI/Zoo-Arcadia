@@ -1,19 +1,17 @@
-<!-- Utilisation d'un footer template, pareil pour faciliter la lecture de la page  -->
-    
-    <footer id="footerId" class="bg-light text-center text-lg-start mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+<footer id="footerId" class="bg-light text-center text-lg-start mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" style="color: black;" href="contact.php">Nous contacter</a>
+                <a class="nav-link text-secondary" href="contact.php"><img src="image/lettre.png" width="32px" height="32px"></img>   Nous contacter</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" style="color: black;" href="index.php#openhours">Nos horaires</a>
+                <a class="nav-link text-secondary" href="index.php#openhours"><img src="image/ouvert.png" width="32px" height="32px"></img>   Nos horaires</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" style="color: black;" href="index.php#apropos">A propos de nous</a>
+                <a class="nav-link text-secondary" href="index.php#apropos"><img src="image/a-propos-de-nous.png" width="32px" height="32px"></img>   A propos de nous</a>
             </li>
             </ul>
         <div class="container p-4">
-            <p>&copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
+            <p class="text-secondary"><img src="image/favicon.jpg" width="32px" height="32px"></img>   &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
         </div>
     </footer>
     <!-- Inclusion de jQuery (version complète, pas la version 'slim' qui ne supporte pas AJAX) -->
@@ -31,3 +29,4 @@
     <script src="../js/scripts.js"></script>
 </body>
 </html>
+

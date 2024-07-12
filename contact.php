@@ -3,9 +3,9 @@ session_start();
 
 require 'functions.php';
 
-// Connexion à la base de données
 $database = new Database();
 $db = $database->connect();
+
 $contact = new Contact($db);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
