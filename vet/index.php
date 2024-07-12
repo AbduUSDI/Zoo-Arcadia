@@ -22,7 +22,6 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Simple conteneur pour préciser que c'est bien l'espace vétérinaire -->
 
 <div class="container mt-4">
     <h1 class="mt-4">Espace Vétérinaire</h1>

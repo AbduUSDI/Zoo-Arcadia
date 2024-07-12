@@ -45,7 +45,6 @@ h1, .mt-5, .mb-4 {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur du formulaire POST pour ajouter un rapport vétérinaire -->
 
 <div class="container mt-5">
     <h1 class="my-4">Ajouter un Rapport Animal</h1>

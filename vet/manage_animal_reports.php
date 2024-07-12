@@ -8,12 +8,8 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 3) {
 
 require '../functions.php';
 
-// Connexion à la base de données
-
 $db = new Database();
 $conn = $db->connect();
-
-// Instance Animal pour récupérer les rapports vétérinaires des animaux
 
 $reportManager = new Animal($conn);
 $reports = $reportManager->getReports();
@@ -31,7 +27,6 @@ h1, .mt-5, .mb-4 {
     border-radius: 15px;
 }
 </style>
-<!-- Utilisation d'un tableau responsive pour afficher les rapports vétérinaires -->
 
 <div class="container mt-5">
     <h1 class="my-4">Gérer les Rapports Animaux</h1>

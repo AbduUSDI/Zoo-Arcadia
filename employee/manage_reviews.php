@@ -1,7 +1,5 @@
 <?php
 
-// Vérification de l'identification de l'utiliateur, il doit être role 2 donc employé, sinon page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
     header('Location: ../login.php');
@@ -10,53 +8,31 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
 
 require '../functions.php';
 
-// Connexion à la base de données
-
 $db = new Database();
 $conn = $db->connect();
 
-// Instance Review pour utiliser les méthodes en rapport au avis
-
 $reviewHandler = new Review($conn);
-
-// Instance Habitat pour utiliser les méthodes en rapport au habitats
-
-$habitatHandler = new Habitat($conn);
-
-// Récupérer les commentaires habitat de vétérinaires avec la méthode getToutHabitatsComments
-
-$vetComments = $habitatHandler->getToutHabitatsComments();
-
-// Récupérer tous les avis existants publiés validés ou pas encore validés
-
 $reviews = $reviewHandler->getAvisTout();
 
-// Récupération par boutons (formulaires) POST de toutes les informations en utilisant les méthodes CRUD
+$habitatHandler = new Habitat($conn);
+$vetComments = $habitatHandler->getToutHabitatsComments();
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete']) && isset($_POST['review_id'])) {
         $review_id = $_POST['review_id'];
-
-// Ici nous utilisons la méthode "deleteAvis" qui permet de supprimer un avis déjà approuvé
-
         $reviewHandler->deleteAvis($review_id);
+
     } elseif (isset($_POST['approve']) && isset($_POST['review_id'])) {
         $review_id = $_POST['review_id'];
-
-// Ici nous avons la méthode "approve" qui permet d'approuver un avis poster mais pas encore approuvé
-
         $reviewHandler->approve($review_id);
+
     } elseif (isset($_POST['delete_comment']) && isset($_POST['comment_id'])) {
         $comment_id = $_POST['comment_id'];
-
-// Ici nous avons la méthode "deleteHabitatComment" pour supprimer un commentaire habitat
-
         $habitatHandler->deleteHabitatComment($comment_id);
+        
     } elseif (isset($_POST['approve_comment']) && isset($_POST['comment_id'])) {
         $comment_id = $_POST['comment_id'];
-
-// Ici nous avons la méthode "approveHabitatComment" pour approuver un commentaire habitat
-
         $habitatHandler->approveHabitatComment($comment_id);
     }
     header('Location: manage_reviews.php');
@@ -80,11 +56,8 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur pour afficher dans des tableaux toutes les informations des avis et commentaires -->
 
 <div class="container mt-4">
-
-    <!-- Tableau des avis visiteurs -->
 
     <h1 class="my-4">Gérer les avis des visiteurs</h1>
     <div class="table-responsive">
@@ -123,9 +96,6 @@ body {
             </tbody>
         </table>
     </div>
-
-    <!-- Tableau des commentaires vétérinaires sur les habitats -->
-
     <h2 class="my-4">Commentaires des vétérinaires</h2>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">

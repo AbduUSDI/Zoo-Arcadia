@@ -1,7 +1,5 @@
 <?php
 
-// Vérification de l'identification de l'utiliateur, il doit être role 1 donc admin, sinon page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     header('Location: ../login.php');
@@ -10,22 +8,14 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
 
 require '../functions.php';
 
-// Connexion à la base de données
-
 $db = (new Database())->connect();
 
-// Instance Habitat pour utiliser les méthodes en rapport avec les habitats
-
 $habitat = new Habitat($db);
-
-// Traitement et récupération des données du formulaire (POST) d'ajout d'habitat
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
     $description = $_POST['description'];
     $image = $_FILES['image'];
-
-    // Ajout d'une image pour l'habitat
 
     if ($image['error'] == UPLOAD_ERR_OK) {
         $imageName = time() . '_' . $image['name'];
@@ -33,9 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $imageName = null;
     }
-
-    // Utilisation de la méthode préparée "addHabitat" pour finaliser le formulaire et valider les informations
-
     if ($habitat->addHabitat($name, $description, $imageName)) {
         header('Location: manage_habitats.php');
         exit;
@@ -61,7 +48,6 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur pour afficher le formulaire d'ajout d'unn habitat -->
 
 <div class="container mt-4">
     <h1 class="my-4">Ajouter un Habitat</h1>

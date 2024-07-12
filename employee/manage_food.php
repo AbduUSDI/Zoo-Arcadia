@@ -1,7 +1,5 @@
 <?php
 
-// Vérification de l'identification de l'utiliateur, il doit être role 2 donc employé, sinon page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
     header('Location: ../login.php');
@@ -10,17 +8,10 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
 
 require '../functions.php';
 
-// Connexion à la base de données
-
 $db = new Database();
 $conn = $db->connect();
 
-// Instance Animal pour récupérer les méthodes en rapport avec les animaux
-
 $animalHandler = new Animal($conn);
-
-// Utilisation de la méthode getAll pour récupérer les informations de tout les animaux
-
 $animals = $animalHandler->getAll();
 
 include '../templates/header.php';
@@ -40,7 +31,6 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur pour afficher le formulaire afin de donner de la nourriture à un animal grâce à la méthode POST -->
 
 <div class="container mt-4">
     <h1 class="my-4">Gérer la Nourriture des Animaux</h1>

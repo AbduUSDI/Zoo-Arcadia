@@ -36,18 +36,11 @@ if (!$review) {
     exit;
 }
 
-// Traitement du formulaire de modification (POST)
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pseudo = $_POST['pseudo'] ?? $review['visitor_name'];
     $subject = $_POST['subject'] ?? $review['subject'];
     $review_text = $_POST['review_text'] ?? $review['review_text'];
-
-    // Utilisation de la méthode "updateAvis" pour modifier les informations existantes
-
     $reviewManager->updateAvis($reviewId, $pseudo, $subject, $review_text);
-
-    // Rediriger vers la page de gestion des avis
 
     header('Location: manage_reviews.php');
     exit;
@@ -70,7 +63,6 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur pour afficher le formulaire POST pour modifier l'avis sélectionné -->
 <div class="container mt-4">
     <h1>Modifier l'avis</h1>
     <form action="edit_review.php?id=<?php echo htmlspecialchars($reviewId); ?>" method="POST">

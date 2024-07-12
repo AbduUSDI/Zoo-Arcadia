@@ -4,32 +4,24 @@ session_start();
 require 'functions.php';
 require 'MongoDB.php';
 
-// Connexion à la base de données
 $db = new Database();
 $conn = $db->connect();
 
-// Instance pour classe Animal
 $animalPage = new Animal($conn);
-
-// Utilisation de la méthode getAll pour afficher tous les animaux
 $animals = $animalPage->getAll();
 
-// Connexion à la base de donnée MongoDB
 try {
     $mongoClient = new MongoDB();
 } catch (Exception $erreur) {
     die('Connexion à la base de données MongoDB échouée : ' . $erreur->getMessage());
 }
 
-// Instance de la classe Habitat pour récupérer les détails de l'habitat de l'animal
 $habitatDef = new Habitat($conn);
 
-// Récupération des informations envoyées par le bouton like
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['like'])) {
         $animalId = $_POST['animal_id'];
         
-        // Utilisation de la méthode d'ajout de Like
         $animalPage->ajouterLike($animalId);
     }
 }
@@ -45,7 +37,7 @@ h1, h2, h3 {
 
 body {
     background-image: url('image/background.jpg');
-    padding-top: 48px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
+    padding-top: 48px;
 }
 
 h1, .mt-5, .mb-4 {
@@ -54,14 +46,13 @@ h1, .mt-5, .mb-4 {
 }
 </style>
 
-<!-- Conteneur pour afficher les animaux ainsi que leurs informations de like et commentaires existants -->
 <div class="container">
     <h1 class="my-4">Tous les Animaux</h1>
     <div class="row">
         <?php if (count($animals) > 0): ?>
             <?php foreach ($animals as $animal): ?>
                 <?php
-                // Récupérer l'habitat pour chaque animal
+                // Récupérer le nom de l'habitat pour chaque animal
                 $habitatName = $animal['habitat_id'] ? htmlspecialchars($habitatDef->getParId($animal['habitat_id'])['name']) : 'Habitat indisponible'; ?>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card">
@@ -90,6 +81,9 @@ h1, .mt-5, .mb-4 {
 </div>
 
 <script>
+
+// Fonction JS pour utiliser le fichier "record_click.php" et en utilisant l'id de l'animal pour incrémenter le click stocké sur le bon animal 
+
 function registerClick(animalId) {
     console.log("Tentative d'enregistrement du clic pour l'animal ID:", animalId);
     fetch('record_click.php?animal_id=' + animalId)

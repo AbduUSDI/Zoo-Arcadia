@@ -1,7 +1,5 @@
 <?php
 
-// Vérification de l'identification de l'utiliateur, il doit être role 1 donc admin, sinon page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     header('Location: ../login.php');
@@ -10,17 +8,10 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
 
 require '../functions.php';
 
-// Connexion à la base de données
-
 $db = new Database();
 $conn = $db->connect();
 
-// Instance pour utililser les méthodes en rapport avec les habitats
-
 $habitat = new Habitat($conn);
-
-// Utilisation de la méthode "getToutHabitats" pour afficher tout les habitats sur un tableau
-
 $habitats = $habitat->getToutHabitats();
 
 include '../templates/header.php';
@@ -31,7 +22,6 @@ include 'navbar_admin.php';
 h1,h2,h3 {
     text-align: center;
 }
-
 body {
     background-image: url('../image/background.jpg');
 }

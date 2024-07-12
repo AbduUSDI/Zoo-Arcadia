@@ -1,7 +1,5 @@
 <?php
 
-// Vérification de l'identification de l'utiliateur, il doit être role 1 donc admin, sinon page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     header('Location: ../login.php');
@@ -10,25 +8,14 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
 
 require '../functions.php';
 
-// Connexion à la base de données
- 
 $db = new Database();
 $conn = $db->connect();
 
-// Instance ZooHours pour utiliser les méthode préparée pour les horaires du zoo
-
 $zooHours = new ZooHours($conn);
-
-// Récupération des horaires existants grâce à la méthode "getAllHours"
-
 $hours = $zooHours->getAllHours();
 
-// Traitement du formulaire POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($_POST['hours'] as $id => $times) {
-
-        // Utilisation de la méthode préparée "updateHours" pour pouvoir modifier les horaires du zoo en cliquant sur les horaires un par un
-         
         $zooHours->updateHours($times['open'], $times['close'], $id);
     }
     header("Location: zoo_hours.php");
@@ -52,7 +39,6 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur pour afficher le formulaire tableau (POST) affichant les horaires du zoo modifiable -->
 
 <div class="container mt-4">
     <h2>Modifier les horaires d'ouverture du Zoo</h2>
@@ -79,7 +65,7 @@ body {
                 </tbody>
             </table>
         </div>
-        <button type="submit" class="btn btn-primary">Mettre à jour les horaires</button>
+        <button type="submit" class="btn btn-success">Mettre à jour les horaires</button>
     </form>
 </div>
 </div>

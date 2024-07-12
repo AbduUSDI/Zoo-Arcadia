@@ -7,38 +7,24 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
 
 require '../functions.php';
 
-// Connexion à la base de données
-
 $db = new Database();
 $conn = $db->connect();
 
-// Instance Habitat pour utiliser les méthodes en rapport avec un habitat
-
 $habitatObj = new Habitat($conn);
-
-// Vérification si un ID d'habitat est fourni dans l'URL, sinon redirige vers manage_habitats.php
 
 if (!isset($_GET['id'])) {
     header('Location: manage_habitats.php');
     exit;
 }
 
-// Récupèration de l'ID de l'habitat depuis les paramètres de l'URL
-
 $id = $_GET['id'];
 
-// Utilisation de la méthode "getParId" pour récupérer les informations de l'habitat par son id
-
 $habitat = $habitatObj->getParId($id);
-
-// Vérifie si l'habitat existe, sinon redirection vers manage_habitats.php
 
 if (!$habitat) {
     header('Location: manage_habitats.php');
     exit;
 }
-
-// Traitement du formulaire (POST) en utilisant les méthode préparées de la classe Habitat
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
@@ -46,15 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $image = $_FILES['image'];
 
     if ($image['size'] > 0) {
-
-        // Utilisation de la méthode préparée "uploadImage" pour pouvoir ajouter une image si il le faut sinon garder l'image existante
-
         $imagee = $habitatObj->uploadImage($image);
     } else {
         $image = $habitat['image'];
     }
-
-        // Utilisation de la méthode préparée "updateHabitat" avec ses 4 paramètres
 
     $habitatObj->updateHabitat($id, $name, $description, $image);
 
@@ -79,7 +60,6 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur pour afficher me formulaire (POST) de modification d'Habitat -->
 
 <div class="container mt-4">
     <h1 class="my-4">Modifier un Habitat</h1>

@@ -1,7 +1,5 @@
 <?php
 
-// Vérification de l'identification de l'utilisateur, il doit être role 1 donc admin, sinon redirection vers la page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     header('Location: ../login.php');
@@ -9,8 +7,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
 }
 
 require '../functions.php';
-
-// Instance pour utiliser la connexion à la base de données
 
 $db = new Database();
 $conn = $db->connect();
@@ -32,7 +28,6 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur pour filtrer les rapports vétérinaires avec -->
 
 <div class="container mt-4">
     <h1 class="my-4">Gérer les Rapports Vétérinaires</h1>
@@ -96,10 +91,10 @@ body {
         const filterAnimal = document.getElementById('filterAnimal');
         const reportsBody = document.getElementById('reportsBody');
 
-        // Fonction "loadOptions" pour charger les options des filtres depuis le serveur
+        // Fonction "loadOptions" pour charger les options des filtres
 
         function loadOptions() {
-            axios.get('get_options.php') // Chargement du fichier get_options.php pour récupérer les informations des rapports et animaux
+            axios.get('get_options.php') // Chargement du fichier get_options.php pour récupérer les options des dates et animaux
                 .then(response => {
                     const dates = response.data.dates;
                     const animals = response.data.animals;
@@ -127,7 +122,7 @@ body {
                 });
         }
 
-        // Fonction pour charger les rapports depuis le serveur avec les filtres choisis
+        // Fonction pour charger les rapports avec les filtres choisis
 
         function loadReports() {
             const visitDate = filterDate.value;
@@ -170,8 +165,8 @@ body {
         
         // Charger les options des filtres et les rapports au démarrage de la page
 
-        loadOptions(); //Chargement de toutes les options au démarrage
-        loadReports(); // Chargement de tout les rapports au démarrage
+        loadOptions();
+        loadReports();
 
         // Actualisation de la liste des rapports toutes les 30 secondes
 

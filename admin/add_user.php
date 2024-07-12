@@ -1,7 +1,5 @@
 <?php
 
-// Vérification de l'identification de l'utiliateur, il doit être role 1 donc admin, sinon page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     header('Location: ../login.php');
@@ -10,15 +8,9 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
 
 require '../functions.php';
 
-// Connexion à la base de données
-
 $db = (new Database())->connect();
 
-// Instance User pour utiliser les méthodes en rapport au utilisateurs du zoo
-
 $user = new User($db);
-
-// Traitement et récupération des données du formulaire (POST) d'ajout d'utilisateur
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
@@ -28,12 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role_id = $_POST['role_id'];
     $username = $_POST['username'];
-
-    // Utilisation de la méthode préparée "addUser" afin d'ajouter le nouvel utilisateur après avoir récupéré toutes les informations fournies
-
     $user->addUser($email, $password, $role_id, $username);
-
-    // Redirection vers la page de gestion des utilisateurs
 
     header('Location: manage_users.php');
     exit;
@@ -56,7 +43,6 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur pour afficher le formulaire (POST) pour ajouter un utilisateur -->
 
 <div class="container mt-4">
     <h1 class="my-4">Ajouter un Utilisateur</h1>

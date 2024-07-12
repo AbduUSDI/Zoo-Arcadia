@@ -1,7 +1,5 @@
 <?php
 
-// Vérification de l'identification de l'utilisateur, il doit être role 1 donc admin, sinon page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     header('Location: ../login.php');
@@ -10,16 +8,10 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
 
 require '../functions.php';
 
-// Connexion à la base de données
-
 $db = new Database();
 $conn = $db->connect();
 
-// Instance Animal pour utiliser les méthodes en rapport avec les animaux
-
 $animalManager = new Animal($conn);
-
-// Traitement et récupération des données du formulaire (POST) d'ajout d'un animal
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
@@ -27,17 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $habitat_id = $_POST['habitat_id'];
     $image = $_FILES['image'];
 
-    // Vérification si un fichier a été téléchargé
-
     if ($image['error'] == UPLOAD_ERR_OK) {
         $targetDir = "../uploads/";
         $imageName = time() . '_' . basename($image["name"]);
         $targetFile = $targetDir . $imageName;
 
         $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
-        // Utilisation d'un allowedTypes pour forcer l'utilisateur à utiliser uniquement des fichiers image ou gif
-
         $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
         if (in_array($fileType, $allowedTypes) && $image['size'] < 5000000) {
             if (move_uploaded_file($image["tmp_name"], $targetFile)) {
@@ -52,16 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!isset($error)) {
-
-        // Utilisation de la méthode "add" de la classe Animal pour ajouter un nouvel animal
-
         $animalManager->add([$name, $species, $habitat_id, $targetFile]);
         header('Location: manage_animals.php');
         exit;
     }
 }
-
-// Récupération de la liste des habitats pour le formulaire
 
 $habitats = $animalManager->getListeAllHabitats();
 
@@ -82,7 +64,6 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur pour afficher le formulaire (POST) pour ajouter un nouvel animal -->
 
 <div class="container mt-4">
     <h1 class="my-4">Ajouter un Animal</h1>

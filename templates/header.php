@@ -1,5 +1,3 @@
-<!-- Utilisation d'un header template pour l'inclure à chaque page afin de faciliter la lecture du code -->
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>

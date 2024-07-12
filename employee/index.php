@@ -1,7 +1,5 @@
 <?php
 
-// Vérification de l'identification de l'utiliateur, il doit être role 2 donc employé, sinon page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
     header('Location: ../login.php');
@@ -25,7 +23,6 @@ body {
     border-radius: 15px;
 }
 </style>
-<!-- Conteneur pour afficher tout simplement que c'est bien l'espace Employé -->
 
 <div class="container mt-5">
     <h1 class="my-4">Espace Employé</h1>

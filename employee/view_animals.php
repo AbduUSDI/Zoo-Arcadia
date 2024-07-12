@@ -1,7 +1,5 @@
 <?php
 
-// Vérification de l'identification de l'utiliateur, il doit être role 2 donc employé, sinon page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
     header('Location: ../login.php');
@@ -10,17 +8,10 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
 
 require '../functions.php';
 
-// Connexion à la base de données
-
 $db = new Database();
 $conn = $db->connect();
 
-// Instance Animal pour afficher tout les animaux pour consultation
-
 $animalManager = new Animal($conn);
-
-// Utilisation de la méthode getAll pour récupérer tout les animaux existants et les afficher dans le tableau en bas
-
 $animals = $animalManager->getAll();
 
 include '../templates/header.php';
@@ -45,8 +36,6 @@ body {
 }
 </style>
 
-<!-- Utilisation d'un conteneur pour afficher dans un tableau les animaux existants et y ajouter aussi deux boutons : le premier pour afficher les commentaires sur l'animal et le deuxième pour afficher les repas consommés par l'animal -->
-
 <div class="container mt-4">
     <h1 class="my-4">Animaux</h1>
     <div class="table-responsive">
@@ -65,16 +54,12 @@ body {
             <tbody>
                 <?php foreach ($animals as $animal): ?>
                 <tr> 
-                    
-                <!-- Utilisation ici encore de htmlspecialchars pour sécuriser le code à caractère spéciaux -->
-
                     <td><?php echo htmlspecialchars($animal['id']); ?></td>
                     <td><?php echo htmlspecialchars($animal['name']); ?></td>
                     <td><?php echo htmlspecialchars($animal['species']); ?></td>
                     <td><?php echo htmlspecialchars($animal['habitat_name']); ?></td>
                     <td><img src="<?php echo htmlspecialchars($animal['image']); ?>" alt="<?php echo htmlspecialchars($animal['name']); ?>" style="width: 100px;"></td>
                     <td>
-                        <!-- Accordéon pour les commentaires -->
                         <div class="accordion" id="accordionExample-<?php echo $animal['id']; ?>">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingOne-<?php echo $animal['id']; ?>">
@@ -86,9 +71,6 @@ body {
                                     <div class="accordion-body">
                                         <ul class="list-group">
                                             <?php
-
-                                            // Utilisation de la méthode getAvisAnimaux par id d'animal afin d'afficher les bons commentaires
-
                                             $comments = $animalManager->getAvisAnimaux($animal['id']);
                                             foreach ($comments as $comment): ?>
                                                 <li class="list-group-item">
@@ -102,7 +84,6 @@ body {
                         </div>
                     </td>
                     <td>
-                        <!-- Accordéon pour les nourritures -->
                         <div class="accordion" id="accordionExampleFood-<?php echo $animal['id']; ?>">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingFood-<?php echo $animal['id']; ?>">
@@ -114,9 +95,6 @@ body {
                                     <div class="accordion-body">
                                         <ul class="list-group">
                                             <?php
-
-                                            // Utilisation de la méthode getNourritureAnimaux par id d'animal afin d'afficher les bonnes informations par animal
-
                                             $foods = $animalManager->getNourritureAnimaux($animal['id']);
                                             foreach ($foods as $food): ?>
                                                 <li class="list-group-item">
