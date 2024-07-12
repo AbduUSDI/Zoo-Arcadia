@@ -13,8 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 
     $userData = $user->getUtilisateurParEmail($email);
 
-    // Ici c'est pour controler la vérification et rediriger vers la bonne page en fonction du role_id de la base de données
-
     if ($userData && password_verify($password, $userData['password'])) {
         echo "Mot de passe vérifié.<br>";
         $_SESSION['user'] = $userData;
@@ -29,8 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             header('Location: index.php');
         }
         exit;
-
-    // Message d'erreur en cas d'erreur, de mot de passe incorrect ou email incorrect
 
     } else {
         $error = "Email ou mot de passe incorrect.";
@@ -105,26 +101,19 @@ body {
 </div>
 
 <script>
-
-   // Exécute le script une fois que le DOM est entièrement chargé
+/* Script pour aficher désafficher le mot de passe */
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    // Obtenir les éléments par leur ID
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
 
-    // Ajouter un écouteur d'événements pour le clic sur l'icône
-
     togglePassword.addEventListener('click', function() {
-        // Modifie le type de l'input entre 'password' et 'text' quand on clic sur l'icône
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
 
-        // Chargement de l'icône FontAwesome à l'intérieur de l'élément cliqué grâce à une balise nommée "i"
         const eyeIcon = this.querySelector('i');
         
-        // Modifications des classes FontAwesome pour l'icône de l'œil (barré/non barré)
         if (type === 'password') {
             eyeIcon.classList.remove('fa-eye');
             eyeIcon.classList.add('fa-eye-slash');
@@ -153,16 +142,16 @@ document.addEventListener('DOMContentLoaded', function() {
             <p>&copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
         </div>
     </footer>
-    <!-- Inclusion de jQuery (version complète, pas la version 'slim' qui ne supporte pas AJAX) -->
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- Inclusion de Popper.js -->
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 
-    <!-- Inclusion de Bootstrap JS -->
+
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <!-- Inclusion de AXIOS -->
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <script src="../js/scripts.js"></script>

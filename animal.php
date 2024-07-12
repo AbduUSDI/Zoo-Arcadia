@@ -29,7 +29,7 @@ if (!$animal) {
 }
 
 // Récupérer les rapports vétérinaires de l'animal
-$reports = $animalDef->getRapportsAnimal($animal_id);
+$reports = $animalDef->getRapportsAnimalParId($animal_id);
 
 // Instance de la classe Habitat pour récupérer les détails de l'habitat de l'animal
 $habitatDef = new Habitat($conn);

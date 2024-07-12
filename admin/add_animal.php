@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Récupération de la liste des habitats pour le formulaire
 
-$habitats = $animalManager->getAllHabitats();
+$habitats = $animalManager->getListeAllHabitats();
 
 include '../templates/header.php';
 include 'navbar_admin.php';

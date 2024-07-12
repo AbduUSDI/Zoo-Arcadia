@@ -3,12 +3,8 @@ session_start();
 
 require_once 'functions.php';
 
-// Connexion à la base de données
-
 $db = new Database();
 $conn = $db->connect();
-
-// Instance Habitat pour afficher tout les habitat sur la page
 
 $habitat = new Habitat($conn);
 $habitats = $habitat->getToutHabitats();
@@ -24,15 +20,13 @@ h1,h2,h3 {
 
 body {
     background-image: url('image/background.jpg');
-    padding-top: 48px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
+    padding-top: 48px;
 }
 h1, .mt-5, .mb-4 {
     background: whitesmoke;
     border-radius: 15px;
 }
 </style>
-
-<!-- Utilisation des card pour afficher les habitats avec leurs images et derscriptions ainsi que le bouton détails -->
 
 <div class="container mb-4">
     <h1 class="my-4">Tous les Habitats</h1>

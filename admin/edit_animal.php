@@ -60,7 +60,7 @@ $habitat_id = $animal['habitat_id'];
 
 // Utilisation de la méthode "getParHabitats" de la classe Animal pour récupérer la liste des habitats dans le label Select
 
-$habitatsparid= $animalManager->getParHabitat($habitat_id);
+$habitatsparid= $animalManager->getAnimalParHabitat($habitat_id);
 
 // Utilisation de la méthode "getToutHabitats" de la classe Habitat pour récupérer la liste des habitats dans le label Select
 

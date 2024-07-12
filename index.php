@@ -2,18 +2,14 @@
 session_start();
 require 'functions.php';
 
-// Connexion à la base de données
 $db = (new Database())->connect();
 
-// Instance pour afficher les habitats existants
 $habitat = new Habitat($db);
 $habitats = $habitat->getToutHabitats();
 
-// Instance pour afficher les avis sur un tableau
 $review = new Review($db);
 $approvedReviews = $review->getAvisApprouvés();
 
-// Instance pour afficher les heures d'ouverture du zoo
 $zooHours = new ZooHours($db);
 $hours = $zooHours->getAllHours();
 
@@ -28,7 +24,7 @@ h1,h2,h3 {
 
 body {
     background-image: url('image/background.jpg');
-    padding-top: 48px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
+    padding-top: 48px;
 }
 .mt-4 {
         max-height: 500px;
@@ -36,7 +32,6 @@ body {
     }
 </style>
 
-<!-- Contenu principal (HTML) de la page -->
 <h1 id="apropos" style="color: white;">.</h1>
 <div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <div class="container">
@@ -51,8 +46,6 @@ body {
         <p>Que vous soyez un amateur de la nature passionné ou simplement en quête d'une escapade familiale inoubliable, le Zoo Arcadia promet une expérience immersive et enrichissante pour les visiteurs de tous âges. Entrez dans un monde où la magie de la nature prend vie et où chaque visite est une aventure à part entière.</p>
         <br>
         <br>
-
-        <!-- Utilisation de card bootstrap pour afficher les habitats avec la description et le bouton pour aller sur la page de l'habitat -->
 
         <h2>Habitats</h2>
         <div class="row">
@@ -91,7 +84,6 @@ body {
         </div>
         <br>
         <br>
-        <!-- Formulaire pour laisser un avis, utilisant la méthode POST  pour le fichier submit_review.php -->
 
         <h2>Laissez un avis</h2>
         <div id="avis" class="col md-4">
@@ -113,7 +105,6 @@ body {
         </div>
         <br>
         <br>
-        <!-- Tableau pour afficher les avis approuvés des visiteurs -->
 
         <h2>Avis des visiteurs</h2>
         <div class="container mt-5">
