@@ -28,18 +28,26 @@ include 'navbar_employee.php';
 ?>
 
 <style>
+h1,h2,h3 {
+    text-align: center;
+}
 
-    /* Utilisation d'une hauteur maximum de l'accordéon pour garder l'effet responsif au cas ou il y aurait beaucoup de commentaires */
-
-    .accordion {
-        max-height: 200px;
-        overflow-y: auto;
-    }
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+.accordion {
+    max-height: 200px;
+    overflow-y: auto;
+}
 </style>
 
 <!-- Utilisation d'un conteneur pour afficher dans un tableau les animaux existants et y ajouter aussi deux boutons : le premier pour afficher les commentaires sur l'animal et le deuxième pour afficher les repas consommés par l'animal -->
 
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Animaux</h1>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
@@ -130,4 +138,4 @@ include 'navbar_employee.php';
     </div>
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

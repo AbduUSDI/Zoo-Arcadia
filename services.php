@@ -1,11 +1,10 @@
 <?php
 session_start();
+
 require 'functions.php';
 
-// Connexion à la base de données
 $db = (new Database())->connect();
 
-// Création d'une instance $service pour utiliser la méthode pour afficher les services
 $service = new Service($db);
 $services = $service->getServices();
 
@@ -13,9 +12,15 @@ include 'templates/header.php';
 include 'templates/navbar_visitor.php';
 ?>
 <style>
-    body {
-        padding-top: 50px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
-    }
+
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('image/background.jpg');
+    padding-top: 48px;
+}
 </style>
 <div class="container">
     <h1 class="my-4" style="text-align: center;">Nos Services</h1>

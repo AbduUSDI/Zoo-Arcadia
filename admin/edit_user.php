@@ -58,10 +58,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher le formulaire de modification (POST) -->
 
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Modifier Utilisateur</h1>
     <form action="edit_user.php?id=<?php echo $user['id']; ?>" method="POST">
         <div class="form-group">
@@ -129,4 +142,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 </script>
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

@@ -38,18 +38,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $service->ajouterService($name, $description, $image);
         header('Location: manage_services.php');
         exit;
-    } catch (Exception $erreur) {
-        $error = $erreur->getMessage();
+    } catch (Exception $e) {
+        $error = $e->getMessage();
     }
 }
 
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher le formulaire (POST) pour ajouter un service -->
 
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Ajouter un Service</h1>
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?php echo $error; ?></div>
@@ -71,4 +84,4 @@ include 'navbar_admin.php';
     </form>
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

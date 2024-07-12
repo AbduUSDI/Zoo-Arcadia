@@ -1,9 +1,9 @@
 <?php
 session_start();
+
 require 'functions.php';
 
-// Connexion à la base données
-
+// Connexion à la base de données
 $database = new Database();
 $db = $database->connect();
 $contact = new Contact($db);
@@ -24,9 +24,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
 
     if ($contact->saveMessage($name, $email, $message)) {
         if (mail($to, $subject, $body, $headers)) {
-            echo "<div class='alert alert-success' style='text-align: center;'><p>Merci pour votre message, $name. Nous vous répondrons sous peu.</p></div>";
+            echo "<div class='alert alert-success text-center'><p>Merci pour votre message, $name. Nous vous répondrons sous peu.</p></div>";
         } else {
-            echo "<div class='alert alert-danger' style='text-align: center;'><p>Désolé, il y a eu un problème lors de l'envoi de votre message. Veuillez réessayer plus tard.</p></div>";
+            echo "<div class='alert alert-danger text-center'><p>Désolé, il y a eu un problème lors de l'envoi de votre message. Veuillez réessayer plus tard.</p></div>";
         }
     }
 }
@@ -36,64 +36,42 @@ include 'templates/navbar_visitor.php';
 ?>
 
 <style>
-body {
-  padding-top: 78px;
-}
-h1 {
-  text-align: center;
-  font-weight: 600;
-  color: black;
-  margin-bottom: 20px;
-}
-input[type="submit"] {
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-input {
-  border-radius: 5px;
-  border: 1px solid;
-  padding: 10px 20px;
-  margin-bottom: 10px;
-  width: 100%;
-  font-size: 16px;
-  font-weight: 600;
-  outline: none;
-  transition: all 0.3s ease;
-}
-#message {
-  border-radius: 5px;
-  border: 1px solid;
-  padding: 10px 20px;
-  margin-bottom: 10px;
-  width: 100%;
-  font-weight: 600;
-  outline: none;
-  transition: all 0.3s ease;
-}
+    h1, h2, h3 {
+        text-align: center;
+    }
+
+    body {
+        background-image: url('image/background.jpg');
+        padding-top: 78px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
+    }
+
+    h1, .mt-5, .mb-4 {
+        background: whitesmoke;
+        border-radius: 15px;
+    }
 </style>
 
-<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6); padding: 20px; border-radius: 10px; border: 5px solid #e5e5e5; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-  <h1>Contact</h1>
-  <form action="contact.php" method="post" class="col-md-6 offset-md-3">
-    <div class="mb-2">
-      <label for="name" class="form-label">Nom:</label>
-      <input type="text" id="name" name="name" required>
+<div class="container mt-5">
+    <div class="card p-4" style="background: linear-gradient(to right, #ffffff, #ccedb6); border-radius: 10px;">
+        <h1 class="card-title text-center">Contact</h1>
+        <form action="contact.php" method="post" class="col-md-6 offset-md-3">
+            <div class="mb-3">
+                <label for="name" class="form-label">Nom :</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email :</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Message :</label>
+                <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+            </div>
+            <div class="mb-3 text-center">
+                <button type="submit" name="submit" class="btn btn-success">Envoyer</button>
+            </div>
+        </form>
     </div>
-    <div class="mb-2">
-      <label for="email" class="form-label">Email:</label>
-      <input type="email" id="email" name="email" required>
-    </div>
-    <div class="mb-2">
-      <label for="message" class="form-label">Message:</label>
-      <textarea id="message" name="message" class="form-control" required></textarea>
-    </div>
-    <div class="mb-2">
-      <input type="submit" name="submit" value="Envoyer" class="btn btn-success">
-    </div>
-  </form>
 </div>
 
 <?php include 'templates/footer.php'; ?>

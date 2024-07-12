@@ -63,15 +63,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Récupération de la liste des habitats pour le formulaire
 
-$habitats = $animalManager->getAllHabitats();
+$habitats = $animalManager->getListeAllHabitats();
 
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher le formulaire (POST) pour ajouter un nouvel animal -->
 
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Ajouter un Animal</h1>
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?php echo $error; ?></div>
@@ -101,4 +114,4 @@ include 'navbar_admin.php';
     </form>
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

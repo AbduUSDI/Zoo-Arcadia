@@ -18,10 +18,23 @@ $conn = $db->connect();
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour filtrer les rapports vétérinaires avec -->
 
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Gérer les Rapports Vétérinaires</h1>
     <form id="filterForm">
         <div class="form-row">
@@ -166,4 +179,4 @@ include 'navbar_admin.php';
     });
 </script>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

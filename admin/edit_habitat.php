@@ -1,7 +1,4 @@
 <?php
-
-// Vérification de l'identification de l'utiliateur, il doit être role 1 donc admin, sinon page login.php
-
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     header('Location: ../login.php');
@@ -68,10 +65,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher me formulaire (POST) de modification d'Habitat -->
 
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Modifier un Habitat</h1>
     <form method="POST" enctype="multipart/form-data">
         <div class="form-group">
@@ -93,4 +103,4 @@ include 'navbar_admin.php';
     </form>
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

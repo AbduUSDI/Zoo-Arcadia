@@ -1,6 +1,6 @@
 <?php
 /**
- * Classe pour établir une connexion à la base de données
+ * Classe Database pour établir une connexion à la base de données
  */
 class Database {
     private $hôte = 'localhost';
@@ -10,27 +10,20 @@ class Database {
     private $connexion;
 
     public function connect() {
-        // Initialisation de la connexion à null car au début pas de connexion active
+
         $this->connexion = null;
     
         try {
-            // Création d'une nouvelle instance de PDO pour se connecter à la base de données
-            // Remplacer les informations de connexion avec les propriétés de l'objet
             $this->connexion = new PDO(
                 "mysql:host=" . $this->hôte . ";dbname=" . $this->nom_base_de_donnée, 
                 $this->identifiant, 
                 $this->mot_de_passe
             );
-    
-            // Configurer PDO pour lancer des exceptions en cas d'erreur
             $this->connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
+
         } catch(PDOException $erreur) {
-            // En cas d'erreur, afficher un message compréhensible
             echo "Erreur de connexion à la base de donnée : " . $erreur->getMessage();
         }
-    
-        // Retourner l'objet de connexion PDO ou null si la connexion a échoué
         return $this->connexion;
     }
     
@@ -40,56 +33,47 @@ class Database {
  */
 class Animal {
     private $db;
-    // Création d'une définition pour la méthode ajouterNourriture
     private $nourriture = 'food';
     private $table = 'vet_reports';
-    // Constructeur qui initialise la connexion à la BDD
     public function __construct($db) {
         $this->db = $db;
     }
-    // Méthode (CRUD = Read) préparée pour récupérer toutes les informations des animaux : habitat, image et id de l'animal et de l'habitat
     public function getAll() {
         $stmt = $this->db->prepare("SELECT animals.*, habitats.name AS habitat_name, animals.image FROM animals LEFT JOIN habitats ON animals.habitat_id = habitats.id");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour ajouter un like sur un animal : sur la page d'un animal on peut cliquer sur un bouton like pour améliorer le score de l'animal
     public function ajouterLike($animal_id) {
         $stmt = $this->db->prepare("UPDATE animals SET likes = likes + 1 WHERE id = :id");
         $stmt->bindParam(':id', $animal_id, PDO::PARAM_INT);
         $stmt->execute();
     }
-    // Méthode préparée pour qu'un visiteur puisse ajouter un avis qui devra être approuver par l'employé(e)
-    public function ajouterAvis($visitorName, $subject, $reviewText, $animalId) {
-        $stmt = $this->db->prepare("INSERT INTO reviews (visitor_name, subject, review_text, animal_id) VALUES (:visitor_name, :subject, :review_text, :animal_id)");
+    public function ajouterAvis($visitorName, $reviewText, $animalId) {
+        $stmt = $this->db->prepare("INSERT INTO reviews (visitor_name, review_text, animal_id) VALUES (:visitor_name, :review_text, :animal_id)");
         $stmt->bindParam(':visitor_name', $visitorName, PDO::PARAM_STR);
-        $stmt->bindParam(':subject', $subject, PDO::PARAM_STR);
         $stmt->bindParam(':review_text', $reviewText, PDO::PARAM_STR);
         $stmt->bindParam(':animal_id', $animalId, PDO::PARAM_INT);
         $stmt->execute();
     }
-    // Méthode préparée pour récupérer les avis et commentaires visiteur approuvés par l'employé en utilisant l'id de l'animal pour afficher sur la bonne colonne animal
     public function getAvisAnimaux($animal_id) {
         $stmt = $this->db->prepare("SELECT * FROM reviews WHERE animal_id = :animal_id AND approved = 1");
         $stmt->bindParam(':animal_id', $animal_id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour récupérer les details des animaux par id
     public function getDetailsAnimal($animal_id) {
         $stmt = $this->db->prepare("SELECT * FROM animals WHERE id = :id");
         $stmt->bindParam(':id', $animal_id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour récupérer tout les rapports vétérinaires existants
     public function getReports() {
         $stmt = $this->db->prepare("SELECT vet_reports.*, animals.name AS animal_name FROM vet_reports JOIN animals ON vet_reports.animal_id = animals.id ORDER BY vet_reports.visit_date DESC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode pour appliquer les filtres par date et/ou par animal : ar = animal reports ; a = animals
-    public function appliquerFiltres($selectedDate, $selectedAnimalId) {
+    // Méthode pour appliquer les filtres par date et/ou par animal 
+    public function appliquerFiltres($selectedDate, $selectedAnimalId) {  // ar = vet_reports table
         $query = "SELECT ar.*, a.name as animal_name FROM vet_reports ar JOIN animals a ON ar.animal_id = a.id";
         $conditions = [];
         $params = [];
@@ -108,21 +92,12 @@ class Animal {
 
         return [$query, $params];
     }
-    // Sous-méthode préparée de la méthode appliquerFiltres pour exécuter l'algorithme
-    public function filtresDateAnimal($selectedDate, $selectedAnimalId) {
-        list($query, $params) = $this->appliquerFiltres($selectedDate, $selectedAnimalId);
-        $stmt = $this->db->prepare($query);
-        $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    // Méthode préparée pour récupérer les rapports vétérinaire par animal en utilisant $animal_id
-    public function getRapportsAnimal($animal_id) {
+    public function getRapportsAnimalParId($animal_id) {
         $stmt = $this->db->prepare("SELECT * FROM vet_reports WHERE animal_id = :animal_id ORDER BY visit_date DESC");
         $stmt->bindParam(':animal_id', $animal_id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour que le vétérinaire puisse ajouter un rapport sur un animal
     public function ajouterRapports($animal_id, $vet_id, $healthStatus, $foodGiven, $foodQuantity, $visitDate, $details) {
         $stmt = $this->db->prepare("INSERT INTO vet_reports (animal_id, vet_id, health_status, food_given, food_quantity, visit_date, details) VALUES (:animal_id, :vet_id, :health_status, :food_given, :food_quantity, :visit_date, :details)");
         $stmt->bindParam(':animal_id', $animal_id, PDO::PARAM_INT);
@@ -134,10 +109,8 @@ class Animal {
         $stmt->bindParam(':details', $details, PDO::PARAM_STR);
         $stmt->execute();
     }
-    // Méthode préparée pour supprimer un rapport vétérinaire
     public function deleteRapport($id) {
-        $query = "DELETE FROM " . $this->table . " WHERE id = :id";
-        $stmt = $this->db->prepare($query);
+        $stmt = $this->db->prepare("DELETE FROM vet_reports WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         
         if($stmt->execute()) {
@@ -145,44 +118,40 @@ class Animal {
         }
         return false;
     }
-    // Méthode préparée pour sélectionner un animal par son habitat et son id
-    public function getParHabitat($habitat_id) {
+    public function getAnimalParHabitat($habitat_id) {
         $stmt = $this->db->prepare("SELECT animals.*, habitats.name AS habitat_name, animals.image FROM animals LEFT JOIN habitats ON animals.habitat_id = habitats.id WHERE animals.habitat_id = ?");
         $stmt->execute([$habitat_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode préparée pour récupérer les habitats et les utiliser comme des options pour une liste déroulante pour le formulaire d'ajout d'animal
-    public function getAllHabitats() {
+    public function getListeAllHabitats() {
         $stmt = $this->db->prepare("SELECT * FROM habitats");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    // Méthode (CRUD = Update) préparée pour mettre à jour un animal avec une image
     public function updateAvecImage($data) {
         $stmt = $this->db->prepare("UPDATE animals SET name = ?, species = ?, habitat_id = ?, image = ? WHERE id = ?");
         return $stmt->execute($data);
     }
-
-    // Méthode (CRUD = Update) préparée pour mettre à jour un animal sans changer l'image
     public function updateSansImage($data) {
         $stmt = $this->db->prepare("UPDATE animals SET name = ?, species = ?, habitat_id = ? WHERE id = ?");
         return $stmt->execute($data);
     }
-    // Méthode (CRUD = Delete) préparée pour supprimer un animal par son id
     public function delete($animalId) {
         $stmt = $this->db->prepare("DELETE FROM animals WHERE id = ?");
         $stmt->execute([$animalId]);
     }
-    // Méthode (CRUD = Create) pour ajouter un nouvel animal
     public function add($data) {
         $stmt = $this->db->prepare("INSERT INTO animals (name, species, habitat_id, image) VALUES (?, ?, ?, ?)");
         $stmt->execute($data);
     }
-    // Méthode préparée pour donner la nourriture à un animal via un formulaire
     public function donnerNourriture($animal_id, $food_given, $food_quantity, $date_given) {
-        $query = "INSERT INTO " . $this->nourriture . " (animal_id, food_given, food_quantity, date_given) VALUES (?, ?, ?, ?)";
-        $stmt = $this->db->prepare($query);
-        return $stmt->execute([$animal_id, $food_given, $food_quantity, $date_given]);
+        $sql = "INSERT INTO food (animal_id, food_given, food_quantity, date_given) VALUES (:animal_id, :food_given, :food_quantity, :date_given)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':animal_id', $animal_id, PDO::PARAM_INT);
+        $stmt->bindParam(':food_given', $food_given, PDO::PARAM_STR);
+        $stmt->bindParam(':food_quantity', $food_quantity, PDO::PARAM_INT);
+        $stmt->bindParam(':date_given', $date_given, PDO::PARAM_STR);
+        $stmt->execute();
     }
     // Méthode préparée pour récupérer les animaux existants afin de le faire apparaître sur le formulaire pour donner la nourriture
     public function getAnimaux() {
@@ -191,7 +160,6 @@ class Animal {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     // Méthode préparée pour récupérer toutes les nourritures données dans une <div> propre à l'animal qui apparaît sous forme d'un accordéon Bootstrap
-    /** f = food */
     public function getNourritureAnimaux($animal_id) {
         $query = "
             SELECT f.food_given, f.food_quantity, f.date_given 
@@ -315,7 +283,7 @@ class Service {
     }
     // Méthode préparée reliée au "create" pour ajouter une image
     public function ajouterImage($file) {
-        $fileTempPath = $file['tmp_name'];
+        $fileTmpPath = $file['tmp_name'];
         $fileName = $file['name'];
         $fileNameCmps = explode(".", $fileName);
         $fileExtension = strtolower(end($fileNameCmps));
@@ -325,7 +293,7 @@ class Service {
             $uploadFileDirection = '../uploads/';
             $dest_path = $uploadFileDirection . $fileName;
 
-            if (move_uploaded_file($fileTempPath, $dest_path)) {
+            if (move_uploaded_file($fileTmpPath, $dest_path)) {
                 return $fileName;
             } else {
                 throw new Exception('Une erreur est survenue au moment de l\'enregistrement de l\'image. Assurez vous que le dossier upload existe bien dans votre répertoire.');
@@ -537,6 +505,7 @@ class User {
         }
         return true;
     }
+    
     // Méthode (CRUD) préparée pour supprimer un utilisateur existant (delete)
     public function deleteUser($id) {
         $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");

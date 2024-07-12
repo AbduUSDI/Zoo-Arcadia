@@ -27,10 +27,23 @@ $services = $services->getServices();
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher la table des services existants -->
 
-<div class="container">
+<div class="container mt-4">
 
     <!-- Table pour afficher les services existants -->
 
@@ -76,4 +89,4 @@ include 'navbar_admin.php';
     </div>
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

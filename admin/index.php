@@ -84,10 +84,23 @@ foreach ($animals as $animal) {
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur responsive pour afficher la dashboard -->
 
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Dashboard Admin</h1>
 
     <!-- Formulaire (POST) de filtre par habitat -->
@@ -143,4 +156,4 @@ include 'navbar_admin.php';
     </div>
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

@@ -71,4 +71,4 @@ include 'navbar_employee.php';
     </form>
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

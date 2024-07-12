@@ -18,6 +18,10 @@ $conn = $db->connect();
 // Instance de la classe Animal pour utiliser les méthodes en rapport avec les animaux
 $animalManager = new Animal($conn);
 
+// Instance de la classe Habitat afin d'afficher les habitats dans le label comme sélection
+
+$habitatsManager = new Habitat($conn);
+
 // Vérification si l'id est affiché sur l'URL
 
 $animal_id = $_GET['id'];
@@ -36,8 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $dossier = "../uploads/";
         $imageName = time() . '_' . basename($image["name"]);
         $targetFile = $dossier . $imageName;
-        move_uploaded_file($image["tmp_name"], $targetFile);
-
+        $success = move_uploaded_file($image["tmp_name"], $targetFile);  // Utilisation de la méthode intégré de VSCode pour php afin de déplacer un fichier chargé vers un dossier existant (attention permissions d'écriture dans le dossier)
         // Méthode updateAvecImage de la classe Animal
         $animalManager->updateAvecImage([$name, $species, $habitat_id, $targetFile, $animal_id]);
     } else {
@@ -55,17 +58,34 @@ $animal = $animalManager->getDetailsAnimal($animal_id);
 // Définition de l'ID de l'habitat à l'animal actuel
 $habitat_id = $animal['habitat_id'];
 
-// Utilisation de la méthode getParHabitats de la classe Animal pour récupérer la liste des habitats dans le label Select
+// Utilisation de la méthode "getParHabitats" de la classe Animal pour récupérer la liste des habitats dans le label Select
 
-$habitats= $animalManager->getParHabitat($habitat_id);
+$habitatsparid= $animalManager->getAnimalParHabitat($habitat_id);
+
+// Utilisation de la méthode "getToutHabitats" de la classe Habitat pour récupérer la liste des habitats dans le label Select
+
+$habitats= $habitatsManager->getToutHabitats();
 
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur pour afficher le formulaire (POST) -->
 
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Modifier un Animal</h1>
     <form action="edit_animal.php?id=<?php echo $animal['id']; ?>" method="POST" enctype="multipart/form-data">
         <div class="form-group">
@@ -96,4 +116,4 @@ include 'navbar_admin.php';
 
 </div>
 
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

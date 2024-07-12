@@ -26,10 +26,23 @@ $habitats = $habitatManager->getToutHabitats();
 include '../templates/header.php';
 include 'navbar_employee.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Utilisation d'un container pour afficher le tableau pour afficher les habitats -->
  
-<div class="container">
+<div class="container mt-4">
     <h1 class="my-4">Habitats</h1>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
@@ -57,4 +70,4 @@ include 'navbar_employee.php';
         </table>
     </div>
 </div>
-<?php include '../templates/footer.php'; ?>
+<?php include '../templates/footerconnected.php'; ?>

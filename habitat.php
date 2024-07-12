@@ -1,15 +1,10 @@
 <?php
 session_start();
 
-// Utilisation du fichier Database et MongoDB pour les base de données relationelle et non relationelle, ainsi que functions pour toutes les autres méthodes préparées
-
 require 'functions.php';
 require 'MongoDB.php';
 
-// Connexion à la base de données
 $db = (new Database())->connect();
-
-// Connexion à la base de donnée MongoDB
 
 try {
     $mongoClient = new MongoDB();
@@ -17,31 +12,16 @@ try {
     die('Connexion à la base de données MongoDB échouée : ' . $erreur->getMessage());
 }
 
-// Récupération de l'id de l'habitat selectionné
-
 if ($db && $mongoClient) {
     $habitatId = $_GET['id'];
-
-    // Instance Habitat pour les méthodes préparées MySQL
     
-    $habitatModel = new Habitat($db);
+    $habitats = new Habitat($db);
+    $habitat = $habitats->getParId($habitatId);
+    $animals = $habitats->getAnimauxParHabitat($habitatId);
+    $vetComments = $habitats->getCommentsApprouvés($habitatId);
 
-    // Récupération de l'habitat sélectionné par son id grâce à la méthode préparée "getParId"
-
-    $habitat = $habitatModel->getParId($habitatId);
-
-    // Récupération de l'animal sélectionné par son id d'habitat grâce à la méthode préparée "getAnimauxParHabitat"
-
-    $animals = $habitatModel->getAnimauxParHabitat($habitatId);
-
-    // Récupération des commentaires vétérinaires d'habitat grâce à la méthode préparée "getCommentApprouvés"
-
-    $vetComments = $habitatModel->getCommentsApprouvés($habitatId);
 } else {
-
-    // Message d'erreur au cas ou si l'id n'est pas trouvé
-
-    die('Connexion à la base de données échouée.');
+    die ('Connexion à la base de données échouée.');
 }
 
 include 'templates/header.php';
@@ -50,24 +30,18 @@ include 'templates/navbar_visitor.php';
 
 <style>
 h1, h2 {
-    text-align: center; /* Centrage des titre h1 et h2 */
+    text-align: center;
 }
 
 body {
-    padding-top: 48px;  /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
+    padding-top: 48px;
 }
 </style>
 
-<!-- Conteneur pour afficher la card de l'habitat, c'est-à-dire : la photo, le commentaire habitat, les animaux de l'habitat -->
-
-    <!-- Affichage de la photo de l'habitat -->
-    
 <div class="container">
     <h1 class="my-4"><?php echo htmlspecialchars($habitat['name']); ?></h1>
     <img src="uploads/<?php echo htmlspecialchars($habitat['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
     <p><?php echo htmlspecialchars($habitat['description']); ?></p>
-
-    <!-- Bloc pour afficher les commentaire vétérinaires -->
 
     <h2>Commentaires sur l'habitat</h2>
     <div class="table-responsive">
@@ -96,7 +70,6 @@ body {
         </table>
     </div>
 
-    <!-- Section for displaying animals -->
     <h2>Animaux</h2>
     <div class="row">
         <?php foreach ($animals as $animal): ?>
@@ -106,8 +79,7 @@ body {
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($animal['name']); ?></h5>
 
-                        <!-- Onclick event to register click using AJAX -->
-                        <button onclick="registerClick(<?php echo $animal['id']; ?>)" class="btn btn-success">Voir les détails</button>
+                        <button onclick="registerClick(<?php echo $animal['id']; ?>)" class="btn btn-success">Plus de détails</button>
                     </div>
                 </div>
             </div>
@@ -116,6 +88,8 @@ body {
 </div>
 
 <script>
+
+// Utilisation de AJAX pour récupérer le click dans Mongo grâce au fichier "record_click.php"
 
 function registerClick(animalId) {
     console.log("Tentative d'enregistrement du clic pour l'animal ID:", animalId);
