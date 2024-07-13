@@ -45,13 +45,13 @@ include 'templates/navbar_visitor.php';
         padding-top: 78px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
     }
 
-    h1, .mt-5, .mb-4 {
+.mt-5, .mb-4 {
         background: whitesmoke;
         border-radius: 15px;
     }
 </style>
 
-<div class="container mt-5">
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <div class="card p-4" style="background: linear-gradient(to right, #ffffff, #ccedb6); border-radius: 10px;">
         <h1 class="card-title text-center">Contact</h1>
         <form action="contact.php" method="post" class="col-md-6 offset-md-3">

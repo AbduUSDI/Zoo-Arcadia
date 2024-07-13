@@ -21,15 +21,15 @@ body {
     background-image: url('image/background.jpg');
     padding-top: 48px;
 }
-h1, .mt-5, .mb-4 {
+.mt-5, .mb-4 {
     background: whitesmoke;
     border-radius: 15px;
 }
 </style>
-<div class="container mt-5">
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
-    <h1 class="my-4" style="text-align: center;">Nos Services</h1>
+    <h1 class="my-4" style="text-align: center;">Nos services</h1>
     <hr>
     <br>
     <div class="row">

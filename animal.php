@@ -54,13 +54,13 @@ body {
     padding-top: 48px;
 }
 
-h1, .mt-5, .mb-4 {
+.mt-5, .mb-4 {
     background: whitesmoke;
     border-radius: 15px;
 }
 </style>
 
-<div class="container mt-5">
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <h1 class="my-4"><?php echo htmlspecialchars($animal['name']); ?></h1>
     <img src="uploads/<?php echo htmlspecialchars($animal['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($animal['name']); ?>">
     <p>Race: <?php echo htmlspecialchars($animal['species']); ?></p>

@@ -40,13 +40,13 @@ body {
     padding-top: 68px;
 }
 
-h1, .mt-5, .mb-4 {
+.mt-5, .mb-4 {
     background: whitesmoke;
     border-radius: 15px;
 }
 </style>
 
-<div class="container mb-4">
+<div class="container mb-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1 class="my-4">Tous les Animaux</h1>

@@ -38,13 +38,13 @@ body {
     background-image: url('image/background.jpg');
     padding-top: 68px;
 }
-h1, .mt-5, .mb-4 {
+.mt-5, .mb-4 {
     background: whitesmoke;
     border-radius: 15px;
 }
 </style>
 
-<div class="container mb-4">
+<div class="container mb-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1 class="my-4"><?php echo htmlspecialchars($habitat['name']); ?></h1>
@@ -52,8 +52,11 @@ h1, .mt-5, .mb-4 {
     <br>
     <img src="uploads/<?php echo htmlspecialchars($habitat['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
     <p><?php echo htmlspecialchars($habitat['description']); ?></p>
-
+    <br>
+    <hr>
     <h2>Commentaires sur l'habitat</h2>
+    <hr>
+    <br>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
             <thead class="thead-dark">
@@ -79,8 +82,11 @@ h1, .mt-5, .mb-4 {
             </tbody>
         </table>
     </div>
-
+    <br>
+    <hr>
     <h2>Animaux</h2>
+    <hr>
+    <br>
     <div class="row">
         <?php foreach ($animals as $animal): ?>
             <div class="col-md-4">

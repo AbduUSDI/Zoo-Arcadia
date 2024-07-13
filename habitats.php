@@ -22,13 +22,13 @@ body {
     background-image: url('image/background.jpg');
     padding-top: 68px;
 }
-h1, .mt-5, .mb-4 {
+.mt-5, .mb-4 {
     background: whitesmoke;
     border-radius: 15px;
 }
 </style>
 
-<div class="container mb-4">
+<div class="container mb-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1 class="my-4">Tous les Habitats</h1>
@@ -37,7 +37,7 @@ h1, .mt-5, .mb-4 {
     <div class="row">
         <?php foreach ($habitats as $habitat): ?>
             <div class="col-md-4">
-                <div class="card mb-4  text-dark" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+                <div class="card mb-4  text-dark">
                     <img class="card-img-top" src="uploads/<?php echo htmlspecialchars($habitat['image']); ?>" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
                     <div class="card-body">
                         <h5 class="card-title" style="text-align: center";><?php echo htmlspecialchars($habitat['name']); ?></h5>
