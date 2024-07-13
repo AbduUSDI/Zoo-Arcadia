@@ -41,7 +41,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h2>Modifier les horaires d'ouverture du Zoo</h2>
+    <hr>
+    <br>
     <form method="POST">
     <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover">

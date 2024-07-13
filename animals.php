@@ -37,7 +37,7 @@ h1, h2, h3 {
 
 body {
     background-image: url('image/background.jpg');
-    padding-top: 48px;
+    padding-top: 68px;
 }
 
 h1, .mt-5, .mb-4 {
@@ -46,8 +46,12 @@ h1, .mt-5, .mb-4 {
 }
 </style>
 
-<div class="container">
+<div class="container mb-4">
+    <br>
+    <hr>
     <h1 class="my-4">Tous les Animaux</h1>
+    <hr>
+    <br>
     <div class="row">
         <?php if (count($animals) > 0): ?>
             <?php foreach ($animals as $animal): ?>

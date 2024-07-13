@@ -30,7 +30,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Gérer les Rapports Vétérinaires</h1>
+    <hr>
+    <br>
     <form id="filterForm">
         <div class="form-row">
             <div class="form-group col-md-6">

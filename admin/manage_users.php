@@ -32,7 +32,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Gérer les utilisateurs</h1>
+    <hr>
+    <br>
     <div class="table-responsive">
         <a href="add_user.php" class="btn btn-success mb-4">Ajouter un utilisateur</a>
         <table class="table table-bordered table-striped table-hover">

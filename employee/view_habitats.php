@@ -32,7 +32,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Habitats</h1>
+    <hr>
+    <br>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
             <thead class="thead-dark">

@@ -18,6 +18,9 @@ include 'navbar_vet.php';
 ?>
 
 <style>
+h1, h2, h3 {
+    text-align: center;
+}
 body {
     background-image: url('../image/background.jpg');
 }
@@ -28,7 +31,11 @@ h1, .mt-5, .mb-4 {
 </style>
 
 <div class="container mt-5">
+<br>
+    <hr>
     <h1 class="my-4">Habitats</h1>
+    <hr>
+    <br>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
             <thead class="thead-dark">

@@ -32,7 +32,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Gestion des Habitats</h1>
+    <hr>
+    <br>
     <a href="add_habitat.php" class="btn btn-success mb-4">Ajouter un habitat</a>
 <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover">

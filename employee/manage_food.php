@@ -33,7 +33,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Gérer la Nourriture des Animaux</h1>
+    <hr>
+    <br>
     <form action="add_food_record.php" method="POST">
         <div class="form-group">
             <label for="animal_id">Animal</label>

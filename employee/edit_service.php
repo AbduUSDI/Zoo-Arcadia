@@ -6,7 +6,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
     exit;
 }
 
-require '../Database.php';
 require '../functions.php';
 
 $db = (new Database())->connect();
@@ -65,7 +64,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Modifier le Service</h1>
+    <hr>
+    <br>
     <form action="edit_service.php?id=<?php echo $id; ?>" method="POST" enctype="multipart/form-data">
         <div class="form-group">
             <label for="name">Nom</label>

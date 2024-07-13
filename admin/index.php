@@ -73,8 +73,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Dashboard Admin</h1>
-
+    <hr>
+    <br>
     <form method="POST" action="">
         <div class="form-group">
             <label for="habitat_id">Filtrer par habitat :</label>

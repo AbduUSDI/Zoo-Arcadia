@@ -20,7 +20,7 @@ h1,h2,h3 {
 
 body {
     background-image: url('image/background.jpg');
-    padding-top: 48px;
+    padding-top: 68px;
 }
 h1, .mt-5, .mb-4 {
     background: whitesmoke;
@@ -29,7 +29,11 @@ h1, .mt-5, .mb-4 {
 </style>
 
 <div class="container mb-4">
+    <br>
+    <hr>
     <h1 class="my-4">Tous les Habitats</h1>
+    <hr>
+    <br>
     <div class="row">
         <?php foreach ($habitats as $habitat): ?>
             <div class="col-md-4">

@@ -35,19 +35,20 @@ body {
 <h1 id="apropos" style="color: white;">.</h1>
 <div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <div class="container">
+        <br>
+        <hr>
         <h1>Bienvenue au Zoo Arcadia</h1>
-        <br>
-        <br>
+        <hr>
         <p>Situé depuis 1960 à proximité de la légendaire forêt de Brocéliande, dans la région enchanteresse de la Bretagne, le Zoo Arcadia s'est établi comme un sanctuaire dédié à la conservation et à la préservation de la faune mondiale. Depuis ses modestes débuts, il a évolué pour devenir un pilier de l'éducation environnementale et de la sensibilisation à la biodiversité.</p>
         <p>Les vastes étendues du Zoo Arcadia abritent une myriade d'animaux, offrant aux visiteurs une immersion totale dans les merveilles de la nature. Avec des habitats soigneusement aménagés pour refléter les environnements naturels d'origine, dont la savane africaine, la jungle amazonienne et les marais tropicaux, chaque coin du zoo est une invitation à l'aventure.</p>
         <p>Les vastes plaines de la savane accueillent les majestueux lions, les éléphants paisibles et les girafes gracieuses, offrant aux visiteurs un aperçu de la vie sauvage africaine. Dans la jungle dense, les singes espiègles se balancent d'arbre en arbre, les jaguars se faufilent dans les ombres et les oiseaux tropicaux colorent le ciel de leurs plumes éclatantes.</p>
         <p>Les marais tranquilles abritent une multitude d'espèces, des crocodiles somnolents aux hérons élégants, tandis que les tortues glissent silencieusement à travers les eaux calmes. Chaque habitat est conçu pour offrir aux animaux un environnement naturel et stimulant, favorisant leur bien-être et leur épanouissement.</p>
         <p>À travers des initiatives de conservation et des programmes éducatifs, le Zoo Arcadia s'efforce de sensibiliser le public à l'importance de la protection de la faune et de la flore. Des visites guidées, des présentations interactives et des rencontres avec les gardiens permettent aux visiteurs de découvrir de près la beauté et la diversité du monde animal, tout en apprenant les défis auxquels ces espèces sont confrontées dans la nature.</p>
         <p>Que vous soyez un amateur de la nature passionné ou simplement en quête d'une escapade familiale inoubliable, le Zoo Arcadia promet une expérience immersive et enrichissante pour les visiteurs de tous âges. Entrez dans un monde où la magie de la nature prend vie et où chaque visite est une aventure à part entière.</p>
-        <br>
-        <br>
+        <hr>
 
         <h2>Habitats</h2>
+        <hr>
         <div class="row">
             <?php foreach ($habitats as $habitat): ?>
                 <div class="col-md-4">
@@ -63,7 +64,10 @@ body {
             <?php endforeach; ?>
         </div>
         <h1 style="color: #ccedb6;" id="openhours">.</h1>
+        <hr>
         <h2>Horaires d'ouverture du Zoo</h2>
+        <hr>
+        <br>
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover">
                 <thead class="thead-dark">
@@ -83,9 +87,9 @@ body {
             </table>
         </div>
         <br>
-        <br>
-
+        <hr>
         <h2>Laissez un avis</h2>
+        <hr>
         <div id="avis" class="col md-4">
             <form action="submit_review.php" method="POST" class="mt-4">
                 <div class="mb-3">
@@ -104,9 +108,10 @@ body {
             </form>
         </div>
         <br>
-        <br>
-
+            
+        <hr> 
         <h2>Avis des visiteurs</h2>
+        <hr>
         <div class="container mt-5">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover">

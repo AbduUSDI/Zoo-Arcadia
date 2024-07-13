@@ -24,7 +24,11 @@ body {
 </style>
 
 <div class="container mt-4">
-    <h1 class="mt-4">Espace Vétérinaire</h1>
+<br>
+    <hr>
+    <h1 class="my-4">Espace vétérinaire</h1>
+    <hr>
+    <br>
     <p>Bienvenue dans votre espace personnel. Utilisez le menu pour gérer les rapports des animaux et des habitats.</p>
 </div>
 

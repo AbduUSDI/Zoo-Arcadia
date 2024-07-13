@@ -35,7 +35,11 @@ include 'navbar_employee.php';
 ?>
 
 <div class="container">
+    <br>
+    <hr>
     <h1 class="my-4">Ajouter un Service</h1>
+    <hr>
+    <br>
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?php echo $error; ?></div>
     <?php endif; ?>

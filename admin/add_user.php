@@ -45,7 +45,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Ajouter un Utilisateur</h1>
+    <hr>
+    <br>
     <form action="add_user.php" method="POST">
         <div class="form-group">
             <label for="email">Email</label>

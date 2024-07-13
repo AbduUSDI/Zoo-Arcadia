@@ -16,21 +16,24 @@ include '../templates/header.php';
 include 'navbar_vet.php';
 ?>
 <style>
+h1 {
+    text-align: center;
+}
 body {
     background-image: url('../image/background.jpg');
-}
-/* Utilisation d'une hauteur maximum de l'accordéon pour garder l'effet responsif au cas ou il y aurait beaucoup de commentaires */
-.accordion {
-    max-height: 200px;
-    overflow-y: auto;
 }
 h1, .mt-5, .mb-4 {
     background: whitesmoke;
     border-radius: 15px;
 }
 </style>
+
 <div class="container mt-5">
-    <h1 class="my-4">Gestion des Animaux</h1>
+<br>
+    <hr>
+    <h1 class="my-4">Gestion des animaux</h1>
+    <hr>
+    <br>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
             <thead class="thead-dark">

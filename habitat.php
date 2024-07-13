@@ -29,17 +29,27 @@ include 'templates/navbar_visitor.php';
 ?>
 
 <style>
-h1, h2 {
+
+h1,h2,h3 {
     text-align: center;
 }
 
 body {
-    padding-top: 48px;
+    background-image: url('image/background.jpg');
+    padding-top: 68px;
+}
+h1, .mt-5, .mb-4 {
+    background: whitesmoke;
+    border-radius: 15px;
 }
 </style>
 
-<div class="container">
+<div class="container mb-4">
+    <br>
+    <hr>
     <h1 class="my-4"><?php echo htmlspecialchars($habitat['name']); ?></h1>
+    <hr>
+    <br>
     <img src="uploads/<?php echo htmlspecialchars($habitat['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
     <p><?php echo htmlspecialchars($habitat['description']); ?></p>
 

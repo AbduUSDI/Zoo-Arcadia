@@ -62,7 +62,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Modifier un Animal</h1>
+    <hr>
+    <br>
     <form action="edit_animal.php?id=<?php echo $animal['id']; ?>" method="POST" enctype="multipart/form-data">
         <div class="form-group">
             <label for="name">Nom</label>

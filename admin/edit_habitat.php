@@ -62,7 +62,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Modifier un Habitat</h1>
+    <hr>
+    <br>
     <form method="POST" enctype="multipart/form-data">
         <div class="form-group">
             <label for="name">Nom</label>

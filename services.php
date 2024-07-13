@@ -21,9 +21,17 @@ body {
     background-image: url('image/background.jpg');
     padding-top: 48px;
 }
+h1, .mt-5, .mb-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
 </style>
-<div class="container">
+<div class="container mt-5">
+    <br>
+    <hr>
     <h1 class="my-4" style="text-align: center;">Nos Services</h1>
+    <hr>
+    <br>
     <div class="row">
         <?php foreach ($services as $service): ?>
             <div class="col-md-4">

@@ -64,7 +64,11 @@ body {
 }
 </style>
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1>Modifier l'avis</h1>
+    <hr>
+    <br>
     <form action="edit_review.php?id=<?php echo htmlspecialchars($reviewId); ?>" method="POST">
         <div class="mb-3">
             <label for="pseudo" class="form-label">Pseudo:</label>

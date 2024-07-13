@@ -29,7 +29,11 @@ h1, .mt-5, .mb-4 {
 </style>
 
 <div class="container mt-5">
-    <h1 class="my-4">Gérer les Rapports Animaux</h1>
+<br>
+    <hr>
+    <h1 class="my-4">Gérer les rapports animaux</h1>
+    <hr>
+    <br>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
             <thead class="thead-dark">

@@ -36,6 +36,9 @@ include '../templates/header.php';
 include 'navbar_vet.php';
 ?>
 <style>
+h1, h2, h3 {
+    text-align: center;
+}
 body {
     background-image: url('../image/background.jpg');
 }
@@ -47,7 +50,11 @@ h1, .mt-5, .mb-4 {
 </style>
 
 <div class="container mt-5">
+    <br>
+    <hr>
     <h1 class="my-4">Ajouter un Rapport Animal</h1>
+    <hr>
+    <br>
     <form action="add_animal_report.php" method="POST">
         <div class="form-group">
             <label for="animal_id">Animal</label>

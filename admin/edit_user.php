@@ -58,7 +58,11 @@ body {
 </style>
 
 <div class="container mt-4">
+    <br>
+    <hr>
     <h1 class="my-4">Modifier Utilisateur</h1>
+    <hr>
+    <br>
     <form action="edit_user.php?id=<?php echo $user['id']; ?>" method="POST">
         <div class="form-group">
             <label for="username">Nom d'utilisateur</label>

@@ -25,7 +25,11 @@ body {
 </style>
 
 <div class="container mt-5">
+    <br>
+    <hr>
     <h1 class="my-4">Espace Employé</h1>
+    <hr>
+    <br>
     <p>Bienvenue dans votre espace personnel. Utilisez le menu pour gérer les avis et les services.</p>
 </div>
 

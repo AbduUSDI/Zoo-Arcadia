@@ -34,7 +34,11 @@ body {
 
 <div class="container mt-4">
     <div class="table-responsive">
+    <br>
+    <hr>
     <h1 class="my-4">Gérer les services</h1>
+    <hr>
+    <br>
     <a href="add_service.php" class="btn btn-success mb-4">Ajouter un service</a>
     <table class="table table-bordered table-striped table-hover">
         <thead class="thead-dark">
