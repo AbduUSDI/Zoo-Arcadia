@@ -10,7 +10,8 @@ Zoo Arcadia permet aux visiteurs de découvrir les animaux et leurs habitats, et
 
 - **HTML, CSS, JavaScript** : Pour l'interface utilisateur.
 - **PHP** : Scripting côté serveur.
-- **MySQL** : Base de données.
+- **MySQL** : Base de données relationnelle.
+- **MongoDB** : Base de données non relationnelle.
 - **Bootstrap** : Design responsive.
 - **Axios** : Scripting côté client.
 - **AJAX** : Scripting coté client.
