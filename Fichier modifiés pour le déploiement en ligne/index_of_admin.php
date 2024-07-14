@@ -8,6 +8,9 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     exit;
 }
 
+// Utilisation du fichier Database et MongoDB pour les base de données relationelle et non relationelle, ainsi que functions pour toutes les autres méthodes préparées
+
+require '../Database.php';
 require '../MongoDB.php';
 require '../functions.php';
 
@@ -15,6 +18,14 @@ require '../functions.php';
 
 $db = new Database();
 $conn = $db->connect();
+
+// Si la connexion à la base de données ne passe pas alors le message apparaît
+
+if (!$conn) {
+    die("Erreur de connexion à la base de données");
+}
+
+// Utilisation d'un try/catch pour se connecter à la base de données MongoDB grâce à une nouvelle instance MongoDB
 
 try {
     $mongoClient = new MongoDB();
@@ -74,11 +85,28 @@ foreach ($animals as $animal) {
 include '../templates/header.php';
 include 'navbar_admin.php';
 ?>
+<style>
 
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
 <!-- Conteneur responsive pour afficher la dashboard -->
 
-<div class="container">
-    <h1 class="my-4">Dashboard Admin</h1>
+<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+<br>
+    <hr>
+    <h1 class="my-4">Dashboard admin</h1>
+    <hr>
+    <br>
 
     <!-- Formulaire (POST) de filtre par habitat -->
 
