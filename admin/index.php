@@ -72,7 +72,7 @@ body {
 }
 </style>
 
-<div class="container mt-4">
+<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1 class="my-4">Dashboard Admin</h1>

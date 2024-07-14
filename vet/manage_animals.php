@@ -22,13 +22,13 @@ h1 {
 body {
     background-image: url('../image/background.jpg');
 }
-h1, .mt-5, .mb-4 {
+.mt-5, .mb-4 {
     background: whitesmoke;
     border-radius: 15px;
 }
 </style>
 
-<div class="container mt-5">
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
 <br>
     <hr>
     <h1 class="my-4">Gestion des animaux</h1>

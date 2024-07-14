@@ -40,7 +40,7 @@ body {
 }
 </style>
 
-<div class="container mt-4">
+<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h2>Modifier les horaires d'ouverture du Zoo</h2>

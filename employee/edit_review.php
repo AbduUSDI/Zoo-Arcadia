@@ -63,7 +63,7 @@ body {
     border-radius: 15px;
 }
 </style>
-<div class="container mt-4">
+<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1>Modifier l'avis</h1>

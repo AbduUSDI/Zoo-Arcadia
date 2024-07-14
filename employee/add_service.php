@@ -33,8 +33,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../templates/header.php';
 include 'navbar_employee.php';
 ?>
+<style>
 
-<div class="container">
+h1,h2,h3 {
+    text-align: center;
+}
+
+body {
+    background-image: url('../image/background.jpg');
+}
+.mt-4 {
+    background: whitesmoke;
+    border-radius: 15px;
+}
+</style>
+<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1 class="my-4">Ajouter un Service</h1>

@@ -32,7 +32,7 @@ body {
 }
 </style>
 
-<div class="container mt-4">
+<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <div class="table-responsive">
     <br>
     <hr>
