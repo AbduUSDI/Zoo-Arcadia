@@ -105,7 +105,7 @@ body {
 
 <script>
 
-// Utilisation de AJAX pour récupérer le click dans Mongo grâce au fichier "record_click.php"
+// Utilisation de FETCH pour récupérer le click dans Mongo grâce au fichier "record_click.php"
 
 function registerClick(animalId) {
     console.log("Tentative d'enregistrement du clic pour l'animal ID:", animalId);
