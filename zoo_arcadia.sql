@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : dim. 14 juil. 2024 à 00:12
+-- Généré le : dim. 14 juil. 2024 à 18:37
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -195,9 +195,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `role_id`, `email`) VALUES
-(1, 'Admin', '$2y$10$YpqmGpoByRupb5TWuXe/AuHG13N.BN1QwbNWJXWNLy4ogu.fJ8Pvu', 1, 'Abdu.usdi@gmail.com'),
-(2, 'Veto', '$2y$10$16MykHVsCLqnF2/TwWDAo.45pHV2Mek7/MQhbtGoKEeloWcjgeIca', 3, 'abdu.usdi@hotmail.fr'),
-(3, 'employee', '$2y$10$427smMlY1nJGoppV6jXtAeGZpsy9PRlwnFCSpHjlyTtfXK1h6DKR2', 2, 'karausdi77@outlook.com');
+(1, 'Administrateur', '$2y$10$fw1Y2d.N1Tm2s4HlE7Gzk.5f3GTMy2jYklKfHhDnrkRjBFvEA1O82', 1, 'admin.arcadia@gmail.com'),
+(2, 'Vétérinaire', '$2y$10$AsF/0agVAcFxJ9w5mfvwS.Ye//rr5AlB0VlIYDaXNER3u1A7p9lrK', 3, 'vet.arcadia@gmail.com'),
+(3, 'Employé', '$2y$10$0.6u0AQ2GeCZEOijPWJPCedfdMqMQ.vABd0xl7jWfeSfKOpWBWYFi', 2, 'employee.arcadia@gmail.com');
 
 -- --------------------------------------------------------
 
