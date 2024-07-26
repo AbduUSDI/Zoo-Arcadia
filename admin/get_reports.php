@@ -6,7 +6,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     exit;
 }
 
-require '../Database.php';
 require '../functions.php';
 
 $db = new Database();
