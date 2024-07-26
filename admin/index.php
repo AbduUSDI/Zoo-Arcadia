@@ -15,7 +15,7 @@ $conn = $db->connect();
 try {
     $mongoClient = new MongoDB();
 } catch (Exception $erreur) {
-
+    echo "Erreur lors de la récupération des clics : " . htmlspecialchars($erreur->getMessage());
 }
 
 $animalMySQL = new Animal($conn);
@@ -51,6 +51,7 @@ foreach ($animals as $animal) {
         $clicks = $mongoClient->getClicks($animal['id']);
         $totalClicks += $clicks;
     } catch (Exception $erreur) {
+        echo "Erreur lors de la récupération des clics : " . htmlspecialchars($erreur->getMessage());
     }
 }
 
