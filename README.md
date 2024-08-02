@@ -50,7 +50,7 @@ Zoo Arcadia permet aux visiteurs de découvrir les animaux et leurs habitats, et
 ## Utilisation
 
 Naviguez dans l'application en utilisant les différents rôles pour explorer les fonctionnalités spécifiques à chaque utilisateur.
-Un fichier `Manuel d'utilisation Zoo Arcadia.pdf` est dans le dépôt Github, il explique toutes les fonctionnalités et comment y accéder.
+Un fichier `Manuel d'utilisation Zoo Arcadia.pdf` est dans le dépôt Github, dans le dossier `docs`, il explique toutes les fonctionnalités et comment y accéder.
 
 ## Contact
 
