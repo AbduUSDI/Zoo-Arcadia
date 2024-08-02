@@ -26,9 +26,11 @@ Zoo Arcadia permet aux visiteurs de découvrir les animaux et leurs habitats, et
 
 ## Structure du Projet
 
-- **/admin, /vet, /employee** : Interfaces selon le rôle.
-- **/template** : Éléments réutilisables.
-- **/uploads** : Stockage des images.
+- **assets/** -> Contient les document **CSS** ; **JavaScript** ; **Image et Uploads** ; **favicon.ico**.
+- **config/** -> Fichier de configuration des base de données.
+- **docs/** -> Dossier pour regrouper la gestion de projet, les diagrammes, la charte graphique et le manuel d'utilisation.
+- **src/** -> Contient tout le code source du projet : Les trois interfaces, le views(templates), les models (composant métier POO) et le dossier public.
+- **index.php** -> Ce fichier redirige automatiquement vers le fichier index.php dans public.
 
 ## Installation
 
