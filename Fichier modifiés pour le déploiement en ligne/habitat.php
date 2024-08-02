@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-require 'Database.php';
-require 'functions.php';
-require 'MongoDB.php';
+require_once '../../config/Database.php';
+require_once '../models/HabitatModel.php';
+require_once '../../config/MongoDB.php';
 
 $db = (new Database())->connect();
 
@@ -29,8 +29,8 @@ if ($db && $mongoClient) {
     die('Connexion à la base de données échouée.');
 }
 
-include 'templates/header.php';
-include 'templates/navbar_visitor.php';
+include '../../src/views/templates/header.php';
+include '../../src/views/templates/navbar_visitor.php';
 ?>
 
 <style>
@@ -40,7 +40,7 @@ h1,h2,h3 {
 }
 
 body {
-    background-image: url('image/background.jpg');
+    background-image: url('../../assets/image/background.jpg');
     padding-top: 48px;
 }
 .mt-5, .mb-4 {
@@ -54,7 +54,7 @@ body {
     <h1 class="my-4"><?php echo htmlspecialchars($habitat['name']); ?></h1>
     <hr>
     <br>
-    <img src="uploads/<?php echo htmlspecialchars($habitat['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
+    <img src="../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
     <p><?php echo htmlspecialchars($habitat['description']); ?></p>
     <br>
     <hr>
@@ -96,7 +96,7 @@ body {
         <?php foreach ($animals as $animal): ?>
             <div class="col-md-4">
                 <div class="card mb-4">
-                    <img class="card-img-top" src="uploads/<?php echo htmlspecialchars($animal['image']); ?>" alt="<?php echo htmlspecialchars($animal['name']); ?>">
+                    <img class="card-img-top" src="../../assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" alt="<?php echo htmlspecialchars($animal['name']); ?>">
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($animal['name']); ?></h5>
 
@@ -129,4 +129,4 @@ function registerClick(animalId) {
 
 </script>
 
-<?php include 'templates/footer.php'; ?>
+<?php include '../../src/views/templates/footer.php'; ?>
