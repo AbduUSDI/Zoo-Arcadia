@@ -1,6 +1,8 @@
 <?php
 
-require 'MongoDB.php';
+require '../../config/MongoDB.php';
+
+// Récupération de l'id d'animal par l'URL grâce à GET
 
 $animal_id = isset($_GET['animal_id']) ? (int)$_GET['animal_id'] : 0;
 
