@@ -1,6 +1,19 @@
 <?php
 session_start();
 
+// Durée de vie de la session en secondes (30 minutes)
+$sessionLifetime = 1800;
+
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
+
+    session_unset();  
+    session_destroy(); 
+    header('Location: login.php');
+    exit;
+}
+
+$_SESSION['LAST_ACTIVITY'] = time();
+
 // Inclure les fichiers nécessaires
 require_once '../../config/Database.php';
 require_once '../models/HabitatModel.php';
