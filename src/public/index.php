@@ -5,7 +5,6 @@ session_start();
 $sessionLifetime = 1800;
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
-
     session_unset();  
     session_destroy(); 
     header('Location: login.php');
@@ -19,8 +18,6 @@ require_once '../../config/Database.php';
 require_once '../models/HabitatModel.php';
 require_once '../models/ReviewModel.php';
 require_once '../models/ZooHoursModel.php';
-
-
 
 // Connexion à la base de données
 $db = (new Database())->connect();
@@ -103,7 +100,7 @@ body {
                     <?php foreach ($hours as $hour): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($hour['day']); ?></td>
-                        <td><?php echo substr($hour['open_time'], 0, 5) . ' - ' . substr($hour['close_time'], 0, 5); ?></td>
+                        <td><?php echo htmlspecialchars(substr($hour['open_time'], 0, 5) . ' - ' . substr($hour['close_time'], 0, 5)); ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -152,7 +149,7 @@ body {
                         <tr>
                             <td style="color: green; font-weight: bold; text-align: center;"><?php echo htmlspecialchars($review['subject']); ?></td>
                             <td style="text-align: center;"><?php echo htmlspecialchars($review['review_text']); ?></td>
-                            <td style="text-align: right;"><?php echo date('d/m/Y', strtotime($review['created_at'])); ?></td>
+                            <td style="text-align: right;"><?php echo htmlspecialchars(date('d/m/Y', strtotime($review['created_at']))); ?></td>
                             <td style="text-align: right; color: red; font-weight: bold;"><?php echo htmlspecialchars($review['visitor_name']); ?></td>
                         </tr>
                         <?php endforeach; ?>
