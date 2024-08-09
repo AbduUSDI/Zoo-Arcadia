@@ -1,25 +1,43 @@
 <?php
 session_start();
 
+// Durée de vie de la session en secondes (30 minutes)
+$sessionLifetime = 1800;
+
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
+    session_unset();  
+    session_destroy(); 
+    header('Location: login.php');
+    exit;
+}
+
+$_SESSION['LAST_ACTIVITY'] = time();
+
 // Inclure les fichiers nécessaires
-require_once '../../config/Database.php';
-require_once '../models/HabitatModel.php';
-require_once '../models/ReviewModel.php';
-require_once '../models/ZooHoursModel.php';
-
-
+require '../../vendor/autoload.php';
 
 // Connexion à la base de données
-$db = (new Database())->connect();
+$db = (new \Database\DatabaseConnection())->connect();
 
-$habitat = new Habitat($db);
-$habitats = $habitat->getToutHabitats();
+// Initialisation des repositories
+$habitatRepository = new \Repositories\HabitatRepository($db);
+$reviewRepository = new \Repositories\ReviewRepository($db);
+$zooHoursRepository = new \Repositories\ZooHoursRepository($db);
 
-$review = new Review($db);
-$approvedReviews = $review->getAvisApprouvés();
+// Initialisation des services
+$habitatService = new \Services\HabitatService($habitatRepository);
+$reviewService = new \Services\ReviewService($reviewRepository);
+$zooHoursService = new \Services\ZooHoursService($zooHoursRepository);
 
-$zooHours = new ZooHours($db);
-$hours = $zooHours->getAllHours();
+// Initialisation des contrôleurs
+$habitatController = new \Controllers\HabitatController($habitatService);
+$reviewController = new \Controllers\ReviewController($reviewService);
+$zooHoursController = new \Controllers\ZooHoursController($zooHoursService);
+
+// Récupérer les données nécessaires via les contrôleurs
+$habitats = $habitatController->getAllHabitats();
+$approvedReviews = $reviewController->getApprovedReviews();
+$hours = $zooHoursController->getAllHours();
 
 // Inclure les fichiers de template
 include '../../src/views/templates/header.php';
@@ -90,7 +108,15 @@ body {
                     <?php foreach ($hours as $hour): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($hour['day']); ?></td>
-                        <td><?php echo substr($hour['open_time'], 0, 5) . ' - ' . substr($hour['close_time'], 0, 5); ?></td>
+                        <td>
+                            <?php 
+                            if ($hour['open_time'] === '00:00:00' && $hour['close_time'] === '00:00:00') {
+                                echo 'Fermé';
+                            } else {
+                                echo htmlspecialchars(substr($hour['open_time'], 0, 5) . ' - ' . substr($hour['close_time'], 0, 5)); 
+                            }
+                            ?>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -139,7 +165,7 @@ body {
                         <tr>
                             <td style="color: green; font-weight: bold; text-align: center;"><?php echo htmlspecialchars($review['subject']); ?></td>
                             <td style="text-align: center;"><?php echo htmlspecialchars($review['review_text']); ?></td>
-                            <td style="text-align: right;"><?php echo date('d/m/Y', strtotime($review['created_at'])); ?></td>
+                            <td style="text-align: right;"><?php echo htmlspecialchars(date('d/m/Y', strtotime($review['created_at']))); ?></td>
                             <td style="text-align: right; color: red; font-weight: bold;"><?php echo htmlspecialchars($review['visitor_name']); ?></td>
                         </tr>
                         <?php endforeach; ?>
