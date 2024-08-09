@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : dim. 14 juil. 2024 à 18:37
+-- Généré le : sam. 10 août 2024 à 00:45
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
@@ -195,9 +195,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `role_id`, `email`) VALUES
-(1, 'Administrateur', '$2y$10$fw1Y2d.N1Tm2s4HlE7Gzk.5f3GTMy2jYklKfHhDnrkRjBFvEA1O82', 1, 'admin.arcadia@gmail.com'),
-(2, 'Vétérinaire', '$2y$10$AsF/0agVAcFxJ9w5mfvwS.Ye//rr5AlB0VlIYDaXNER3u1A7p9lrK', 3, 'vet.arcadia@gmail.com'),
-(3, 'Employé', '$2y$10$0.6u0AQ2GeCZEOijPWJPCedfdMqMQ.vABd0xl7jWfeSfKOpWBWYFi', 2, 'employee.arcadia@gmail.com');
+(29, 'Administrateur', '$2y$10$qPPOWycHGeKslbMTsr998eQFK2Nw764Lu66SZkkVNWX3BOlSo0r1K', 1, 'admin.arcadia@gmail.com'),
+(33, 'Employé', '$2y$10$Of461GSxXmv5TFdkrqi6BeWSmSyMqy1UwKb0ln1KUtbsdz7Rbk5G2', 2, 'employee.arcadia@gmail.com'),
+(39, 'Véto', '$2y$10$8eia9BGyg8JxTkwaiuUm0u8MuSPvpJVy37ymZDK0IjBpjOYPQ7o/u', 3, 'vet.arcadia@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -227,21 +227,22 @@ CREATE TABLE `zoo_hours` (
   `id` int(11) NOT NULL,
   `day` varchar(255) NOT NULL,
   `open_time` time NOT NULL,
-  `close_time` time NOT NULL
+  `close_time` time NOT NULL,
+  `closed` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `zoo_hours`
 --
 
-INSERT INTO `zoo_hours` (`id`, `day`, `open_time`, `close_time`) VALUES
-(1, 'Lundi', '11:00:00', '18:00:00'),
-(2, 'Mardi', '08:00:00', '18:00:00'),
-(3, 'Mercredi', '08:00:00', '18:00:00'),
-(4, 'Jeudi', '08:00:00', '18:00:00'),
-(5, 'Vendredi', '08:00:00', '18:00:00'),
-(6, 'Samedi', '10:00:00', '18:00:00'),
-(7, 'Dimanche', '11:00:00', '16:00:00');
+INSERT INTO `zoo_hours` (`id`, `day`, `open_time`, `close_time`, `closed`) VALUES
+(1, 'Lundi', '00:00:00', '00:00:00', 1),
+(2, 'Mardi', '09:00:00', '18:00:00', 0),
+(3, 'Mercredi', '08:00:00', '18:00:00', 0),
+(4, 'Jeudi', '08:00:00', '18:00:00', 0),
+(5, 'Vendredi', '08:00:00', '18:00:00', 0),
+(6, 'Samedi', '10:00:00', '18:00:00', 0),
+(7, 'Dimanche', '11:00:00', '16:00:00', 0);
 
 --
 -- Index pour les tables déchargées
@@ -403,7 +404,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT pour la table `vet_reports`
@@ -452,8 +453,9 @@ ALTER TABLE `users`
 -- Contraintes pour la table `vet_reports`
 --
 ALTER TABLE `vet_reports`
+  ADD CONSTRAINT `fk_vet_id` FOREIGN KEY (`vet_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `vet_reports_ibfk_1` FOREIGN KEY (`animal_id`) REFERENCES `animals` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `vet_reports_ibfk_2` FOREIGN KEY (`vet_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `vet_reports_ibfk_2` FOREIGN KEY (`vet_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
