@@ -1,6 +1,5 @@
 # Dossiers à ignorer
 vendor/
-.vscode
 
 # Fichiers à ignorer
 composer.phar

@@ -5,7 +5,6 @@ session_start();
 $sessionLifetime = 1800;
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
-
     session_unset();  
     session_destroy(); 
     header('Location: login.php');
@@ -14,20 +13,33 @@ if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 
 
 $_SESSION['LAST_ACTIVITY'] = time();
 
-require_once '../../config/Database.php';
-require_once '../models/HabitatModel.php';
+require '../../vendor/autoload.php';
 
-$db = new Database();
-$conn = $db->connect();
+use Database\DatabaseConnection;
+use Repositories\HabitatRepository;
+use Services\HabitatService;
+use Controllers\HabitatController;
 
-$habitat = new Habitat($conn);
-$habitats = $habitat->getToutHabitats();
+// Connexion à la base de données
+$db = (new DatabaseConnection())->connect();
+
+// Initialisation des repositories
+$habitatRepository = new HabitatRepository($db);
+
+// Initialisation des services
+$habitatService = new HabitatService($habitatRepository);
+
+// Initialisation des contrôleurs
+$habitatController = new HabitatController($habitatService);
+
+// Récupérer tous les habitats
+$habitats = $habitatController->getAllHabitats();
 
 include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
-<style>
 
+<style>
 h1,h2,h3 {
     text-align: center;
 }
@@ -51,10 +63,10 @@ body {
     <div class="row">
         <?php foreach ($habitats as $habitat): ?>
             <div class="col-md-4">
-                <div class="card mb-4  text-dark">
+                <div class="card mb-4 text-dark">
                     <img class="card-img-top" src="../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
                     <div class="card-body">
-                        <h5 class="card-title" style="text-align: center";><?php echo htmlspecialchars($habitat['name']); ?></h5>
+                        <h5 class="card-title" style="text-align: center;"><?php echo htmlspecialchars($habitat['name']); ?></h5>
                         <a href="habitat.php?id=<?php echo $habitat['id']; ?>" class="btn btn-success">Voir les habitants</a>
                     </div>
                 </div>
