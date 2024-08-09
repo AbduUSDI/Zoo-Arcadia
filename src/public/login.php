@@ -1,34 +1,53 @@
 <?php
 session_start();
 
-require_once '../../config/Database.php';
-require_once '../models/UserModel.php';
+// Durée de vie de la session en secondes (30 minutes)
+$sessionLifetime = 1800;
 
-$database = new Database();
-$db = $database->connect();
-$user = new User($db);
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
+    session_unset();  
+    session_destroy(); 
+    header('Location: login.php');
+    exit;
+}
 
+$_SESSION['LAST_ACTIVITY'] = time();
+
+// Inclure les fichiers nécessaires
+require '../../vendor/autoload.php';
+
+// Connexion à la base de données
+$db = (new \Database\DatabaseConnection())->connect();
+
+// Initialisation des repositories
+$userRepository = new \Repositories\UserRepository($db);
+
+// Initialisation des services
+$userService = new \Services\UserService($userRepository);
+
+// Initialisation des contrôleurs
+$userController = new \Controllers\UserController($userService);
+
+// Gestion du formulaire de connexion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $userData = $user->getUtilisateurParEmail($email);
+    $userData = $userController->getUserByEmail($email);
 
     if ($userData && password_verify($password, $userData['password'])) {
         echo "Mot de passe vérifié.<br>";
         $_SESSION['user'] = $userData;
         if ($userData['role_id'] == 1) {
-            header('Location: ../admin/index.php');
+            header('Location: ../views/admin/index.php');
         } elseif ($userData['role_id'] == 2) {
-            header('Location: ../employee/index.php');
+            header('Location: ../views/employee/index.php');
         } elseif ($userData['role_id'] == 3) {
-            header('Location: ../vet/index.php');
+            header('Location: ../views/vet/index.php');
         } else {
-
             header('Location: index.php');
         }
         exit;
-
     } else {
         $error = "Email ou mot de passe incorrect.";
     }
@@ -39,8 +58,7 @@ include '../../src/views/templates/navbar_visitor.php';
 ?>
 
 <style>
-
-h1,h2,h3 {
+h1, h2, h3 {
     text-align: center;
 }
 
@@ -80,8 +98,8 @@ body {
         <button type="submit" class="btn btn-primary" name="login">Se connecter</button>
     </form>
     <hr>
-    <button class="btn btn-outline-danger" data-toggle="modal" data-target="#forgotPasswordModal">Mot de passe oublié ?</button>  
-    <hr> 
+    <button class="btn btn-outline-danger" data-toggle="modal" data-target="#forgotPasswordModal">Mot de passe oublié ?</button>
+    <hr>
 </div>
 
 <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
@@ -107,10 +125,7 @@ body {
 </div>
 
 <script>
-/* Script pour aficher désafficher le mot de passe */
-
 document.addEventListener('DOMContentLoaded', function() {
-
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
 
@@ -119,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function() {
         passwordInput.setAttribute('type', type);
 
         const eyeIcon = this.querySelector('i');
-        
         if (type === 'password') {
             eyeIcon.classList.remove('fa-eye');
             eyeIcon.classList.add('fa-eye-slash');
@@ -129,37 +143,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
 </script>
-    
+
 <footer id="footerId" class="bg-light text-center text-lg-start mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link text-secondary" href="contact.php"><img src="../../assets/image/lettre.png" width="32px" height="32px"></img>   Nous contacter</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-secondary" href="index.php#openhours"><img src="../../assets/image/ouvert.png" width="32px" height="32px"></img>   Nos horaires</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-secondary" href="index.php#apropos"><img src="../../assets/image/a-propos-de-nous.png" width="32px" height="32px"></img>   A propos de nous</a>
-            </li>
-            </ul>
-        <div class="container p-4">
-            <p class="text-secondary"><img src="../../assets/image/favicon.jpg" width="32px" height="32px"></img>   &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
-        </div>
-    </footer>
-    <!-- Inclusion de jQuery (version complète, pas la version 'slim' qui ne supporte pas AJAX) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <li class="nav-item">
+            <a class="nav-link text-secondary" href="contact.php"><img src="../../assets/image/lettre.png" width="32px" height="32px"></img> Nous contacter</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-secondary" href="index.php#openhours"><img src="../../assets/image/ouvert.png" width="32px" height="32px"></img> Nos horaires</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-secondary" href="index.php#apropos"><img src="../../assets/image/a-propos-de-nous.png" width="32px" height="32px"></img> A propos de nous</a>
+        </li>
+    </ul>
+    <div class="container p-4">
+        <p class="text-secondary"><img src="../../assets/image/favicon.jpg" width="32px" height="32px"></img> &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
+    </div>
+</footer>
 
-    <!-- Inclusion de Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<!-- Inclusion de jQuery (version complète, pas la version 'slim' qui ne supporte pas AJAX) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- Inclusion de Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Inclusion de Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 
-    <!-- Inclusion de AXIOS -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- Inclusion de Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script src="../js/scripts.js"></script>
+<!-- Inclusion de AXIOS -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script src="../../assets/js/scripts.js"></script>
 </body>
 </html>

@@ -1,12 +1,51 @@
 <?php
 session_start();
 
-require_once '../../config/Database.php';
-require_once '../models/AnimalModel.php';
-require_once '../models/HabitatModel.php';
+// Durée de vie de la session en secondes (30 minutes)
+$sessionLifetime = 1800;
 
-$db = new Database();
-$conn = $db->connect();
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
+    session_unset();  
+    session_destroy(); 
+    header('Location: login.php');
+    exit;
+}
+
+$_SESSION['LAST_ACTIVITY'] = time();
+
+require '../../vendor/autoload.php';
+
+use Database\DatabaseConnection;
+use Database\MongoDBConnection;
+use Repositories\AnimalRepository;
+use Repositories\HabitatRepository;
+use Repositories\ClickRepository;
+use Services\AnimalService;
+use Services\HabitatService;
+use Services\ClickService;
+use Controllers\AnimalController;
+use Controllers\HabitatController;
+
+// Connexion à la base de données
+$databaseConnection = new DatabaseConnection();
+$db = $databaseConnection->connect();
+// Connexion à la base de données MongoDB
+$mongoConnection = new MongoDBConnection();
+$clickCollection = $mongoConnection->getCollection('clicks');
+
+// Initialisation des repositories
+$animalRepository = new AnimalRepository($db);
+$habitatRepository = new HabitatRepository($db);
+$clickRepository = new ClickRepository($clickCollection);
+
+// Initialisation des services
+$animalService = new AnimalService($animalRepository, $clickRepository);
+$habitatService = new HabitatService($habitatRepository);
+$clickService = new ClickService($clickRepository);
+
+// Initialisation des contrôleurs
+$animalController = new AnimalController($animalService, $clickService);
+$habitatController = new HabitatController($habitatService);
 
 $animal_id = $_GET['id'] ?? null;
 
@@ -15,24 +54,22 @@ if (!$animal_id) {
     exit;
 }
 
-$animalDef = new Animal($conn);
-$animal = $animalDef->getDetailsAnimal($animal_id);
-$reports = $animalDef->getRapportsAnimalParId($animal_id);
+$animal = $animalController->getAnimalDetails($animal_id);
+$reports = $animalController->getReportsByAnimalId($animal_id);
 
 if (!$animal) {
     header("Location: animals.php");
     exit;
 }
 
-$habitatDef = new Habitat($conn);
-$habitat = $habitatDef->getParId($animal['habitat_id']);
+$habitat = $habitatController->getHabitatById($animal['habitat_id']);
 
 if (!$habitat) {
     $habitat['name'] = 'Habitat indisponible';
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like'])) {
-    $animalDef->ajouterLike($animal_id);
+    $animalController->addLike($animal_id);
     $animal['likes']++;
 }
 
@@ -41,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
     $visitorName = $_POST['visitor_name'];
     $reviewText = $_POST['review_text'];
 
-    $animalDef->ajouterAvis($visitorName, $reviewText, $animal_id);
+    $animalController->addReview($visitorName, $reviewText, $animal_id);
 
     $avis_success = true;
 }
@@ -79,7 +116,7 @@ h1 {
     <form action="animal.php?id=<?php echo $animal_id; ?>" method="POST">
         <button type="submit" name="like" class="btn btn-success">👍 Like</button>
     </form>
-<hr>
+    <hr>
     <div class="my-4">
         <h2>Ajouter un avis</h2>
         <form action="animal.php?id=<?php echo $animal_id; ?>" method="POST">
@@ -95,7 +132,7 @@ h1 {
         </form>
         <?php if ($avis_success): ?>
             <div class="alert alert-success mt-3" role="alert">
-                Votre avis a bien été envoyé, il sera soumit à la validation par nos employés !
+                Votre avis a bien été envoyé, il sera soumis à la validation par nos employés !
             </div>
         <?php endif; ?>
     </div>
@@ -111,7 +148,7 @@ h1 {
                 <div class="accordion-body">
                     <ul class="list-group">
                         <?php
-                        $comments = $animalDef->getAvisAnimaux($animal['id']);
+                        $comments = $animalController->getAnimalReviews($animal['id']);
                         foreach ($comments as $comment): ?>
                             <li class="list-group-item">
                                 <strong><?php echo htmlspecialchars($comment['visitor_name']); ?>:</strong> <?php echo htmlspecialchars($comment['review_text']); ?>
@@ -122,8 +159,8 @@ h1 {
             </div>
         </div>
     </div>
-<hr>
-<hr>
+    <hr>
+    <hr>
     <h2>Rapports du Vétérinaire</h2>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">

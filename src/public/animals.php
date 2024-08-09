@@ -1,31 +1,58 @@
 <?php
 session_start();
 
-require_once '../../config/Database.php';
-require_once '../../config/MongoDB.php';
-require_once '../models/AnimalModel.php';
-require_once '../models/HabitatModel.php';
+// Durée de vie de la session en secondes (30 minutes)
+$sessionLifetime = 1800;
 
-$db = new Database();
-$conn = $db->connect();
-
-$animalPage = new Animal($conn);
-$animals = $animalPage->getAll();
-
-try {
-    $mongoClient = new MongoDB();
-} catch (Exception $erreur) {
-    die('Connexion à la base de données MongoDB échouée : ' . $erreur->getMessage());
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
+    session_unset();  
+    session_destroy(); 
+    header('Location: login.php');
+    exit;
 }
 
-$habitatDef = new Habitat($conn);
+$_SESSION['LAST_ACTIVITY'] = time();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['like'])) {
-        $animalId = $_POST['animal_id'];
-        
-        $animalPage->ajouterLike($animalId);
-    }
+require '../../vendor/autoload.php';
+
+use Database\DatabaseConnection;
+use Database\MongoDBConnection;
+use Repositories\AnimalRepository;
+use Repositories\HabitatRepository;
+use Repositories\ClickRepository;
+use Services\AnimalService;
+use Services\HabitatService;
+use Services\ClickService;
+use Controllers\AnimalController;
+use Controllers\HabitatController;
+
+// Connexion à la base de données
+$databaseConnection = new DatabaseConnection();
+$db = $databaseConnection->connect();
+// Connexion à la base de données MongoDB
+$mongoConnection = new MongoDBConnection();
+$clickCollection = $mongoConnection->getCollection('clicks');
+
+// Initialisation des repositories
+$animalRepository = new AnimalRepository($db);
+$habitatRepository = new HabitatRepository($db);
+$clickRepository = new ClickRepository($clickCollection);
+
+// Initialisation des services
+$animalService = new AnimalService($animalRepository, $clickRepository);
+$habitatService = new HabitatService($habitatRepository);
+$clickService = new ClickService($clickRepository);
+
+// Initialisation des contrôleurs
+$animalController = new AnimalController($animalService, $clickService);
+$habitatController = new HabitatController($habitatService);
+
+// Récupérer tous les animaux
+$animals = $animalController->getAllAnimals();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like'])) {
+    $animalId = $_POST['animal_id'];
+    $animalController->addLike($animalId);
 }
 
 include '../../src/views/templates/header.php';
@@ -59,7 +86,8 @@ body {
             <?php foreach ($animals as $animal): ?>
                 <?php
                 // Récupérer le nom de l'habitat pour chaque animal
-                $habitatName = $animal['habitat_id'] ? htmlspecialchars($habitatDef->getParId($animal['habitat_id'])['name']) : 'Habitat indisponible'; ?>
+                $habitat = $habitatController->getHabitatById($animal['habitat_id']);
+                $habitatName = $habitat ? htmlspecialchars($habitat['name']) : 'Habitat indisponible'; ?>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card">
                         <img src="../../assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" 
@@ -87,16 +115,11 @@ body {
 </div>
 
 <script>
-
-// Fonction JS pour utiliser le fichier "record_click.php" et en utilisant l'id de l'animal pour incrémenter le click stocké sur le bon animal 
-
+// Utilisation de FETCH pour enregistrer le clic dans MongoDB grâce au fichier "record_click.php"
 function registerClick(animalId) {
     console.log("Tentative d'enregistrement du clic pour l'animal ID:", animalId);
     fetch('record_click.php?animal_id=' + animalId)
-        .then(response => {
-            console.log("Réponse reçue:", response);
-            return response.text();
-        })
+        .then(response => response.text())
         .then(data => {
             console.log("Données reçues:", data);
             window.location.href = 'animal.php?id=' + animalId;

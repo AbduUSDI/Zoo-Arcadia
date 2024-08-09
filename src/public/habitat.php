@@ -1,36 +1,62 @@
 <?php
 session_start();
 
-require_once '../../config/Database.php';
-require_once '../models/HabitatModel.php';
-require_once '../../config/MongoDB.php';
+// Durée de vie de la session en secondes (30 minutes)
+$sessionLifetime = 1800;
 
-$db = (new Database())->connect();
-
-try {
-    $mongoClient = new MongoDB();
-} catch (Exception $erreur) {
-    die('Connexion à la base de données MongoDB échouée : ' . $erreur->getMessage());
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
+    session_unset();  
+    session_destroy(); 
+    header('Location: login.php');
+    exit;
 }
 
-if ($db && $mongoClient) {
-    $habitatId = $_GET['id'];
-    
-    $habitats = new Habitat($db);
-    $habitat = $habitats->getParId($habitatId);
-    $animals = $habitats->getAnimauxParHabitat($habitatId);
-    $vetComments = $habitats->getCommentsApprouvés($habitatId);
+$_SESSION['LAST_ACTIVITY'] = time();
 
-} else {
-    die ('Connexion à la base de données échouée.');
+require '../../vendor/autoload.php';
+
+use Database\DatabaseConnection;
+use Database\MongoDBConnection;
+use Repositories\HabitatRepository;
+use Repositories\ClickRepository;
+use Services\HabitatService;
+use Services\ClickService;
+use Controllers\HabitatController;
+
+// Connexion à la base de données
+$db = (new DatabaseConnection())->connect();
+$mongoDB = new MongoDBConnection();
+$clickCollection = $mongoDB->getCollection('clicks');
+
+// Initialisation des repositories
+$habitatRepository = new HabitatRepository($db);
+$clickRepository = new ClickRepository($clickCollection);
+
+// Initialisation des services
+$habitatService = new HabitatService($habitatRepository);
+$clickService = new ClickService($clickRepository);
+
+// Initialisation des contrôleurs
+$habitatController = new HabitatController($habitatService);
+
+// Récupérer l'ID de l'habitat
+$habitatId = $_GET['id'] ?? null;
+
+if (!$habitatId) {
+    header("Location: habitats.php");
+    exit;
 }
+
+// Récupérer les données de l'habitat
+$habitat = $habitatController->getHabitatById($habitatId);
+$animals = $habitatController->getAnimalsByHabitat($habitatId);
+$vetComments = $habitatController->getApprovedComments($habitatId);
 
 include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
 
 <style>
-
 h1,h2,h3 {
     text-align: center;
 }
@@ -95,7 +121,6 @@ body {
                     <img class="card-img-top" src="../../assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" alt="<?php echo htmlspecialchars($animal['name']); ?>">
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($animal['name']); ?></h5>
-
                         <button onclick="registerClick(<?php echo $animal['id']; ?>)" class="btn btn-success">Plus de détails</button>
                     </div>
                 </div>
@@ -105,16 +130,11 @@ body {
 </div>
 
 <script>
-
-// Utilisation de FETCH pour récupérer le click dans Mongo grâce au fichier "record_click.php"
-
+// Utilisation de FETCH pour enregistrer le clic dans MongoDB grâce au fichier "record_click.php"
 function registerClick(animalId) {
     console.log("Tentative d'enregistrement du clic pour l'animal ID:", animalId);
     fetch('record_click.php?animal_id=' + animalId)
-        .then(response => {
-            console.log("Réponse reçue:", response);
-            return response.text();
-        })
+        .then(response => response.text())
         .then(data => {
             console.log("Données reçues:", data);
             window.location.href = 'animal.php?id=' + animalId;
@@ -123,7 +143,6 @@ function registerClick(animalId) {
             console.error("Erreur lors de l'enregistrement du clic:", error);
         });
 }
-
 </script>
 
 <?php include '../../src/views/templates/footer.php'; ?>

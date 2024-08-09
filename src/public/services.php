@@ -1,20 +1,44 @@
 <?php
 session_start();
 
-// Inclure les fichiers nécessaires
-require_once '../../config/Database.php';
-require_once '../models/ServiceModel.php';
+// Durée de vie de la session en secondes (30 minutes)
+$sessionLifetime = 1800;
+
+if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
+    session_unset();  
+    session_destroy(); 
+    header('Location: login.php');
+    exit;
+}
+
+$_SESSION['LAST_ACTIVITY'] = time();
+
+require '../../vendor/autoload.php';
+
+use Database\DatabaseConnection;
+use Repositories\ServiceRepository;
+use Services\ServiceService;
+use Controllers\ServiceController;
 
 // Connexion à la base de données
-$db = (new Database())->connect();
+$db = (new DatabaseConnection())->connect();
 
-$service = new Service($db); // Assuming your model class is ServiceModel
-$services = $service->getServices();
+// Initialisation des repositories
+$serviceRepository = new ServiceRepository($db);
 
-// Inclure les fichiers de template
+// Initialisation des services
+$serviceService = new ServiceService($serviceRepository);
+
+// Initialisation des contrôleurs
+$serviceController = new ServiceController($serviceService);
+
+// Récupérer tous les services
+$services = $serviceController->getServices();
+
 include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
+
 <style>
 h1,h2,h3 {
     text-align: center;
@@ -29,6 +53,7 @@ body {
     border-radius: 15px;
 }
 </style>
+
 <div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
