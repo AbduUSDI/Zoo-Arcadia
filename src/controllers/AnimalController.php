@@ -41,7 +41,7 @@ class AnimalController {
             try {
                 $animal['clicks'] = $this->clickService->getClicks($animal['id']);
             } catch (\Exception $e) {
-                $animal['clicks'] = 0;  // Default value if clicks cannot be retrieved
+                $animal['clicks'] = 0;
             }
         }
         return $animals;
