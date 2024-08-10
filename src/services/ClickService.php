@@ -1,9 +1,10 @@
 <?php
 namespace Services;
 
+use Interfaces\ClickServiceInterface;
 use Repositories\ClickRepository;
 
-class ClickService {
+class ClickService implements ClickServiceInterface {
     private $clickRepository;
 
     public function __construct(ClickRepository $clickRepository) {

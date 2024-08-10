@@ -2,9 +2,10 @@
 
 namespace Repositories;
 
+use Interfaces\ClickRepositoryInterface;
 use MongoDB\Collection;
 
-class ClickRepository {
+class ClickRepository implements ClickRepositoryInterface {
     private $collection;
 
     public function __construct(Collection $collection) {
