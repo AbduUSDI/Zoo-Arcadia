@@ -10,13 +10,6 @@ class FoodRepository implements FoodRepositoryInterface {
     public function __construct(PDO $db) {
         $this->db = $db;
     }
-
-    public function getAnimalFoods($animalId) {
-        $stmt = $this->db->prepare("SELECT * FROM food WHERE animal_id = :animal_id");
-        $stmt->bindParam(':animal_id', $animalId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
     public function addFoodRecord($animal_id, $food_given, $food_quantity, $date_given) {
         $sql = "INSERT INTO food (animal_id, food_given, food_quantity, date_given) VALUES (:animal_id, :food_given, :food_quantity, :date_given)";
         $stmt = $this->db->prepare($sql);

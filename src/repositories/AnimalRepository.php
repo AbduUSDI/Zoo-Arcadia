@@ -16,12 +16,6 @@ class AnimalRepository implements AnimalRepositoryInterface {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function getById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM animals WHERE id = :id");
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
     public function ajouterLike($animal_id) {
         $stmt = $this->db->prepare("UPDATE animals SET likes = likes + 1 WHERE id = :id");
         $stmt->bindParam(':id', $animal_id, PDO::PARAM_INT);
@@ -49,12 +43,6 @@ class AnimalRepository implements AnimalRepositoryInterface {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function getAnimauxParHabitat($habitat_id) {
-        $stmt = $this->db->prepare("SELECT * FROM animals WHERE habitat_id = :habitat_id");
-        $stmt->bindParam(':habitat_id', $habitat_id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
     public function getRapportsAnimalParId($animal_id) {
         $stmt = $this->db->prepare("SELECT * FROM vet_reports WHERE animal_id = :animal_id ORDER BY visit_date DESC");
         $stmt->bindParam(':animal_id', $animal_id, PDO::PARAM_INT);
@@ -66,33 +54,27 @@ class AnimalRepository implements AnimalRepositoryInterface {
         $stmt->execute([$habitat_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function getListeAllHabitats() {
         $stmt = $this->db->prepare("SELECT * FROM habitats");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function updateAvecImage($data) {
         $stmt = $this->db->prepare("UPDATE animals SET name = ?, species = ?, habitat_id = ?, image = ? WHERE id = ?");
         return $stmt->execute($data);
     }
-
     public function updateSansImage($data) {
         $stmt = $this->db->prepare("UPDATE animals SET name = ?, species = ?, habitat_id = ? WHERE id = ?");
         return $stmt->execute($data);
     }
-
     public function delete($animalId) {
         $stmt = $this->db->prepare("DELETE FROM animals WHERE id = ?");
         return $stmt->execute([$animalId]);
     }
-
     public function add($data) {
         $stmt = $this->db->prepare("INSERT INTO animals (name, species, habitat_id, image) VALUES (?, ?, ?, ?)");
         return $stmt->execute($data);
     }
-
     public function donnerNourriture($animal_id, $food_given, $food_quantity, $date_given) {
         $sql = "INSERT INTO food (animal_id, food_given, food_quantity, date_given) VALUES (:animal_id, :food_given, :food_quantity, :date_given)";
         $stmt = $this->db->prepare($sql);
@@ -102,7 +84,6 @@ class AnimalRepository implements AnimalRepositoryInterface {
         $stmt->bindParam(':date_given', $date_given, PDO::PARAM_STR);
         $stmt->execute();
     }
-
     public function getNourritureAnimaux($animal_id) {
         $query = "
             SELECT f.food_given, f.food_quantity, f.date_given 
