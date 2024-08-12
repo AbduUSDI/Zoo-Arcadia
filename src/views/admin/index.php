@@ -5,11 +5,13 @@ session_start();
 // Durée de vie de la session en secondes (30 minutes)
 $sessionLifetime = 1800;
 
+// Redirection si l'utilisateur n'est pas connecté ou n'a pas les droits d'accès admin
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     header('Location: ../../public/login.php');
     exit;
 }
 
+// Vérification de la durée de session
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();  
     session_destroy(); 
@@ -32,7 +34,7 @@ use Repositories\HabitatRepository;
 use Services\HabitatService;
 use Controllers\HabitatController;
 
-// Connexion à la base de données
+// Connexion à la base de données MySQL et MongoDB
 $db = (new DatabaseConnection())->connect();
 $mongoCollection = (new MongoDBConnection())->getCollection('clicks');
 
@@ -56,10 +58,15 @@ $habitats = $habitatController->getAllHabitats();
 $totalLikes = $animalController->getTotalLikes($animals);
 $totalClicks = $animalController->getTotalClicks($animals);
 
+// Gestion du filtrage par habitat
 if (isset($_POST['habitat_id']) && $_POST['habitat_id'] !== '') {
-    $animals = $animalController->getAnimalsByHabitat($_POST['habitat_id']);
+    $habitat_id = filter_input(INPUT_POST, 'habitat_id', FILTER_VALIDATE_INT);
+    if ($habitat_id) {
+        $animals = $animalController->getAnimalsByHabitat($habitat_id);
+    }
 }
 
+// Tri des animaux par nombre de likes
 usort($animals, function($a, $b) {
     return $b['likes'] - $a['likes'];
 });
@@ -68,7 +75,7 @@ include_once '../../../src/views/templates/header.php';
 ?>
 
 <style>
-h1,h2,h3 {
+h1, h2, h3 {
     text-align: center;
 }
 
@@ -127,7 +134,7 @@ body {
             <select class="form-control" id="habitat_id" name="habitat_id">
                 <option value="">Tous les habitats</option>
                 <?php foreach ($habitats as $habitat): ?>
-                    <option value="<?php echo $habitat['id']; ?>"><?php echo htmlspecialchars($habitat['name']); ?></option>
+                    <option value="<?php echo htmlspecialchars($habitat['id']); ?>"><?php echo htmlspecialchars($habitat['name']); ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -147,14 +154,14 @@ body {
                 <?php foreach ($animals as $animal): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($animal['name']); ?></td>
-                        <td><?php echo $animal['likes']; ?></td>
-                        <td><?php echo $animal['clicks']; ?></td>
+                        <td><?php echo htmlspecialchars($animal['likes']); ?></td>
+                        <td><?php echo htmlspecialchars($animal['clicks']); ?></td>
                     </tr>
                 <?php endforeach; ?>
                 <tr>
                     <td><strong>Total</strong></td>
-                    <td><strong><?php echo $totalLikes; ?></strong></td>
-                    <td><strong><?php echo $totalClicks; ?></strong></td>
+                    <td><strong><?php echo htmlspecialchars($totalLikes); ?></strong></td>
+                    <td><strong><?php echo htmlspecialchars($totalClicks); ?></strong></td>
                 </tr>
             </tbody>
         </table>

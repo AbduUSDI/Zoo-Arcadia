@@ -1,5 +1,10 @@
-<?php
+<?php 
 session_start();
+
+// Protection CSRF
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 require '../../vendor/autoload.php';
 
@@ -11,28 +16,42 @@ use Controllers\ReviewController;
 // Connexion à la base de données
 $db = (new DatabaseConnection())->connect();
 
-// Initialisation des repositories
+// Initialisation des repositories, services, et contrôleurs
 $reviewRepository = new ReviewRepository($db);
-
-// Initialisation des services
 $reviewService = new ReviewService($reviewRepository);
-
-// Initialisation des contrôleurs
 $reviewController = new ReviewController($reviewService);
 
-// Récupérer les données du formulaire
-$pseudo = filter_input(INPUT_POST, 'pseudo', FILTER_SANITIZE_STRING);
-$subject = filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING);
-$reviewText = filter_input(INPUT_POST, 'review_text', FILTER_SANITIZE_STRING);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Vérification du token CSRF
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Échec de la validation CSRF.");
+    }
 
-if ($pseudo && $subject && $reviewText) {
-    $reviewController->addReview($pseudo, $subject, $reviewText);
-    $_SESSION['message'] = "Votre avis a été envoyé avec succès.";
-    $_SESSION['message_type'] = "success";
-} else {
-    $_SESSION['message'] = "Tous les champs sont obligatoires.";
-    $_SESSION['message_type'] = "danger";
+    // Validation des entrées sans échapper les caractères spéciaux
+    $pseudo = trim($_POST['pseudo']);
+    $subject = trim($_POST['subject']);
+    $reviewText = trim($_POST['review_text']);
+
+    if ($pseudo && $subject && $reviewText) {
+        // Insertion des données sans échapper ici, car htmlspecialchars doit être utilisé lors de l'affichage
+        $reviewController->addReview($pseudo, $subject, $reviewText);
+        $_SESSION['message'] = "Votre avis a été envoyé avec succès.";
+        $_SESSION['message_type'] = "success";
+    } else {
+        $_SESSION['message'] = "Tous les champs sont obligatoires.";
+        $_SESSION['message_type'] = "danger";
+    }
+
+    header('Location: index.php?page=home');
+    exit;
 }
 
-header('Location: index.php');
-exit;
+// Affichage des messages d'erreur
+if (isset($_SESSION['message'])) {
+    echo '<div class="alert alert-' . htmlspecialchars($_SESSION['message_type']) . ' alert-dismissible fade show" role="alert">
+            ' . htmlspecialchars($_SESSION['message']) . '
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>';
+    unset($_SESSION['message']);
+    unset($_SESSION['message_type']);
+}

@@ -1,10 +1,23 @@
 <?php
+session_start();
 require_once '../../../../vendor/autoload.php';
 
 use Database\DatabaseConnection;
 use Repositories\HabitatRepository;
 use Services\HabitatService;
 use Controllers\HabitatController;
+
+// Vérification de l'authentification et du rôle de l'utilisateur
+if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
+    http_response_code(403); // Accès interdit
+    echo 'Accès interdit';
+    exit;
+}
+
+// Protection CSRF : Génération d'un token CSRF si nécessaire
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 $dbConnection = new DatabaseConnection();
 $conn = $dbConnection->connect();
@@ -39,7 +52,8 @@ $habitatsList = $habitatController->getAllHabitats();
                 <td><?php echo htmlspecialchars($habitat['description']); ?></td>
                 <td>
                     <a href="#" class="btn btn-warning btn-edit" data-id="<?php echo $habitat['id']; ?>">Modifier</a>
-                    <a href="manage_habitats.php?action=delete&id=<?php echo $habitat['id']; ?>" class="btn btn-danger btn-delete">Supprimer</a>
+                    <!-- Inclusion du token CSRF dans l'URL de suppression -->
+                    <a href="manage_habitats.php?action=delete&id=<?php echo $habitat['id']; ?>&csrf_token=<?php echo $_SESSION['csrf_token']; ?>" class="btn btn-danger btn-delete">Supprimer</a>
                 </td>
             </tr>
         <?php endforeach; ?>

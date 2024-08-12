@@ -13,6 +13,7 @@ if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 
 
 $_SESSION['LAST_ACTIVITY'] = time();
 
+// Inclure les fichiers nécessaires
 require '../../vendor/autoload.php';
 
 use Database\DatabaseConnection;
@@ -33,7 +34,12 @@ $habitatService = new HabitatService($habitatRepository);
 $habitatController = new HabitatController($habitatService);
 
 // Récupérer tous les habitats
-$habitats = $habitatController->getAllHabitats();
+try {
+    $habitats = $habitatController->getAllHabitats();
+} catch (Exception $e) {
+    // Gérer l'erreur en affichant un message utilisateur ou en enregistrant l'erreur dans un journal
+    die("Erreur lors de la récupération des habitats : " . htmlspecialchars($e->getMessage()));
+}
 
 include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
@@ -61,17 +67,21 @@ body {
     <hr>
     <br>
     <div class="row">
-        <?php foreach ($habitats as $habitat): ?>
-            <div class="col-md-4">
-                <div class="card mb-4 text-dark">
-                    <img class="card-img-top" src="../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
-                    <div class="card-body">
-                        <h5 class="card-title" style="text-align: center;"><?php echo htmlspecialchars($habitat['name']); ?></h5>
-                        <a href="habitat.php?id=<?php echo $habitat['id']; ?>" class="btn btn-success">Voir les habitants</a>
+        <?php if (!empty($habitats)): ?>
+            <?php foreach ($habitats as $habitat): ?>
+                <div class="col-md-4">
+                    <div class="card mb-4 text-dark">
+                        <img class="card-img-top" src="../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
+                        <div class="card-body">
+                            <h5 class="card-title" style="text-align: center;"><?php echo htmlspecialchars($habitat['name']); ?></h5>
+                            <a href="index.php?page=habitat&id=<?php echo htmlspecialchars($habitat['id']); ?>" class="btn btn-success">Voir les habitants</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        <?php endforeach; ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p class="text-center">Aucun habitat disponible pour le moment.</p>
+        <?php endif; ?>
     </div>
 </div>
 

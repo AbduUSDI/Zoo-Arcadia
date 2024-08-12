@@ -79,4 +79,31 @@ class UserRepository implements UserRepositoryInterface {
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
     }
+    // Méthodes pour la réinitialisation de mot de passe
+    public function createPasswordResetToken($userId, $token) {
+        $stmt = $this->db->prepare("INSERT INTO password_resets (user_id, token, created_at) VALUES (:user_id, :token, NOW())");
+        $stmt->execute([
+            'user_id' => $userId,
+            'token' => $token
+        ]);
+    }
+
+    public function getUserIdByPasswordResetToken($token) {
+        $stmt = $this->db->prepare("SELECT user_id FROM password_resets WHERE token = :token AND created_at >= NOW() - INTERVAL 1 HOUR");
+        $stmt->execute(['token' => $token]);
+        return $stmt->fetchColumn();
+    }
+
+    public function updatePassword($id, $newPassword) {
+        $stmt = $this->db->prepare("UPDATE users SET password = :password WHERE id = :id");
+        $stmt->execute([
+            'password' => password_hash($newPassword, PASSWORD_BCRYPT),
+            'id' => $id
+        ]);
+    }
+
+    public function deletePasswordResetToken($token) {
+        $stmt = $this->db->prepare("DELETE FROM password_resets WHERE token = :token");
+        $stmt->execute(['token' => $token]);
+    }
 }

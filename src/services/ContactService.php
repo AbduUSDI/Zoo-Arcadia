@@ -1,4 +1,4 @@
-<?php
+<?php 
 namespace Services;
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -10,36 +10,38 @@ class ContactService {
 
         try {
             $mail->isSMTP();
-            $mail->Host = 'smtp.office365.com';  // Serveur SMTP d'Office 365
+            $mail->Host = 'smtp.office365.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'Karausdi77@outlook.fr'; // Adresse email utilisée pour l'authentification
-            $mail->Password = 'Abdufufu2525+';     // Mot de passe pour l'authentification
+            $mail->Username = 'zoo-arcadia-usdi@hotmail.com';
+            $mail->Password = 'Arcadia123+';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
 
-            // Adresse email d'envoi
-            $mail->setFrom('Karausdi77@outlook.fr', 'Service client - Contact');
+            $mail->setFrom('zoo-arcadia-usdi@hotmail.com', 'Service client Arcadia - Contact');
+            $mail->addAddress('Karausdi77@outlook.fr');
 
-            // Adresse du destinataire
-            $mail->addAddress('abdu.usdi@gmail.com');
-
-            // Contenu du message
             $mail->isHTML(true);
-            $mail->Charset = 'UTF-8'; // Spécifier l'encodage UTF-8
-            $mail->Subject = $subject;
+            $mail->CharSet = 'UTF-8';
+
+            // Décodage des entités HTML pour le sujet
+            $decodedSubject = html_entity_decode($subject, ENT_QUOTES, 'UTF-8');
+            $mail->Subject = '=?UTF-8?B?' . base64_encode($decodedSubject) . '?=';
+
+            // Décodage des entités HTML pour le contenu du message
+            $decodedMessage = html_entity_decode($message, ENT_QUOTES, 'UTF-8');
 
             // Numéro de message unique
             $messageId = uniqid('msg_', true);
 
-            // Corps du message incluant l'adresse email du formulaire
+            // Construction du corps du message
             $mail->Body = "<p><strong>Numéro de message:</strong> $messageId</p>
-                           <p><strong>Nom:</strong> $name</p>
-                           <p><strong>Email:</strong> $email</p>
-                           <p>$message</p>";
+                           <p><strong>Nom:</strong> " . htmlentities($name, ENT_QUOTES, 'UTF-8') . "</p>
+                           <p><strong>Email:</strong> " . htmlentities($email, ENT_QUOTES, 'UTF-8') . "</p>
+                           <p>" . nl2br(htmlentities($decodedMessage, ENT_QUOTES, 'UTF-8')) . "</p>";
             $mail->AltBody = "Numéro de message: $messageId\n
-                              Nom: $name\n
-                              Email: $email\n
-                              Message: $message";
+                              Nom: " . $name . "\n
+                              Email: " . $email . "\n
+                              Message: " . $decodedMessage;
 
             $mail->send();
             return ['success' => true, 'message' => 'Votre message a été envoyé avec succès.'];
@@ -48,3 +50,6 @@ class ContactService {
         }
     }
 }
+
+
+

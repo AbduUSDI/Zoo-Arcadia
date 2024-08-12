@@ -13,6 +13,11 @@ if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 
 
 $_SESSION['LAST_ACTIVITY'] = time();
 
+// Générer un token CSRF unique s'il n'existe pas
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 require '../../vendor/autoload.php';
 
 use Database\DatabaseConnection;
@@ -47,7 +52,7 @@ $clickService = new ClickService($clickRepository);
 $animalController = new AnimalController($animalService, $clickService);
 $habitatController = new HabitatController($habitatService);
 
-$animal_id = $_GET['id'] ?? null;
+$animal_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 if (!$animal_id) {
     header("Location: animals.php");
@@ -68,19 +73,27 @@ if (!$habitat) {
     $habitat['name'] = 'Habitat indisponible';
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like'])) {
-    $animalController->addLike($animal_id);
-    $animal['likes']++;
-}
-
 $avis_success = false;
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
-    $visitorName = $_POST['visitor_name'];
-    $reviewText = $_POST['review_text'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Vérification du token CSRF
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Échec de la validation CSRF.");
+    }
 
-    $animalController->addReview($visitorName, $reviewText, $animal_id);
+    if (isset($_POST['like'])) {
+        $animalController->addLike($animal_id);
+        $animal['likes']++;
+    } elseif (isset($_POST['comment'])) {
+        $visitorName = filter_input(INPUT_POST, 'visitor_name', FILTER_SANITIZE_STRING);
+        $reviewText = filter_input(INPUT_POST, 'review_text', FILTER_SANITIZE_STRING);
 
-    $avis_success = true;
+        if ($visitorName && $reviewText) {
+            $animalController->addReview($visitorName, $reviewText, $animal_id);
+            $avis_success = true;
+        } else {
+            $error = "Veuillez remplir tous les champs.";
+        }
+    }
 }
 
 include '../../src/views/templates/header.php';
@@ -114,12 +127,14 @@ h1 {
     <p>Habitat: <?php echo htmlspecialchars($habitat['name']); ?></p>
     <p>Likes: <?php echo $animal['likes']; ?></p>
     <form action="animal.php?id=<?php echo $animal_id; ?>" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <button type="submit" name="like" class="btn btn-success">👍 Like</button>
     </form>
     <hr>
     <div class="my-4">
         <h2>Ajouter un avis</h2>
         <form action="animal.php?id=<?php echo $animal_id; ?>" method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <div class="mb-3">
                 <label for="visitor_name" class="form-label">Nom</label>
                 <input type="text" class="form-control" name="visitor_name" required>
@@ -133,6 +148,10 @@ h1 {
         <?php if ($avis_success): ?>
             <div class="alert alert-success mt-3" role="alert">
                 Votre avis a bien été envoyé, il sera soumis à la validation par nos employés !
+            </div>
+        <?php elseif (isset($error)): ?>
+            <div class="alert alert-danger mt-3" role="alert">
+                <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
     </div>

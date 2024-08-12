@@ -5,14 +5,14 @@ session_start();
 // Durée de vie de la session en secondes (30 minutes)
 $sessionLifetime = 1800;
 
-if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
+if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
     header('Location: ../../public/login.php');
     exit;
 }
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
-    session_unset();  
-    session_destroy(); 
+    session_unset();
+    session_destroy();
     header('Location: ../../public/login.php');
     exit;
 }
@@ -26,6 +26,11 @@ use Repositories\ServiceRepository;
 use Services\ServiceService;
 use Controllers\ServiceController;
 
+// Protection CSRF : Génération d'un token CSRF si nécessaire
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Connexion à la base de données
 $db = (new DatabaseConnection())->connect();
 
@@ -38,11 +43,112 @@ $serviceService = new ServiceService($serviceRepository);
 // Initialisation des contrôleurs
 $serviceController = new ServiceController($serviceService);
 
-// Récupérer tous les services
-$servicesList = $serviceController->getServices();
+// Gestion des actions CRUD via AJAX
+if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $action = $_GET['action'] ?? null;
+    if ($action) {
+        if ($action === 'list') {
+            $services = $serviceController->getServices();
+                // Ajout du conteneur du tableau ici
+                echo '<table class="table table-bordered table-striped table-hover">';
+                echo '<thead  class="thead-dark">';
+                echo '<tr>';
+                echo '<th>Nom</th>';
+                echo '<th>Description</th>';
+                echo '<th>Image</th>';
+                echo '<th>Actions</th>';
+                echo '</tr>';
+                echo '</thead>';
+                echo '<tbody>';
+            foreach ($services as $service) {
+                echo '<tr>';
+                echo '<td>' . htmlspecialchars($service['name']) . '</td>';
+                echo '<td>' . htmlspecialchars($service['description']) . '</td>';
+                echo '<td>';
+                if (!empty($service['image'])) {
+                    echo '<img src="../../../../assets/uploads/' . htmlspecialchars($service['image']) . '" alt="Image du service" style="width: 250px;">';
+                }
+                echo '</td>';
+                echo '<td>';
+                echo '<a href="#" class="btn btn-warning btn-sm btn-edit" data-id="' . htmlspecialchars($service['id']) . '" data-name="' . htmlspecialchars($service['name']) . '" data-description="' . htmlspecialchars($service['description']) . '" data-image="' . htmlspecialchars($service['image']) . '" data-toggle="modal" data-target="#editServiceModal">Modifier</a>';
+                echo '<a href="javascript:void(0);" class="btn btn-danger btn-sm btn-delete" data-id="' . htmlspecialchars($service['id']) . '">Supprimer</a>';
+                echo '</td>';
+                echo '</tr>';
+            }
+            exit;
+        } elseif ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Vérification du token CSRF
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                die("Échec de la validation CSRF.");
+            }
+
+            $name = htmlspecialchars($_POST['name']);
+            $description = htmlspecialchars($_POST['description']);
+            $image = $_FILES['image'];
+
+            try {
+                $imageName = $serviceController->addServiceImage($image);
+                $serviceController->addService($name, $description, $imageName);
+                echo "Service ajouté avec succès !";
+            } catch (Exception $erreur) {
+                echo "Erreur: " . $erreur->getMessage();
+            }
+            exit;
+        } elseif ($action === 'edit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Vérification du token CSRF
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                die("Échec de la validation CSRF.");
+            }
+
+            // Modification d'un service
+            $id = filter_input(INPUT_POST, 'serviceId', FILTER_VALIDATE_INT);
+            $name = htmlspecialchars($_POST['name']);
+            $description = htmlspecialchars($_POST['description']);
+            $image = $_FILES['image'];
+
+            try {
+                if ($image['error'] === UPLOAD_ERR_NO_FILE) {
+                    // Mise à jour sans modification de l'image
+                    $serviceController->updateServiceWithoutImage($id, $name, $description);
+                } else {
+                    // Traitement de l'image uploadée et mise à jour avec l'image
+                    $imageName = $serviceController->addServiceImage($image);
+                    $serviceController->updateServiceWithImage($id, $name, $description, $imageName);
+                }
+                echo "Service modifié avec succès !";
+            } catch (Exception $erreur) {
+                echo "Erreur: " . $erreur->getMessage();
+            }
+            exit;
+        } elseif ($action === 'get' && isset($_GET['id'])) {
+            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+            if ($id) {
+                $service = $serviceController->getServiceById($id);
+                echo json_encode($service);
+            } else {
+                echo json_encode(['error' => 'ID invalide']);
+            }
+            exit;
+        } elseif ($action === 'delete' && isset($_GET['id'])) {
+            // Vérification du token CSRF pour la suppression
+            if (!isset($_GET['csrf_token']) || $_GET['csrf_token'] !== $_SESSION['csrf_token']) {
+                die("Échec de la validation CSRF.");
+            }
+
+            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+            if ($id) {
+                $serviceController->deleteService($id);
+                echo "Service supprimé avec succès.";
+            } else {
+                echo "Erreur: ID invalide.";
+            }
+            exit;
+        }
+    }
+}
 
 include '../../../views/templates/header.php';
-include '../navbar_admin.php';
+include '../navbar_employee.php';
 ?>
 <style>
     h1,h2,h3 {
@@ -85,6 +191,7 @@ include '../navbar_admin.php';
             </div>
             <div class="modal-body">
                 <form id="addServiceForm" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     <div class="form-group">
                         <label for="name">Nom:</label>
                         <input type="text" id="name" name="name" class="form-control" required>
@@ -118,6 +225,7 @@ include '../navbar_admin.php';
             <div class="modal-body">
                 <form id="editServiceForm" enctype="multipart/form-data">
                     <input type="hidden" id="editServiceId" name="serviceId">
+                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     <div class="form-group">
                         <label for="editName">Nom:</label>
                         <input type="text" id="editName" name="name" class="form-control" required>
@@ -144,7 +252,7 @@ $(document).ready(function() {
     // Fonction pour rafraîchir la table des services
     function refreshServiceTable() {
         $.ajax({
-            url: 'fetch_services.php',
+            url: 'manage_services.php?action=list',
             type: 'GET',
             success: function(data) {
                 $('#servicesTable').html(data);
@@ -159,13 +267,12 @@ $(document).ready(function() {
     refreshServiceTable();
 
     // Formulaire pour ajouter un service
-
     $('#addServiceForm').on('submit', function(event) {
         event.preventDefault();
         var formData = new FormData(this);
 
         $.ajax({
-            url: 'add_service_handler.php',
+            url: 'manage_services.php?action=add',
             type: 'POST',
             data: formData,
             contentType: false,
@@ -184,13 +291,12 @@ $(document).ready(function() {
     });
 
     // Formulaire pour modifier un service
-
     $(document).on('submit', '#editServiceForm', function(event) {
         event.preventDefault();
         var formData = new FormData(this);
 
         $.ajax({
-            url: 'edit_service_handler.php',
+            url: 'manage_services.php?action=edit',
             type: 'POST',
             data: formData,
             contentType: false,
@@ -209,11 +315,10 @@ $(document).ready(function() {
     });
 
     // Fonction pour remplir le formulaire de modification
-
     $(document).on('click', '.btn-edit', function() {
         var serviceId = $(this).data('id');
         $.ajax({
-            url: 'get_service.php',
+            url: 'manage_services.php?action=get',
             type: 'GET',
             data: { id: serviceId },
             success: function(data) {
@@ -230,14 +335,12 @@ $(document).ready(function() {
     });
 
     // Fonction pour supprimer un service
-
     $(document).on('click', '.btn-delete', function(event) {
         event.preventDefault();
-        var url = $(this).attr('href');
-
+        var serviceId = $(this).data('id');
         if (confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) {
             $.ajax({
-                url: url,
+                url: 'manage_services.php?action=delete&id=' + serviceId + '&csrf_token=<?php echo $_SESSION['csrf_token']; ?>',
                 type: 'GET',
                 success: function(response) {
                     alert(response);
@@ -253,5 +356,3 @@ $(document).ready(function() {
 </script>
 
 <?php include '../../../views/templates/footerconnected.php'; ?>
-</body>
-</html>

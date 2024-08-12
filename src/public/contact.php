@@ -5,23 +5,39 @@ require '../../vendor/autoload.php';
 use Controllers\ContactController;
 use Services\ContactService;
 
+// Protection CSRF : Génération d'un token CSRF si nécessaire
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 $contactService = new ContactService();
 $contactController = new ContactController($contactService);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Vérification du token CSRF
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Échec de la validation CSRF.");
+    }
+
+    // Validation et nettoyage des entrées
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $subject = filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING);
     $message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
 
     if ($name && $email && $subject && $message) {
-        $result = $contactController->handleContactForm($name, $email, $subject, $message);
+        try {
+            $result = $contactController->handleContactForm($name, $email, $subject, $message);
 
-        if ($result['success']) {
-            $_SESSION['message'] = $result['message'];
-            $_SESSION['message_type'] = "success";
-        } else {
-            $_SESSION['message'] = $result['message'];
+            if ($result['success']) {
+                $_SESSION['message'] = $result['message'];
+                $_SESSION['message_type'] = "success";
+            } else {
+                $_SESSION['message'] = $result['message'];
+                $_SESSION['message_type'] = "danger";
+            }
+        } catch (Exception $e) {
+            $_SESSION['message'] = "Une erreur s'est produite : " . htmlspecialchars($e->getMessage());
             $_SESSION['message_type'] = "danger";
         }
     } else {
@@ -45,12 +61,13 @@ body {
     background-image: url('../../assets/image/background.jpg');
     padding-top: 48px;
 }
-h1, .mt-5 {
+.mt-5 {
     background: whitesmoke;
     border-radius: 15px;
 }
 </style>
-<div class="container mt-5">
+
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1 class="text-center">Nous contacter</h1>
@@ -58,7 +75,7 @@ h1, .mt-5 {
     <br>
     <?php
     if (isset($_SESSION['message'])) {
-        echo '<div class="alert alert-' . $_SESSION['message_type'] . ' alert-dismissible fade show" role="alert">
+        echo '<div class="alert alert-' . htmlspecialchars($_SESSION['message_type']) . ' alert-dismissible fade show" role="alert">
                 ' . htmlspecialchars($_SESSION['message']) . '
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>';
@@ -68,6 +85,7 @@ h1, .mt-5 {
     ?>
 
     <form method="POST" class="mt-4">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <div class="mb-3">
             <label for="name" class="form-label">Nom</label>
             <input type="text" class="form-control" id="name" name="name" required>
@@ -84,7 +102,7 @@ h1, .mt-5 {
             <label for="message" class="form-label">Message</label>
             <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
         </div>
-        <button type="submit" class="btn btn-info">Envoyer</button>
+        <button type="submit" class="btn btn-success">Envoyer</button>
         <hr>
     </form>
 </div>

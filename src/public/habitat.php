@@ -5,8 +5,8 @@ session_start();
 $sessionLifetime = 1800;
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
-    session_unset();  
-    session_destroy(); 
+    session_unset();
+    session_destroy();
     header('Location: login.php');
     exit;
 }
@@ -40,24 +40,32 @@ $clickService = new ClickService($clickRepository);
 $habitatController = new HabitatController($habitatService);
 
 // Récupérer l'ID de l'habitat
-$habitatId = $_GET['id'] ?? null;
+$habitatId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 if (!$habitatId) {
     header("Location: habitats.php");
     exit;
 }
 
-// Récupérer les données de l'habitat
-$habitat = $habitatController->getHabitatById($habitatId);
-$animals = $habitatController->getAnimalsByHabitat($habitatId);
-$vetComments = $habitatController->getApprovedComments($habitatId);
+try {
+    // Récupérer les données de l'habitat
+    $habitat = $habitatController->getHabitatById($habitatId);
+    if (!$habitat) {
+        throw new Exception("Habitat introuvable.");
+    }
+
+    $animals = $habitatController->getAnimalsByHabitat($habitatId);
+    $vetComments = $habitatController->getApprovedComments($habitatId);
+} catch (Exception $e) {
+    die("Erreur : " . htmlspecialchars($e->getMessage()));
+}
 
 include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
 
 <style>
-h1,h2,h3 {
+h1, h2, h3 {
     text-align: center;
 }
 
@@ -96,9 +104,9 @@ body {
             <tbody>
                 <?php foreach ($vetComments as $comment): ?>
                     <tr>
-                        <td scope="col" class="col-3"><?php echo htmlspecialchars($comment['username']); ?></td>
-                        <td scope="col" class="col-3"><?php echo htmlspecialchars($comment['created_at']); ?></td>
-                        <td scope="col" class="col-6"><?php echo htmlspecialchars($comment['comment']); ?></td>
+                        <td><?php echo htmlspecialchars($comment['username']); ?></td>
+                        <td><?php echo htmlspecialchars($comment['created_at']); ?></td>
+                        <td><?php echo htmlspecialchars($comment['comment']); ?></td>
                     </tr>
                 <?php endforeach; ?>
                 <?php if (empty($vetComments)): ?>
@@ -121,7 +129,7 @@ body {
                     <img class="card-img-top" src="../../assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" alt="<?php echo htmlspecialchars($animal['name']); ?>">
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($animal['name']); ?></h5>
-                        <button onclick="registerClick(<?php echo $animal['id']; ?>)" class="btn btn-success">Plus de détails</button>
+                        <button onclick="registerClick(<?php echo htmlspecialchars($animal['id']); ?>)" class="btn btn-success">Plus de détails</button>
                     </div>
                 </div>
             </div>
@@ -133,11 +141,11 @@ body {
 // Utilisation de FETCH pour enregistrer le clic dans MongoDB grâce au fichier "record_click.php"
 function registerClick(animalId) {
     console.log("Tentative d'enregistrement du clic pour l'animal ID:", animalId);
-    fetch('record_click.php?animal_id=' + animalId)
+    fetch('record_click.php?animal_id=' + encodeURIComponent(animalId))
         .then(response => response.text())
         .then(data => {
             console.log("Données reçues:", data);
-            window.location.href = 'animal.php?id=' + animalId;
+            window.location.href = 'index.php?page=animal&id=' + encodeURIComponent(animalId);
         })
         .catch(error => {
             console.error("Erreur lors de l'enregistrement du clic:", error);

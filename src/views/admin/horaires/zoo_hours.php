@@ -11,7 +11,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
 }
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
-
     session_unset();  
     session_destroy(); 
     header('Location: ../../public/login.php');
@@ -27,6 +26,11 @@ use Repositories\ZooHoursRepository;
 use Services\ZooHoursService;
 use Controllers\ZooHoursController;
 
+// Protection CSRF : Génération d'un token CSRF si nécessaire
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Connexion à la base de données
 $dbConnection = new DatabaseConnection();
 $conn = $dbConnection->connect();
@@ -41,10 +45,19 @@ $hours = $zooHoursController->getAllHours();
 
 // Gestion de la mise à jour des horaires via le formulaire POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Vérification du token CSRF
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Échec de la validation CSRF.");
+    }
+    
     foreach ($_POST['hours'] as $id => $times) {
-        // Si le checkbox "Fermé" est coché, on passe la valeur 1, sinon 0
+        // Validation des données entrées par l'utilisateur
+        $openTime = filter_var($times['open'], FILTER_SANITIZE_STRING);
+        $closeTime = filter_var($times['close'], FILTER_SANITIZE_STRING);
         $closed = isset($times['closed']) ? 1 : 0;
-        $zooHoursController->updateHours($times['open'], $times['close'], $closed, $id);
+        
+        // Met à jour les heures du zoo
+        $zooHoursController->updateHours($openTime, $closeTime, $closed, (int)$id);
     }
     header("Location: zoo_hours.php");
     exit;
@@ -73,6 +86,7 @@ body {
     <hr>
     <br>
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover">
                 <thead class="thead-dark">
