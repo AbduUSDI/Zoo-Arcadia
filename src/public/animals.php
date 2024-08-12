@@ -13,6 +13,11 @@ if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 
 
 $_SESSION['LAST_ACTIVITY'] = time();
 
+// Générer un token CSRF unique s'il n'existe pas
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 require '../../vendor/autoload.php';
 
 use Database\DatabaseConnection;
@@ -29,6 +34,7 @@ use Controllers\HabitatController;
 // Connexion à la base de données
 $databaseConnection = new DatabaseConnection();
 $db = $databaseConnection->connect();
+
 // Connexion à la base de données MongoDB
 $mongoConnection = new MongoDBConnection();
 $clickCollection = $mongoConnection->getCollection('clicks');
@@ -50,9 +56,19 @@ $habitatController = new HabitatController($habitatService);
 // Récupérer tous les animaux
 $animals = $animalController->getAllAnimals();
 
+// Gestion des likes
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like'])) {
-    $animalId = $_POST['animal_id'];
-    $animalController->addLike($animalId);
+    // Vérification du token CSRF
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Échec de la validation CSRF.");
+    }
+
+    $animalId = filter_input(INPUT_POST, 'animal_id', FILTER_VALIDATE_INT);
+    if ($animalId) {
+        $animalController->addLike($animalId);
+    } else {
+        $error = "ID d'animal invalide.";
+    }
 }
 
 include '../../src/views/templates/header.php';
@@ -82,6 +98,9 @@ body {
     <hr>
     <br>
     <div class="row">
+        <?php if (isset($error)): ?>
+            <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
         <?php if (count($animals) > 0): ?>
             <?php foreach ($animals as $animal): ?>
                 <?php
@@ -101,6 +120,7 @@ body {
                             <p class="card-text">Habitat: <?php echo $habitatName; ?></p>
                             <p class="card-text">Likes: <?php echo $animal['likes']; ?></p>
                             <form action="animals.php" method="POST">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                 <input type="hidden" name="animal_id" value="<?php echo $animal['id']; ?>">
                                 <button type="submit" name="like" class="btn btn-success">👍 Like</button>
                             </form>
@@ -122,12 +142,14 @@ function registerClick(animalId) {
         .then(response => response.text())
         .then(data => {
             console.log("Données reçues:", data);
-            window.location.href = 'animal.php?id=' + animalId;
+            // Rediriger vers la nouvelle structure d'URL
+            window.location.href = 'index.php?page=animal&id=' + animalId;
         })
         .catch(error => {
             console.error("Erreur lors de l'enregistrement du clic:", error);
         });
 }
 </script>
+
 
 <?php include '../../src/views/templates/footer.php'; ?>

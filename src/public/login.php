@@ -5,13 +5,18 @@ session_start();
 $sessionLifetime = 1800;
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
-    session_unset();  
-    session_destroy(); 
+    session_unset();
+    session_destroy();
     header('Location: login.php');
     exit;
 }
 
 $_SESSION['LAST_ACTIVITY'] = time();
+
+// Générer un token CSRF unique s'il n'existe pas
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 // Inclure les fichiers nécessaires
 require '../../vendor/autoload.php';
@@ -30,27 +35,65 @@ $userController = new \Controllers\UserController($userService);
 
 // Gestion du formulaire de connexion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
-    $email = $_POST['email'];
+    // Vérification du token CSRF
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Échec de la validation CSRF.");
+    }
+
+    // Validation et filtrage des entrées
+    $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
     $password = $_POST['password'];
 
-    $userData = $userController->getUserByEmail($email);
+    if ($email && $password) {
+        $userData = $userController->getUserByEmail($email);
 
-    if ($userData && password_verify($password, $userData['password'])) {
-        echo "Mot de passe vérifié.<br>";
-        $_SESSION['user'] = $userData;
-        if ($userData['role_id'] == 1) {
-            header('Location: ../views/admin/index.php');
-        } elseif ($userData['role_id'] == 2) {
-            header('Location: ../views/employee/index.php');
-        } elseif ($userData['role_id'] == 3) {
-            header('Location: ../views/vet/index.php');
+        if ($userData && password_verify($password, $userData['password'])) {
+            $_SESSION['user'] = $userData;
+            if ($userData['role_id'] == 1) {
+                header('Location: ../views/admin/index.php');
+            } elseif ($userData['role_id'] == 2) {
+                header('Location: ../views/employee/index.php');
+            } elseif ($userData['role_id'] == 3) {
+                header('Location: ../views/vet/index.php');
+            } else {
+                header('Location: index.php');
+            }
+            exit;
         } else {
-            header('Location: index.php');
+            $error = "Email ou mot de passe incorrect.";
         }
-        exit;
     } else {
-        $error = "Email ou mot de passe incorrect.";
+        $error = "Veuillez entrer une adresse email valide et un mot de passe.";
     }
+}
+
+// Gestion du formulaire de mot de passe oublié
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['forgotEmail'])) {
+    // Vérification du token CSRF
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Échec de la validation CSRF.");
+    }
+
+    // Validation et filtrage de l'email
+    $email = filter_input(INPUT_POST, 'forgotEmail', FILTER_VALIDATE_EMAIL);
+
+    if ($email) {
+        $result = $userController->handleForgotPasswordRequest($email);
+
+        if ($result['success']) {
+            $_SESSION['message'] = $result['message'];
+            $_SESSION['message_type'] = "success";
+        } else {
+            $_SESSION['message'] = $result['message'];
+            $_SESSION['message_type'] = "danger";
+        }
+    } else {
+        $_SESSION['message'] = "Veuillez entrer une adresse email valide.";
+        $_SESSION['message_type'] = "danger";
+    }
+
+    header('Location: login.php');
+    exit;
 }
 
 include '../../src/views/templates/header.php';
@@ -79,9 +122,10 @@ body {
     <hr>
     <br>
     <?php if (isset($error)): ?>
-        <div class="alert alert-danger"><?php echo $error; ?></div>
+        <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
     <form action="login.php" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <div class="form-group">
             <label for="email">Email</label>
             <input type="email" class="form-control" id="email" name="email" autocomplete="email" required>
@@ -102,6 +146,7 @@ body {
     <hr>
 </div>
 
+<!-- Modale pour la réinitialisation du mot de passe -->
 <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -112,7 +157,8 @@ body {
                 </button>
             </div>
             <div class="modal-body">
-                <form id="forgotPasswordForm" method="post" action="forgot_password.php">
+                <form id="forgotPasswordForm" method="post" action="login.php">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     <div class="form-group">
                         <label for="forgotEmail">Email</label>
                         <input type="email" class="form-control" id="forgotEmail" name="forgotEmail" required>

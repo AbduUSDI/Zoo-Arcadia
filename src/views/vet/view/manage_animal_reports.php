@@ -1,8 +1,10 @@
 <?php
 session_start();
 
+// Durée de vie de la session en secondes (30 minutes)
 $sessionLifetime = 1800;
 
+// Vérification du rôle de l'utilisateur et de la session
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 3) {
     header('Location: ../../public/login.php');
     exit;
@@ -17,6 +19,11 @@ if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 
 
 $_SESSION['LAST_ACTIVITY'] = time();
 
+// Génération du token CSRF
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 require_once '../../../../vendor/autoload.php';
 
 use Database\DatabaseConnection;
@@ -29,77 +36,107 @@ use Repositories\AnimalRepository;
 $dbConnection = new DatabaseConnection();
 $pdo = $dbConnection->connect();
 
-// Création des instances des dépôts
+// Création des instances des dépôts et services
 $reportRepository = new ReportRepository($pdo);
 $animalRepository = new AnimalRepository($pdo);
-
-// Création des instances des services
 $reportService = new ReportService($reportRepository);
-
-// Création du contrôleur
 $reportController = new ReportController($reportService);
+
 $animals = $animalRepository->getAll();
 $distinctVisitDates = $reportController->getDistinctDates();
 
+// Gestion des actions AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
     $action = $_GET['action'] ?? null;
     if ($action) {
-        if ($action === 'list') {
-            $visit_date = $_GET['visit_date'] ?? null;
-            $animal_id = $_GET['animal_id'] ?? null;
-            $reports = $reportController->getReports($visit_date, $animal_id);
+        try {
+            if ($action === 'list') {
+                $visit_date = filter_input(INPUT_GET, 'visit_date', FILTER_SANITIZE_STRING);
+                $animal_id = filter_input(INPUT_GET, 'animal_id', FILTER_VALIDATE_INT);
+                $reports = $reportController->getReports($visit_date, $animal_id);
 
-            foreach ($reports as $report) {
-                echo '<tr>';
-                echo '<td>' . htmlspecialchars($report['animal_name']) . '</td>';
-                echo '<td>' . htmlspecialchars($report['visit_date']) . '</td>';
-                echo '<td>' . htmlspecialchars($report['health_status']) . '</td>';
-                echo '<td>' . htmlspecialchars($report['food_given']) . '</td>';
-                echo '<td>' . htmlspecialchars($report['food_quantity']) . '</td>';
-                echo '<td>' . htmlspecialchars($report['details']) . '</td>';
-                echo '<td>';
-                echo '<a href="#" class="btn btn-warning btn-sm btn-edit" data-id="' . $report['id'] . '" data-animal_id="' . $report['animal_name'] . '" data-visit_date="' . $report['visit_date'] . '" data-health_status="' . $report['health_status'] . '" data-food_given="' . $report['food_given'] . '" data-food_quantity="' . $report['food_quantity'] . '" data-details="' . $report['details'] . '" data-toggle="modal" data-target="#editReportModal">Modifier</a>';
-                echo '<a href="javascript:void(0);" class="btn btn-danger btn-sm btn-delete" data-id="' . $report['id'] . '">Supprimer</a>';
-                echo '</td>';
-                echo '</tr>';
+                foreach ($reports as $report) {
+                    echo '<tr>';
+                    echo '<td>' . htmlspecialchars($report['animal_name'], ENT_QUOTES, 'UTF-8') . '</td>';
+                    echo '<td>' . htmlspecialchars($report['visit_date'], ENT_QUOTES, 'UTF-8') . '</td>';
+                    echo '<td>' . htmlspecialchars($report['health_status'], ENT_QUOTES, 'UTF-8') . '</td>';
+                    echo '<td>' . htmlspecialchars($report['food_given'], ENT_QUOTES, 'UTF-8') . '</td>';
+                    echo '<td>' . htmlspecialchars($report['food_quantity'], ENT_QUOTES, 'UTF-8') . '</td>';
+                    echo '<td>' . htmlspecialchars($report['details'], ENT_QUOTES, 'UTF-8') . '</td>';
+                    echo '<td>';
+                    echo '<a href="#" class="btn btn-warning btn-sm btn-edit" data-id="' . htmlspecialchars($report['id'], ENT_QUOTES, 'UTF-8') . '" data-animal_id="' . htmlspecialchars($report['animal_name'], ENT_QUOTES, 'UTF-8') . '" data-visit_date="' . htmlspecialchars($report['visit_date'], ENT_QUOTES, 'UTF-8') . '" data-health_status="' . htmlspecialchars($report['health_status'], ENT_QUOTES, 'UTF-8') . '" data-food_given="' . htmlspecialchars($report['food_given'], ENT_QUOTES, 'UTF-8') . '" data-food_quantity="' . htmlspecialchars($report['food_quantity'], ENT_QUOTES, 'UTF-8') . '" data-details="' . htmlspecialchars($report['details'], ENT_QUOTES, 'UTF-8') . '" data-toggle="modal" data-target="#editReportModal">Modifier</a>';
+                    echo '<a href="javascript:void(0);" class="btn btn-danger btn-sm btn-delete" data-id="' . htmlspecialchars($report['id'], ENT_QUOTES, 'UTF-8') . '">Supprimer</a>';
+                    echo '</td>';
+                    echo '</tr>';
+                }
+                exit;
+            } elseif ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                // Vérification du token CSRF
+                if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                    die("Échec de la validation CSRF.");
+                }
+
+                // Validation des entrées
+                $vet_id = $_SESSION['user']['id'];
+                $animal_id = filter_input(INPUT_POST, 'animal_id', FILTER_VALIDATE_INT);
+                $health_status = filter_input(INPUT_POST, 'health_status', FILTER_SANITIZE_STRING);
+                $food_given = filter_input(INPUT_POST, 'food_given', FILTER_SANITIZE_STRING);
+                $food_quantity = filter_input(INPUT_POST, 'food_quantity', FILTER_VALIDATE_INT);
+                $visit_date = filter_input(INPUT_POST, 'visit_date', FILTER_SANITIZE_STRING);
+                $details = filter_input(INPUT_POST, 'details', FILTER_SANITIZE_STRING);
+
+                if ($animal_id && $health_status && $food_given && $food_quantity !== false && $visit_date) {
+                    $reportController->addReport($vet_id, $animal_id, $visit_date, $health_status, $food_given, $food_quantity, $details);
+                    echo "Rapport ajouté avec succès.";
+                } else {
+                    throw new Exception("Données invalides. Veuillez vérifier vos entrées.");
+                }
+                exit;
+            } elseif ($action === 'edit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                // Vérification du token CSRF
+                if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                    die("Échec de la validation CSRF.");
+                }
+
+                // Validation des entrées
+                $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+                $animal_id = filter_input(INPUT_POST, 'animal_id', FILTER_VALIDATE_INT);
+                $vet_id = $_SESSION['user']['id'];
+                $visit_date = filter_input(INPUT_POST, 'visit_date', FILTER_SANITIZE_STRING);
+                $health_status = filter_input(INPUT_POST, 'health_status', FILTER_SANITIZE_STRING);
+                $food_given = filter_input(INPUT_POST, 'food_given', FILTER_SANITIZE_STRING);
+                $food_quantity = filter_input(INPUT_POST, 'food_quantity', FILTER_VALIDATE_INT);
+                $details = filter_input(INPUT_POST, 'details', FILTER_SANITIZE_STRING);
+
+                if ($id && $animal_id && $health_status && $food_given && $food_quantity !== false && $visit_date) {
+                    $reportController->updateReport($id, $animal_id, $vet_id, $visit_date, $health_status, $food_given, $food_quantity, $details);
+                    echo "Rapport modifié avec succès.";
+                } else {
+                    throw new Exception("Données invalides. Veuillez vérifier vos entrées.");
+                }
+                exit;
+            } elseif ($action === 'get' && isset($_GET['id'])) {
+                $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+                $report = $reportController->getReportById($id);
+                echo json_encode($report);
+                exit;
+            } elseif ($action === 'delete' && isset($_GET['id'])) {
+                // Vérification du token CSRF pour la suppression
+                if (!isset($_GET['csrf_token']) || $_GET['csrf_token'] !== $_SESSION['csrf_token']) {
+                    die("Échec de la validation CSRF.");
+                }
+
+                $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+                if ($id) {
+                    $reportController->deleteReport($id);
+                    echo "Rapport supprimé avec succès.";
+                } else {
+                    throw new Exception("ID de rapport invalide.");
+                }
+                exit;
             }
-            exit;
-        } elseif ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $vet_id = $_SESSION['user']['id'];
-            $animal_id = filter_input(INPUT_POST, 'animal_id', FILTER_VALIDATE_INT);
-            $health_status = htmlspecialchars($_POST['health_status']);
-            $food_given = htmlspecialchars($_POST['food_given']);
-            $food_quantity = filter_input(INPUT_POST, 'food_quantity', FILTER_VALIDATE_INT);
-            $visit_date = htmlspecialchars($_POST['visit_date']);
-            $details = htmlspecialchars($_POST['details']);
-
-            $reportController->addReport($vet_id, $animal_id,  $visit_date, $health_status, $food_given, $food_quantity, $details);
-
-            echo "Rapport ajouté avec succès.";
-            exit;
-        } elseif ($action === 'edit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['id'];
-            $animal_id = filter_input(INPUT_POST, 'animal_id', FILTER_VALIDATE_INT);
-            $vet_id = $_SESSION['user']['id'];
-            $visit_date = htmlspecialchars($_POST['visit_date']);
-            $health_status = htmlspecialchars($_POST['health_status']);
-            $food_given = htmlspecialchars($_POST['food_given']);
-            $food_quantity = filter_input(INPUT_POST, 'food_quantity', FILTER_VALIDATE_INT);
-            $details = htmlspecialchars($_POST['details']);
-
-            $reportController->updateReport($id, $animal_id, $vet_id, $visit_date, $health_status, $food_given, $food_quantity, $details);
-            echo "Rapport modifié avec succès.";
-            exit;
-        } elseif ($action === 'get' && isset($_GET['id'])) {
-            $id = $_GET['id'];
-            $report = $reportController->getReportById($id);
-            echo json_encode($report);
-            exit;
-        } elseif ($action === 'delete' && isset($_GET['id'])) {
-            $id = $_GET['id'];
-            $reportController->deleteReport($id);
-            echo "Rapport supprimé avec succès.";
-            exit;
+        } catch (Exception $e) {
+            echo "Erreur : " . $e->getMessage();
         }
     }
 }
@@ -134,7 +171,7 @@ body {
                 <select class="form-control" id="filterDate" name="visit_date">
                     <option value="">Toutes les dates</option>
                     <?php foreach ($distinctVisitDates as $date): ?>
-                        <option value="<?= htmlspecialchars($date['visit_date']) ?>"><?= htmlspecialchars($date['visit_date']) ?></option>
+                        <option value="<?= htmlspecialchars($date['visit_date'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($date['visit_date'], ENT_QUOTES, 'UTF-8') ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -143,7 +180,7 @@ body {
                 <select class="form-control" id="filterAnimal" name="animal_id">
                     <option value="">Tous les animaux</option>
                     <?php foreach ($animals as $animal): ?>
-                        <option value="<?= htmlspecialchars($animal['id']) ?>"><?= htmlspecialchars($animal['name']) ?></option>
+                        <option value="<?= htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($animal['name'], ENT_QUOTES, 'UTF-8') ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -235,11 +272,12 @@ body {
                 <form id="editReportForm">
                     <input type="hidden" name="action" value="edit">
                     <input type="hidden" id="editReportId" name="id">
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
                     <div class="form-group">
                         <label for="editAnimal">Animal:</label>
                         <select class="form-control" id="editAnimal" name="animal_id" required>
                             <?php foreach ($animals as $animal): ?>
-                                <option value="<?= htmlspecialchars($animal['id']) ?>"><?= htmlspecialchars($animal['name']) ?></option>
+                                <option value="<?= htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($animal['name'], ENT_QUOTES, 'UTF-8') ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -275,6 +313,12 @@ body {
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
 $(document).ready(function() {
+    
+    // Ouvrir le modal si le paramètre 'action=add' est présent dans l'URL
+    <?php if (isset($_GET['action']) && $_GET['action'] === 'add'): ?>
+        $('#addReportModal').modal('show');
+    <?php endif; ?>
+
     function refreshReportsTable() {
         $.ajax({
             url: 'manage_animal_reports.php?action=list',
@@ -358,7 +402,7 @@ $(document).ready(function() {
         var reportId = $(this).data('id');
         if (confirm('Êtes-vous sûr de vouloir supprimer ce rapport ?')) {
             $.ajax({
-                url: 'manage_animal_reports.php?action=delete&id=' + reportId,
+                url: 'manage_animal_reports.php?action=delete&id=' + reportId + '&csrf_token=<?= $_SESSION['csrf_token']; ?>',
                 type: 'GET',
                 success: function(response) {
                     alert(response);

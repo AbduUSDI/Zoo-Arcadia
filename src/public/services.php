@@ -65,11 +65,11 @@ body {
             <div class="col-md-4">
                 <div class="card mb-4 text-black bg-light border-success">
                     <?php if (!empty($service['image'])): ?>
-                        <img src="../../assets/uploads/<?php echo htmlspecialchars($service['image']); ?>" class="card-img-top" alt="Image du Service">
+                        <img src="../../assets/uploads/<?php echo htmlspecialchars($service['image'], ENT_QUOTES, 'UTF-8'); ?>" class="card-img-top" alt="Image du Service">
                     <?php endif; ?>
                     <div class="card-body">
-                        <h5 class="card-title"><?php echo htmlspecialchars($service['name']); ?></h5>
-                        <p class="card-text"><?php echo htmlspecialchars($service['description']); ?></p>
+                        <h5 class="card-title"><?php echo htmlspecialchars($service['name'], ENT_QUOTES, 'UTF-8'); ?></h5>
+                        <p class="card-text"><?php echo htmlspecialchars($service['description'], ENT_QUOTES, 'UTF-8'); ?></p>
                     </div>
                 </div>
             </div>

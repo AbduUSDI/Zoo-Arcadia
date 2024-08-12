@@ -1,39 +1,32 @@
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use Database\DatabaseConnection;
+use Repositories\UserRepository;
+use Services\UserService;
+use Controllers\UserController;
 
 require '../../vendor/autoload.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['forgotEmail'];
-    $mail = new PHPMailer(true);
+    $email = filter_input(INPUT_POST, 'forgotEmail', FILTER_VALIDATE_EMAIL);
 
-    try {
-        $mail->SMTPDebug = 2; // Active le mode debug
-        $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'abdu.usdi@gmail.com';
-        $mail->Password = 'toutpourunnouveaune';
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port = 465;
+    if ($email) {
+        // Connexion à la base de données
+        $db = (new DatabaseConnection())->connect();
+        
+        // Initialisation des repositories, services et contrôleurs
+        $userRepository = new UserRepository($db);
+        $userService = new UserService($userRepository);
+        $userController = new UserController($userService);
 
-        $mail->SMTPOptions = [
-            'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true
-            ]
-        ];
-
-        $mail->setFrom('abdu.usdi@gmail.com', 'USDI Abdurahman');
-        $mail->addAddress($email);
-        $mail->Subject = 'Réinitialisation de mot de passe';
-        $mail->msgHTML('Bonjour, pour réinitialiser votre mot de passe, veuillez cliquer sur ce lien : <a href="randompasswordcreate.php">Réinitialiser mot de passe</a>');
-
-        $mail->send();
-        echo 'Email envoyé avec succès.';
-    } catch (Exception $erreur) {
-        echo "Erreur lors de l'envoi de l'email : {$mail->ErrorInfo}";
+        // Début de la réinitialisation du mot de passe
+        if ($userController->initiatePasswordReset($email)) {
+            echo 'Un email de réinitialisation de mot de passe a été envoyé.';
+        } else {
+            echo "Aucun utilisateur trouvé avec cet email.";
+        }
+    } else {
+        echo "Adresse email invalide.";
     }
 }

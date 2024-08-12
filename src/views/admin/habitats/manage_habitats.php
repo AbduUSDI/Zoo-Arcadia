@@ -11,8 +11,8 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
 }
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
-    session_unset();  
-    session_destroy(); 
+    session_unset();
+    session_destroy();
     header('Location: ../../public/login.php');
     exit;
 }
@@ -34,24 +34,37 @@ $habitatRepository = new HabitatRepository($conn);
 $habitatService = new HabitatService($habitatRepository);
 $habitatController = new HabitatController($habitatService);
 
+// Génération d'un token CSRF pour sécuriser les formulaires
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Gestion des actions AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
     $action = $_GET['action'] ?? null;
     if ($action) {
         if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = $_POST['name'];
-            $description = $_POST['description'];
-            $image = $_FILES['image'];
-            $habitatController->addHabitat($name, $description, $image);
-            echo "Habitat ajouté avec succès.";
+            if (hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                $name = $_POST['name'];
+                $description = $_POST['description'];
+                $image = $_FILES['image'];
+                $habitatController->addHabitat($name, $description, $image);
+                echo "Habitat ajouté avec succès.";
+            } else {
+                echo "Échec de la validation du token CSRF.";
+            }
             exit;
         } elseif ($action === 'edit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['habitatId'];
-            $name = $_POST['name'];
-            $description = $_POST['description'];
-            $image = $_FILES['image'] ?? null;
-            $habitatController->updateHabitat($id, $name, $description, $image);
-            echo "Habitat modifié avec succès.";
+            if (hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+                $id = $_POST['habitatId'];
+                $name = $_POST['name'];
+                $description = $_POST['description'];
+                $image = $_FILES['image'] ?? null;
+                $habitatController->updateHabitat($id, $name, $description, $image);
+                echo "Habitat modifié avec succès.";
+            } else {
+                echo "Échec de la validation du token CSRF.";
+            }
             exit;
         } elseif ($action === 'get' && isset($_GET['id'])) {
             $id = $_GET['id'];
@@ -111,6 +124,8 @@ body {
             </div>
             <div class="modal-body">
                 <form id="addHabitatForm" enctype="multipart/form-data">
+                    <!-- Inclusion du token CSRF dans le formulaire -->
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     <div class="form-group">
                         <label for="name">Nom:</label>
                         <input type="text" id="name" name="name" class="form-control" required>
@@ -143,6 +158,7 @@ body {
             </div>
             <div class="modal-body">
                 <form id="editHabitatForm" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     <input type="hidden" id="editHabitatId" name="habitatId">
                     <div class="form-group">
                         <label for="editName">Nom:</label>
@@ -163,6 +179,7 @@ body {
         </div>
     </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -191,6 +208,15 @@ $(document).ready(function() {
 
     $('#addHabitatForm').on('submit', function(event) {
         event.preventDefault();
+        
+        // Validation basique des entrées avec JavaScript
+        var name = $('#name').val();
+        var description = $('#description').val();
+        if (name.trim() === '' || description.trim() === '') {
+            alert('Veuillez remplir tous les champs obligatoires.');
+            return;
+        }
+
         var formData = new FormData(this);
 
         $.ajax({
@@ -216,6 +242,15 @@ $(document).ready(function() {
 
     $(document).on('submit', '#editHabitatForm', function(event) {
         event.preventDefault();
+
+        // Validation basique des entrées avec JavaScript
+        var name = $('#editName').val();
+        var description = $('#editDescription').val();
+        if (name.trim() === '' || description.trim() === '') {
+            alert('Veuillez remplir tous les champs obligatoires.');
+            return;
+        }
+
         var formData = new FormData(this);
 
         $.ajax({
@@ -282,5 +317,3 @@ $(document).ready(function() {
 </script>
 
 <?php include '../../../../src/views/templates/footerconnected.php'; ?>
-</body>
-</html>

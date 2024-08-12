@@ -39,7 +39,11 @@ $habitatService = new HabitatService($habitatRepository);
 $habitatController = new HabitatController($habitatService);
 
 // Récupérer tous les habitats
-$habitats = $habitatController->getAllHabitats();
+try {
+    $habitats = $habitatController->getAllHabitats();
+} catch (Exception $e) {
+    die("Erreur lors de la récupération des habitats : " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'));
+}
 
 include '../../../views/templates/header.php';
 include '../navbar_employee.php';
@@ -77,10 +81,10 @@ body {
             <tbody>
                 <?php foreach ($habitats as $habitat): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($habitat['id']); ?></td>
-                        <td><?php echo htmlspecialchars($habitat['name']); ?></td>
-                        <td><?php echo htmlspecialchars($habitat['description']); ?></td>
-                        <td><img src="../../../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" alt="<?php echo htmlspecialchars($habitat['name']); ?>" width="250"></td>
+                        <td><?php echo htmlspecialchars($habitat['id'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?php echo htmlspecialchars($habitat['name'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?php echo htmlspecialchars($habitat['description'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><img src="../../../../assets/uploads/<?php echo htmlspecialchars($habitat['image'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($habitat['name'], ENT_QUOTES, 'UTF-8'); ?>" width="250"></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

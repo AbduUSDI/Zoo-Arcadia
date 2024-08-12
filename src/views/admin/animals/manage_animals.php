@@ -1,13 +1,16 @@
 <?php
 session_start();
 
+// Durée de vie de la session
 $sessionLifetime = 1800;
 
+// Vérification si l'utilisateur est connecté et a le bon rôle
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     header('Location: ../../public/login.php');
     exit;
 }
 
+// Vérification de l'expiration de la session
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();
     session_destroy();
@@ -16,6 +19,11 @@ if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 
 }
 
 $_SESSION['LAST_ACTIVITY'] = time();
+
+// Génération d'un token CSRF pour protéger contre les attaques CSRF
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 require_once '../../../../vendor/autoload.php';
 
@@ -69,21 +77,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
             }
             exit;
         } elseif ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validation CSRF
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                die("Échec de la validation CSRF.");
+            }
+
             $data = [
-                $_POST['name'],
-                $_POST['species'],
-                $_POST['habitat_id'],
+                htmlspecialchars($_POST['name']),
+                htmlspecialchars($_POST['species']),
+                intval($_POST['habitat_id']),
                 $animalController->uploadImage($_FILES['image'])
             ];
             $animalController->addAnimal($data);
             echo "Animal ajouté avec succès.";
             exit;
         } elseif ($action === 'edit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validation CSRF
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                die("Échec de la validation CSRF.");
+            }
+
             $data = [
-                $_POST['name'],
-                $_POST['species'],
-                $_POST['habitat_id'],
-                $_POST['id']
+                htmlspecialchars($_POST['name']),
+                htmlspecialchars($_POST['species']),
+                intval($_POST['habitat_id']),
+                intval($_POST['id'])
             ];
             if (!empty($_FILES['image']['name'])) {
                 array_splice($data, 3, 0, [$animalController->uploadImage($_FILES['image'])]);
@@ -94,12 +112,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
             echo "Animal modifié avec succès.";
             exit;
         } elseif ($action === 'get' && isset($_GET['id'])) {
-            $id = $_GET['id'];
+            $id = intval($_GET['id']);
             $animal = $animalController->getAnimalDetails($id);
             echo json_encode($animal);
             exit;
         } elseif ($action === 'delete' && isset($_GET['id'])) {
-            $id = $_GET['id'];
+            // Validation CSRF
+            if (!isset($_GET['csrf_token']) || $_GET['csrf_token'] !== $_SESSION['csrf_token']) {
+                die("Échec de la validation CSRF.");
+            }
+
+            $id = intval($_GET['id']);
             $animalController->deleteAnimal($id);
             echo "Animal supprimé avec succès.";
             exit;
@@ -114,7 +137,7 @@ include_once '../../../../src/views/templates/header.php';
 include_once '../navbar_admin.php';
 ?>
 <style>
-h1,h2,h3 {
+h1, h2, h3 {
     text-align: center;
 }
 body {
@@ -163,6 +186,7 @@ body {
             </div>
             <div class="modal-body">
                 <form id="addAnimalForm" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     <div class="form-group">
                         <label for="name">Nom:</label>
                         <input type="text" id="name" name="name" class="form-control" required>
@@ -175,7 +199,7 @@ body {
                         <label for="habitat_id">Habitat:</label>
                         <select id="habitat_id" name="habitat_id" class="form-control" required>
                             <?php foreach ($habitats as $habitat): ?>
-                                <option value="<?php echo $habitat['id']; ?>"><?php echo $habitat['name']; ?></option>
+                                <option value="<?php echo htmlspecialchars($habitat['id']); ?>"><?php echo htmlspecialchars($habitat['name']); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -204,6 +228,7 @@ body {
             <div class="modal-body">
                 <form id="editAnimalForm" enctype="multipart/form-data">
                     <input type="hidden" id="editAnimalId" name="id">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     <div class="form-group">
                         <label for="editName">Nom:</label>
                         <input type="text" id="editName" name="name" class="form-control" required>
@@ -216,7 +241,7 @@ body {
                         <label for="editHabitatId">Habitat:</label>
                         <select id="editHabitatId" name="habitat_id" class="form-control" required>
                             <?php foreach ($habitats as $habitat): ?>
-                                <option value="<?php echo $habitat['id']; ?>"><?php echo $habitat['name']; ?></option>
+                                <option value="<?php echo htmlspecialchars($habitat['id']); ?>"><?php echo htmlspecialchars($habitat['name']); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -236,6 +261,7 @@ body {
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Fonction pour rafraîchir le tableau des animaux
     function refreshAnimalTable() {
         $.ajax({
             url: 'manage_animals.php?action=list',
@@ -249,9 +275,13 @@ $(document).ready(function() {
         });
     }
 
+    // Gestion de la soumission du formulaire d'ajout d'animal
     $('#addAnimalForm').on('submit', function(event) {
         event.preventDefault();
         var formData = new FormData(this);
+
+        // Ajout du token CSRF dans les données du formulaire
+        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>');
 
         $.ajax({
             url: 'manage_animals.php?action=add',
@@ -272,9 +302,13 @@ $(document).ready(function() {
         });
     });
 
-    $(document).on('submit', '#editAnimalForm', function(event) {
+    // Gestion de la soumission du formulaire de modification d'animal
+    $('#editAnimalForm').on('submit', function(event) {
         event.preventDefault();
         var formData = new FormData(this);
+
+        // Ajout du token CSRF dans les données du formulaire
+        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>');
 
         $.ajax({
             url: 'manage_animals.php?action=edit',
@@ -295,6 +329,7 @@ $(document).ready(function() {
         });
     });
 
+    // Gestion de l'édition d'un animal
     $(document).on('click', '.btn-edit', function() {
         var animalId = $(this).data('id');
         $.ajax({
@@ -315,9 +350,10 @@ $(document).ready(function() {
         });
     });
 
+    // Gestion de la suppression d'un animal
     $(document).on('click', '.btn-delete', function(event) {
         event.preventDefault();
-        var url = 'manage_animals.php?action=delete&id=' + $(this).data('id');
+        var url = 'manage_animals.php?action=delete&id=' + $(this).data('id') + '&csrf_token=<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>';
         if (confirm('Êtes-vous sûr de vouloir supprimer cet animal ?')) {
             $.ajax({
                 url: url,
@@ -333,6 +369,7 @@ $(document).ready(function() {
         }
     });
 
+    // Rafraîchir le tableau des animaux au chargement de la page
     refreshAnimalTable();
 });
 </script>
