@@ -41,7 +41,7 @@ $pdo = $dbConnection->connect();
 
 // Connexion à la base de données MongoDB
 $mongoDBConnection = new MongoDBConnection();
-$clicksCollection = $mongoDBConnection->getCollection('click_counts');
+$clicksCollection = $mongoDBConnection->getCollection('clicks');
 
 // Création des instances des dépôts
 $animalRepository = new AnimalRepository($pdo);
