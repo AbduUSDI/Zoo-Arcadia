@@ -82,7 +82,7 @@ h1, h2, h3 {
 
 body {
     background-image: url('../../assets/image/background.jpg');
-    padding-top: 68px;
+    padding-top: 88px;
 }
 
 .mt-5, .mb-4 {

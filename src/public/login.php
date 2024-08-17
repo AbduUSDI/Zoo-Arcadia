@@ -107,7 +107,7 @@ h1, h2, h3 {
 
 body {
     background-image: url('../../assets/image/background.jpg');
-    padding-top: 48px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
+    padding-top: 68px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
 }
 .mt-4 {
     background: whitesmoke;

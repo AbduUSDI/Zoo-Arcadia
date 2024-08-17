@@ -5,7 +5,7 @@ session_start();
 // Durée de vie de la session en secondes (30 minutes)
 $sessionLifetime = 1800;
 
-if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
+if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
     header('Location: ../../public/login.php');
     exit;
 }
@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
 }
 
 include '../../../views/templates/header.php';
-include '../navbar_employee.php';
+include '../navbar_admin.php';
 ?>
 <style>
     h1,h2,h3 {
