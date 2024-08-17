@@ -22,14 +22,13 @@ Zoo Arcadia permet aux visiteurs de découvrir les animaux et leurs habitats, et
 - **Visual Studio Code, Cursor** : Éditeurs de code.
 - **Composer** : Gestionnaire de dépendances PHP.
 - **Git** : Contrôleur de version.
-- **MongoDBCompass** : Base de données non relationnelle 
+- **MongoDBCompass** : Base de données non relationnelle et aussi **MongoDB Atlas** pour la version déployée.
 
 ## Structure du Projet
 
 - **assets/** -> Contient les documents **CSS** ; **JavaScript** ; **Image et Uploads** ; **favicon.ico**.
-- **config/** -> Fichiers de configuration des base de données.
 - **docs/** -> Dossier pour regrouper la gestion de projet, les diagrammes, la charte graphique et le manuel d'utilisation.
-- **src/** -> Contient tout le code source du projet : Les trois interfaces, le views(templates), les models (composant métier POO) et le dossier public.
+- **src/** -> Contient tout le code source du projet en respectant les principes SOLID : les database, le views(templates, espaces), les interfaces, les repositories, les controllers et les services enfin le dossier public.
 - **index.php** -> Ce fichier redirige automatiquement vers le fichier index.php dans public.
 
 ## Installation
