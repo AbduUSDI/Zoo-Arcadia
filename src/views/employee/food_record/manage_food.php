@@ -76,22 +76,7 @@ include '../../../../src/views/templates/header.php';
 include '../navbar_employee.php';
 ?>
 
-<style>
-h1, h2, h3 {
-    text-align: center;
-}
-
-body {
-    background-image: url('../../../../assets/image/background.jpg');
-}
-
-.mt-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1 class="my-4">Gérer la Nourriture des Animaux</h1>

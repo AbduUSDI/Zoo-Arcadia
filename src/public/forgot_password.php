@@ -1,6 +1,4 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 use Database\DatabaseConnection;
 use Repositories\UserRepository;
 use Services\UserService;

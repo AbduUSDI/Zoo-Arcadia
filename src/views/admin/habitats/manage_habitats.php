@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 // Durée de vie de la session en secondes (30 minutes)
@@ -80,35 +79,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     }
 }
 
+$scriptRepository = new Repositories\ScriptRepository();
+
+$script = $scriptRepository->manageHabitatScript();
+
 $habitats = $habitatController->getAllHabitats();
 
 include_once '../../../../src/views/templates/header.php';
 include_once '../navbar_admin.php';
 ?>
-<style>
-h1,h2,h3 {
-    text-align: center;
-}
-body {
-    background-image: url('../../../../assets/image/background.jpg');
-}
-.mt-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
 
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
-    <div class="table-responsive">
-        <br>
-        <hr>
-        <h1 class="my-4">Gestion des Habitats</h1>
-        <hr>
-        <br>
-        <a href="#" class="btn btn-success mb-4" data-toggle="modal" data-target="#addHabitatModal">Ajouter un habitat</a>
-        <div id="habitatsTable">
-            <!-- La table sera remplie ici par AJAX -->
-        </div>
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+    <div class="row">
+        <a href="#" class="btn btn-success mb-4 addButton" data-toggle="modal" data-target="#addHabitatModal">Ajouter un habitat</a>
+    </div>
+    <div class="row" id="habitatsTable">
+        <!-- Les cartes des habitats seront injectées ici par AJAX -->
     </div>
 </div>
 
@@ -124,7 +110,6 @@ body {
             </div>
             <div class="modal-body">
                 <form id="addHabitatForm" enctype="multipart/form-data">
-                    <!-- Inclusion du token CSRF dans le formulaire -->
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     <div class="form-group">
                         <label for="name">Nom:</label>
@@ -182,138 +167,9 @@ body {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script>
 
-// Fonctions pour le CRUD sans rechargement de page grâce à AJAX
-
-$(document).ready(function() {
-    // Fonction pour rafraîchir la table des habitats
-    function refreshHabitatTable() {
-        $.ajax({
-            url: 'fetch_habitats.php',
-            type: 'GET',
-            success: function(data) {
-                $('#habitatsTable').html(data);
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    }
-
-    // Initialisation de la table des habitats
-    refreshHabitatTable();
-
-    // Formulaire pour ajouter un habitat
-
-    $('#addHabitatForm').on('submit', function(event) {
-        event.preventDefault();
-        
-        // Validation basique des entrées avec JavaScript
-        var name = $('#name').val();
-        var description = $('#description').val();
-        if (name.trim() === '' || description.trim() === '') {
-            alert('Veuillez remplir tous les champs obligatoires.');
-            return;
-        }
-
-        var formData = new FormData(this);
-
-        $.ajax({
-            url: 'manage_habitats.php?action=add',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                $('#responseMessage').html(response);
-                $('#addHabitatModal').modal('hide');
-                refreshHabitatTable();
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-            },
-            error: function(xhr, status, error) {
-                $('#responseMessage').html("Erreur: " + error);
-            }
-        });
-    });
-
-    // Formulaire pour modifier un habitat
-
-    $(document).on('submit', '#editHabitatForm', function(event) {
-        event.preventDefault();
-
-        // Validation basique des entrées avec JavaScript
-        var name = $('#editName').val();
-        var description = $('#editDescription').val();
-        if (name.trim() === '' || description.trim() === '') {
-            alert('Veuillez remplir tous les champs obligatoires.');
-            return;
-        }
-
-        var formData = new FormData(this);
-
-        $.ajax({
-            url: 'manage_habitats.php?action=edit',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                $('#editResponseMessage').html(response);
-                $('#editHabitatModal').modal('hide');
-                refreshHabitatTable();
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-            },
-            error: function(xhr, status, error) {
-                $('#editResponseMessage').html("Erreur: " + error);
-            }
-        });
-    });
-
-    // Fonction pour remplir le formulaire de modification
-
-    $(document).on('click', '.btn-edit', function() {
-        var habitatId = $(this).data('id');
-        $.ajax({
-            url: 'manage_habitats.php?action=get',
-            type: 'GET',
-            data: { id: habitatId },
-            success: function(data) {
-                var habitat = JSON.parse(data);
-                $('#editHabitatId').val(habitat.id);
-                $('#editName').val(habitat.name);
-                $('#editDescription').val(habitat.description);
-                $('#editHabitatModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    });
-
-    // Fonction pour supprimer un habitat
-
-    $(document).on('click', '.btn-delete', function(event) {
-        event.preventDefault();
-        var url = $(this).attr('href');
-
-        if (confirm('Êtes-vous sûr de vouloir supprimer ce habitat ?')) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(response) {
-                    alert(response);
-                    refreshHabitatTable();
-                },
-                error: function(xhr, status, error) {
-                    alert("Erreur: " + error);
-                }
-            });
-        }
-    });
-});
-</script>
+<?php 
+echo $script;
+?>
 
 <?php include '../../../../src/views/templates/footerconnected.php'; ?>

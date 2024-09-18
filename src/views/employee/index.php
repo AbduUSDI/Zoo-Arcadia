@@ -22,23 +22,9 @@ $_SESSION['LAST_ACTIVITY'] = time();
 
 include '../../../src/views/templates/header.php';
 ?>
-<style>
 
-h1,h2,h3 {
-    text-align: center;
-}
-
-body {
-    background-image: url('../../../assets/image/background.jpg');
-}
-.mt-5 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
-    <a class="navbar-brand" href="../../public/index.php"><img src="../../../assets/image/favicon.jpg" width="32px" height="32px"></img>   Zoo Arcadia</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+    <a class="navbar-brand" href="../../public/index.php"><img src="/Zoo-Arcadia-New/assets/image/favicon.jpg" width="32px" height="32px"></img>   Zoo Arcadia</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -81,17 +67,17 @@ body {
 <footer id="footerId" class="bg-light text-center text-lg-start mt-5 fixed-bottom" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link text-secondary" href="../../public/contact.php"><img src="../../../assets/image/lettre.png" width="32px" height="32px"></img>   Nous contacter</a>
+                <a class="nav-link text-secondary" href="../../public/contact.php"><img src="/Zoo-Arcadia-New/assets/image/lettre.png" width="32px" height="32px"></img>   Nous contacter</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-secondary" href="../../public/index.php#openhours"><img src="../../../assets/image/ouvert.png" width="32px" height="32px"></img>   Nos horaires</a>
+                <a class="nav-link text-secondary" href="../../public/index.php#openhours"><img src="/Zoo-Arcadia-New/assets/image/ouvert.png" width="32px" height="32px"></img>   Nos horaires</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-secondary" href="../../public/index.php#apropos"><img src="../../../assets/image/a-propos-de-nous.png" width="32px" height="32px"></img>   A propos de nous</a>
+                <a class="nav-link text-secondary" href="../../public/index.php#apropos"><img src="/Zoo-Arcadia-New/assets/image/a-propos-de-nous.png" width="32px" height="32px"></img>   A propos de nous</a>
             </li>
             </ul>
-        <div class="container p-4">
-            <p class="text-secondary"><img src="../../../assets/image/favicon.jpg" width="32px" height="32px"></img>   &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
+        <div class="containerr p-4">
+            <p class="text-secondary"><img src="/Zoo-Arcadia-New/assets/image/favicon.jpg" width="32px" height="32px"></img>   &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
         </div>
     </footer>
     <!-- Inclusion de jQuery (version complète, pas la version 'slim' qui ne supporte pas AJAX) -->
@@ -106,6 +92,6 @@ body {
     <!-- Inclusion de AXIOS -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    <script src="../../../assets/js/scripts.js"></script>
+    <script src="/Zoo-Arcadia-New/assets/js/scripts.js"></script>
 </body>
 </html>

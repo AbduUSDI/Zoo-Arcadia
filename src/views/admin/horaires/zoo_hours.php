@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 // Durée de vie de la session en secondes (30 minutes)
@@ -63,33 +62,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
+$scriptRepository = new Repositories\ScriptRepository;
+$script = $scriptRepository->zooHoursScript();
+
 include '../../../../src/views/templates/header.php';
 include '../navbar_admin.php';
 ?>
-<style>
-h1, h2, h3 {
-    text-align: center;
-}
-body {
-    background-image: url('../../../../assets/image/background.jpg');
-}
-.mt-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
 
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
-    <br>
-    <hr>
-    <h2>Modifier les horaires d'ouverture du Zoo</h2>
-    <hr>
-    <br>
+<div class="zoo-hours-container mt-5 container">
+    <h2 class="zoo-hours-title">Modifier les horaires d'ouverture du Zoo</h2>
     <form method="POST">
         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover">
-                <thead class="thead-dark">
+        <div class="zoo-hours-table-wrapper">
+            <table class="zoo-hours-table">
+                <thead class="zoo-hours-table-header">
                     <tr>
                         <th>Jour</th>
                         <th>Heures d'ouverture</th>
@@ -106,35 +92,24 @@ body {
                                 <input type="hidden" name="hours[<?php echo $hour['id']; ?>][open]" value="00:00">
                                 <input type="hidden" name="hours[<?php echo $hour['id']; ?>][close]" value="00:00">
                             <?php else: ?>
-                                <input type="time" name="hours[<?php echo $hour['id']; ?>][open]" value="<?php echo substr($hour['open_time'], 0, 5); ?>">
+                                <input type="time" name="hours[<?php echo $hour['id']; ?>][open]" value="<?php echo substr($hour['open_time'], 0, 5); ?>" class="zoo-hours-input-time">
                                 -
-                                <input type="time" name="hours[<?php echo $hour['id']; ?>][close]" value="<?php echo substr($hour['close_time'], 0, 5); ?>">
+                                <input type="time" name="hours[<?php echo $hour['id']; ?>][close]" value="<?php echo substr($hour['close_time'], 0, 5); ?>" class="zoo-hours-input-time">
                             <?php endif; ?>
-                            <input type="checkbox" name="hours[<?php echo $hour['id']; ?>][closed]" value="1" <?php echo $hour['closed'] ? 'checked' : ''; ?>>
-                            <label for="hours[<?php echo $hour['id']; ?>][closed]">Fermé</label>
+                            <input type="checkbox" name="hours[<?php echo $hour['id']; ?>][closed]" value="1" <?php echo $hour['closed'] ? 'checked' : ''; ?> class="zoo-hours-checkbox">
+                            <label for="hours[<?php echo $hour['id']; ?>][closed]" class="zoo-hours-label">Fermé</label>
                         </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
-        <button type="submit" class="btn btn-success">Mettre à jour les horaires</button>
+        <button type="submit" class="zoo-hours-update-button">Mettre à jour les horaires</button>
     </form>
 </div>
 
-<script>
-function toggleClosed(checkbox, id) {
-    const openInput = document.querySelector(`input[name="hours[${id}][open]"]`);
-    const closeInput = document.querySelector(`input[name="hours[${id}][close]"]`);
-    
-    if (checkbox.checked) {
-        openInput.disabled = true;
-        closeInput.disabled = true;
-    } else {
-        openInput.disabled = false;
-        closeInput.disabled = false;
-    }
-}
-</script>
+<?php
+echo $script;
+?>
 
 <?php include '../../../../src/views/templates/footerconnected.php'; ?>

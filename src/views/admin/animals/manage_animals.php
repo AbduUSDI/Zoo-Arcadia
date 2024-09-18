@@ -59,22 +59,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     if ($action) {
         if ($action === 'list') {
             $animals = $animalController->getAllAnimals();
+
+            // Grouper les animaux par habitat
+            $animalsByHabitat = [];
             foreach ($animals as $animal) {
-                echo '<tr>';
-                echo '<td>' . htmlspecialchars($animal['name']) . '</td>';
-                echo '<td>' . htmlspecialchars($animal['species']) . '</td>';
-                echo '<td>' . htmlspecialchars($animal['habitat_name']) . '</td>';
-                echo '<td>';
-                if (!empty($animal['image'])) {
-                    echo '<img src="../../../../assets/uploads/' . htmlspecialchars($animal['image']) . '" alt="Image de l\'animal" style="width: 100px;">';
+                $habitatName = htmlspecialchars($animal['habitat_name']);
+                if (!isset($animalsByHabitat[$habitatName])) {
+                    $animalsByHabitat[$habitatName] = [];
                 }
-                echo '</td>';
-                echo '<td>';
-                echo '<a href="#" class="btn btn-warning btn-sm btn-edit" data-id="' . $animal['id'] . '" data-toggle="modal" data-target="#editAnimalModal">Modifier</a>';
-                echo '<a href="javascript:void(0);" class="btn btn-danger btn-sm btn-delete" data-id="' . $animal['id'] . '">Supprimer</a>';
-                echo '</td>';
-                echo '</tr>';
+                $animalsByHabitat[$habitatName][] = $animal;
             }
+
+            // Afficher les animaux par habitat dans un menu de sélection horizontal
+            foreach ($animalsByHabitat as $habitatName => $animals) {
+                echo '<h3 class="my-4">' . $habitatName . '</h3>';
+                echo '<div class="animal-selection-container">';
+                echo '<div class="animal-list">';
+
+                foreach ($animals as $animal) {
+                    echo '<div class="animal-card">';
+                    if (!empty($animal['image'])) {
+                        echo '<img src="../../../../assets/uploads/' . htmlspecialchars($animal['image']) . '" alt="Image de l\'animal" class="animal-image">';
+                    }
+                    echo '<div class="animal-info">';
+                    echo '<h5>' . htmlspecialchars($animal['name']) . '</h5>';
+                    echo '<p>' . htmlspecialchars_decode($animal['species']) . '</p>';
+                    echo '<p>' . htmlspecialchars($animal['habitat_name']) . '</p>';
+                    echo '<a href="#" class="btn btn-warning btn-sm btn-edit" data-id="' . $animal['id'] . '" data-toggle="modal" data-target="#editAnimalModal">Modifier</a>';
+                    echo '<a href="javascript:void(0);" class="btn btn-danger btn-sm btn-delete" data-id="' . $animal['id'] . '">Supprimer</a>';
+                    echo '</div>';
+                    echo '</div>';
+                }
+
+                echo '</div>'; // Fin de la liste d'animaux
+                echo '</div>'; // Fin du conteneur de sélection
+            }
+
             exit;
         } elseif ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             // Validation CSRF
@@ -130,48 +150,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     }
 }
 
+$scriptRepository = new Repositories\ScriptRepository;
+$script = $scriptRepository->manageAnimalAdminScript();
+
 $animals = $animalController->getAllAnimals();
 $habitats = $animalController->getAllHabitats();
 
 include_once '../../../../src/views/templates/header.php';
 include_once '../navbar_admin.php';
 ?>
-<style>
-h1, h2, h3 {
-    text-align: center;
-}
-body {
-    background-image: url('../../../../assets/image/background.jpg');
-}
-.mt-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
 
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1 class="my-4">Gérer les Animaux</h1>
     <hr>
     <br>
     <a href="#" class="btn btn-success mb-4" data-toggle="modal" data-target="#addAnimalModal">Ajouter un Animal</a>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Nom</th>
-                    <th>Espèce</th>
-                    <th>Habitat</th>
-                    <th>Image</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Le contenu du tableau sera chargé ici via AJAX -->
-            </tbody>
-        </table>
-    </div>
+    <main></main>
 </div>
 
 <!-- Modal pour Ajouter un Animal -->
@@ -259,119 +255,9 @@ body {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script>
-$(document).ready(function() {
-    // Fonction pour rafraîchir le tableau des animaux
-    function refreshAnimalTable() {
-        $.ajax({
-            url: 'manage_animals.php?action=list',
-            type: 'GET',
-            success: function(data) {
-                $('tbody').html(data);
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    }
 
-    // Gestion de la soumission du formulaire d'ajout d'animal
-    $('#addAnimalForm').on('submit', function(event) {
-        event.preventDefault();
-        var formData = new FormData(this);
-
-        // Ajout du token CSRF dans les données du formulaire
-        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>');
-
-        $.ajax({
-            url: 'manage_animals.php?action=add',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                $('#responseMessage').html(response);
-                $('#addAnimalModal').modal('hide');
-                refreshAnimalTable();
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-            },
-            error: function(xhr, status, error) {
-                $('#responseMessage').html("Erreur: " + error);
-            }
-        });
-    });
-
-    // Gestion de la soumission du formulaire de modification d'animal
-    $('#editAnimalForm').on('submit', function(event) {
-        event.preventDefault();
-        var formData = new FormData(this);
-
-        // Ajout du token CSRF dans les données du formulaire
-        formData.append('csrf_token', '<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>');
-
-        $.ajax({
-            url: 'manage_animals.php?action=edit',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                $('#editResponseMessage').html(response);
-                $('#editAnimalModal').modal('hide');
-                refreshAnimalTable();
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-            },
-            error: function(xhr, status, error) {
-                $('#editResponseMessage').html("Erreur: " + error);
-            }
-        });
-    });
-
-    // Gestion de l'édition d'un animal
-    $(document).on('click', '.btn-edit', function() {
-        var animalId = $(this).data('id');
-        $.ajax({
-            url: 'manage_animals.php?action=get',
-            type: 'GET',
-            data: { id: animalId },
-            success: function(data) {
-                var animal = JSON.parse(data);
-                $('#editAnimalId').val(animal.id);
-                $('#editName').val(animal.name);
-                $('#editSpecies').val(animal.species);
-                $('#editHabitatId').val(animal.habitat_id);
-                $('#editAnimalModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    });
-
-    // Gestion de la suppression d'un animal
-    $(document).on('click', '.btn-delete', function(event) {
-        event.preventDefault();
-        var url = 'manage_animals.php?action=delete&id=' + $(this).data('id') + '&csrf_token=<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>';
-        if (confirm('Êtes-vous sûr de vouloir supprimer cet animal ?')) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(response) {
-                    alert(response);
-                    refreshAnimalTable();
-                },
-                error: function(xhr, status, error) {
-                    alert("Erreur: " + error);
-                }
-            });
-        }
-    });
-
-    // Rafraîchir le tableau des animaux au chargement de la page
-    refreshAnimalTable();
-});
-</script>
+<?php
+echo $script;
+?>
 
 <?php include '../../../../src/views/templates/footerconnected.php'; ?>

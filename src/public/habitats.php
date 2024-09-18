@@ -37,7 +37,6 @@ $habitatController = new HabitatController($habitatService);
 try {
     $habitats = $habitatController->getAllHabitats();
 } catch (Exception $e) {
-    // Gérer l'erreur en affichant un message utilisateur ou en enregistrant l'erreur dans un journal
     die("Erreur lors de la récupération des habitats : " . htmlspecialchars($e->getMessage()));
 }
 
@@ -45,25 +44,10 @@ include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
 
-<style>
-h1,h2,h3 {
-    text-align: center;
-}
-
-body {
-    background-image: url('../../assets/image/background.jpg');
-    padding-top: 88px;
-}
-.mt-5, .mb-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
 <div class="container mb-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
-    <h1 class="my-4">Tous les Habitats</h1>
+    <h1 class="my-4">Explorez Nos Habitats</h1>
     <hr>
     <br>
     <div class="row">
@@ -72,9 +56,9 @@ body {
                 <div class="col-md-4">
                     <div class="card mb-4 text-dark">
                         <img class="card-img-top" src="../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
-                        <div class="card-body">
-                            <h5 class="card-title" style="text-align: center;"><?php echo htmlspecialchars($habitat['name']); ?></h5>
-                            <a href="index.php?page=habitat&id=<?php echo htmlspecialchars($habitat['id']); ?>" class="btn btn-success">Voir les habitants</a>
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><?php echo htmlspecialchars($habitat['name']); ?></h5>
+                            <a href="index.php?page=habitat&id=<?php echo htmlspecialchars($habitat['id']); ?>" class="btn btn-success btn-block">Voir les habitants</a>
                         </div>
                     </div>
                 </div>

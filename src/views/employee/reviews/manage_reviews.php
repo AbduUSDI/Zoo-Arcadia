@@ -85,27 +85,9 @@ include '../../../../src/views/templates/header.php';
 include '../navbar_employee.php';
 ?>
 
-<style>
-h1, h2, h3 {
-    text-align: center;
-}
-
-body {
-    background-image: url('../../../../assets/image/background.jpg');
-}
-
-.mt-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
-    <br>
-    <hr>
-    <h1 class="my-4">Gérer les avis des visiteurs</h1>
-    <hr>
-    <br>
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+    <h1 class="text-center my-4">Gérer les avis des visiteurs</h1>
+    
     <?php if (!empty($error)): ?>
         <div class="alert alert-danger">
             <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?>
@@ -115,47 +97,38 @@ body {
             <?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?>
         </div>
     <?php endif; ?>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Pseudo</th>
-                    <th>Objet</th>
-                    <th>Avis</th>
-                    <th>Approuvé</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($reviews as $review): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($review['visitor_name'], ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($review['subject'], ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars($review['review_text'], ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= $review['approved'] ? 'Oui' : 'Non' ?></td>
-                        <td>
-                            <?php if (!$review['approved']): ?>
-                                <form method="post" style="display: inline;">
-                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
-                                    <input type="hidden" name="review_id" value="<?= htmlspecialchars($review['id'], ENT_QUOTES, 'UTF-8') ?>">
-                                    <button type="submit" name="approve" class="btn btn-success">Approuver</button>
-                                </form>
-                            <?php endif; ?>
-                            <form method="post" style="display: inline;">
+
+    <!-- Section pour les avis des visiteurs -->
+    <div class="review-cards">
+        <?php foreach ($reviews as $review): ?>
+            <div class="card review-card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"><?= htmlspecialchars($review['visitor_name'], ENT_QUOTES, 'UTF-8') ?></h5>
+                    <h6 class="card-subtitle mb-2 text-muted"><?= htmlspecialchars($review['subject'], ENT_QUOTES, 'UTF-8') ?></h6>
+                    <p class="card-text"><?= htmlspecialchars($review['review_text'], ENT_QUOTES, 'UTF-8') ?></p>
+                    <p class="card-text"><strong>Approuvé: </strong><?= $review['approved'] ? 'Oui' : 'Non' ?></p>
+                    <div class="d-flex justify-content-between">
+                        <?php if (!$review['approved']): ?>
+                            <form method="post">
                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
                                 <input type="hidden" name="review_id" value="<?= htmlspecialchars($review['id'], ENT_QUOTES, 'UTF-8') ?>">
-                                <button type="submit" name="delete" class="btn btn-danger">Supprimer</button>
+                                <button type="submit" name="approve" class="btn btn-success">Approuver</button>
                             </form>
-                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editReviewModal-<?= htmlspecialchars($review['id'], ENT_QUOTES, 'UTF-8') ?>">Modifier</button>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                        <?php endif; ?>
+                        <form method="post">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+                            <input type="hidden" name="review_id" value="<?= htmlspecialchars($review['id'], ENT_QUOTES, 'UTF-8') ?>">
+                            <button type="submit" name="delete" class="btn btn-danger">Supprimer</button>
+                        </form>
+                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editReviewModal-<?= htmlspecialchars($review['id'], ENT_QUOTES, 'UTF-8') ?>">Modifier</button>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 
+    <!-- Modals pour modifier les avis -->
     <?php foreach ($reviews as $review): ?>
-        <!-- Modal pour modifier l'avis -->
         <div class="modal fade" id="editReviewModal-<?= htmlspecialchars($review['id'], ENT_QUOTES, 'UTF-8') ?>" tabindex="-1" role="dialog" aria-labelledby="editReviewModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -189,43 +162,33 @@ body {
         </div>
     <?php endforeach; ?>
 
-    <h2 class="my-4">Commentaires des vétérinaires</h2>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID Habitat</th>
-                    <th>Nom du Vétérinaire</th>
-                    <th>Commentaire</th>
-                    <th>Approuvé</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($vetComments as $comment): ?>
-                    <tr>
-                        <td><?= htmlspecialchars(trim($comment['habitat_id']), ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars(trim($comment['vet_username']), ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= htmlspecialchars(trim($comment['comment']), ENT_QUOTES, 'UTF-8') ?></td>
-                        <td><?= $comment['approved'] ? 'Oui' : 'Non' ?></td>
-                        <td>
-                            <?php if (!$comment['approved']): ?>
-                                <form method="post" style="display: inline;">
-                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
-                                    <input type="hidden" name="comment_id" value="<?= htmlspecialchars($comment['id'], ENT_QUOTES, 'UTF-8') ?>">
-                                    <button type="submit" name="approve_comment" class="btn btn-success">Approuver</button>
-                                </form>
-                            <?php endif; ?>
-                            <form method="post" style="display: inline;">
+    <!-- Section pour les commentaires des vétérinaires -->
+    <h2 class="text-center my-4">Commentaires des vétérinaires</h2>
+    <div class="review-cards">
+        <?php foreach ($vetComments as $comment): ?>
+            <div class="card comment-card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">ID Habitat: <?= htmlspecialchars(trim($comment['habitat_id']), ENT_QUOTES, 'UTF-8') ?></h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Vétérinaire: <?= htmlspecialchars(trim($comment['vet_username']), ENT_QUOTES, 'UTF-8') ?></h6>
+                    <p class="card-text"><?= htmlspecialchars(trim($comment['comment']), ENT_QUOTES, 'UTF-8') ?></p>
+                    <p class="card-text"><strong>Approuvé: </strong><?= $comment['approved'] ? 'Oui' : 'Non' ?></p>
+                    <div class="d-flex justify-content-between">
+                        <?php if (!$comment['approved']): ?>
+                            <form method="post">
                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
                                 <input type="hidden" name="comment_id" value="<?= htmlspecialchars($comment['id'], ENT_QUOTES, 'UTF-8') ?>">
-                                <button type="submit" name="delete_comment" class="btn btn-danger">Supprimer</button>
+                                <button type="submit" name="approve_comment" class="btn btn-success">Approuver</button>
                             </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                        <?php endif; ?>
+                        <form method="post">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+                            <input type="hidden" name="comment_id" value="<?= htmlspecialchars($comment['id'], ENT_QUOTES, 'UTF-8') ?>">
+                            <button type="submit" name="delete_comment" class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
 

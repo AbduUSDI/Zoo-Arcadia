@@ -24,4 +24,8 @@ class ClickRepository implements ClickRepositoryInterface {
         $click = $this->collection->findOne(['animal_id' => $animalId]);
         return $click ? $click['clicks'] : 0;
     }
+    public function find(array $filter = [], array $options = []) {
+        return $this->collection->find($filter, $options);
+    }
+    
 }

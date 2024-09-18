@@ -61,7 +61,7 @@ class ServiceRepository implements ServiceRepositoryInterface {
         $fileName = $file['name'];
         $fileNameCmps = explode(".", $fileName);
         $fileExtension = strtolower(end($fileNameCmps));
-        $allowedfileExtensions = ['jpg', 'gif', 'png', 'jpeg'];
+        $allowedfileExtensions = ['jpg', 'gif', 'png', 'jpeg', 'webp'];
         if (in_array($fileExtension, $allowedfileExtensions)) {
             $uploadFileDirection = '../../../../assets/uploads/';
             $dest_path = "{$uploadFileDirection}{$fileName}";

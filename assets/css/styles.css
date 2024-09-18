@@ -1,3 +1,464 @@
+/* Styles globaux */
 body {
-    color: aliceblue;
+    background-image: url("../image/background.jpg");
+    padding-top: 48px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    padding-top: 8%;
+}
+
+h1, h2, h3 {
+    text-align: center;
+    color: #006400;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+/* Classes générales */
+.mt-4 {
+    max-height: 500px;
+    overflow-y: auto;
+    background: whitesmoke;
+    border-radius: 15px;
+}
+
+.breadcrumb-custom {
+    background: linear-gradient(to right, #ffffff, #ccedb6) !important;
+    border-radius: 5px !important;
+    padding: 10px !important;
+    margin-bottom: 20px !important;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.breadcrumb-custom .breadcrumb-item a {
+    color: #006400 !important;
+}
+
+.breadcrumb-custom .breadcrumb-item.active {
+    color: #333333 !important;
+    font-weight: bold !important;
+}
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.img-fluid:hover {
+    transform: scale(1.05);
+}
+.containerr {
+    background: transparent;
+}
+.container, .custom {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+}
+
+/* Styles spécifiques pour les formulaires */
+.form-group label {
+    font-weight: bold;
+}
+
+.input-group .form-control, .input-group-append .btn {
+    border-radius: 0;
+}
+
+.alert {
+    text-align: center;
+    font-weight: bold;
+}
+
+.btn-success, .btn-outline-danger {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.modal-content {
+    border-radius: 15px;
+}
+
+#togglePassword {
+    border: none;
+    background: transparent;
+    color: #007bff;
+}
+
+#togglePassword:hover {
+    color: #0056b3;
+}
+
+/* Styles spécifiques pour les cartes */
+.card, .report-card {
+    margin-bottom: 20px;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.card:hover, .report-card:hover {
+    transform: scale(1.05);
+}
+
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.button-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    color: #e67e22;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.card-text {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+/* Style pour les cartes de la pages de gestion des animaux - espace admin */
+.animal-selection-container {
+    background: linear-gradient(to right, #ffffff, #ccedb6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.animal-list {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    width: 100%;
+    padding: 20px;
+    gap: 20px;
+}
+
+.animal-card {
+    min-width: 200px;
+    margin: 0 10px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    flex: 0 0 auto; /* Empêche la carte de se redimensionner */
+}
+
+.animal-image img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.animal-info {
+    margin-top: 10px;
+}
+
+.accordion-body {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.accordion-button {
+    width: 100%;
+}
+.animal-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* Styles personnalisés pour la page des horaires du zoo */
+.zoo-hours-container {
+    background: linear-gradient(to right, #ffffff, #ccedb6);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.zoo-hours-title {
+    text-align: center;
+    color: #006400;
+    margin-bottom: 20px;
+}
+
+.zoo-hours-table-wrapper {
+    margin-top: 20px;
+}
+
+.zoo-hours-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.zoo-hours-table-header {
+    background-color: #006400;
+    color: #fff;
+}
+
+.zoo-hours-table-header th {
+    text-align: center;
+    padding: 15px;
+}
+
+.zoo-hours-table tbody td {
+    padding: 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.zoo-hours-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.zoo-hours-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.zoo-hours-input-time {
+    width: auto;
+    padding: 5px;
+    margin: 0 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.zoo-hours-checkbox {
+    margin-left: 10px;
+}
+
+.zoo-hours-label {
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+.zoo-hours-update-button {
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.zoo-hours-update-button:hover {
+    background-color: #218838;
+}
+/* Styles personnalisés pour la page de gestion des utilisateurs */
+.user-management-container {
+    background: linear-gradient(to right, #ffffff, #ccedb6);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.user-management-title {
+    text-align: center;
+    color: #006400;
+    margin-bottom: 20px;
+}
+
+.user-management-table-wrapper {
+    margin-top: 20px;
+}
+
+.user-management-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-management-table-header {
+    background-color: #006400;
+    color: #fff;
+}
+
+.user-management-table-header th {
+    text-align: center;
+    padding: 15px;
+}
+
+.user-management-table tbody td {
+    padding: 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.user-management-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.user-management-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.user-management-input {
+    width: 100%;
+    padding: 5px;
+    margin: 0 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.user-management-add-btn {
+    display: block;
+    margin: 20px auto;
+    width: 200px;
+}
+
+.user-management-edit-btn, .user-management-delete-btn {
+    margin: 2px;
+}
+
+.user-management-add-confirm-btn, .user-management-edit-confirm-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.user-management-add-confirm-btn:hover, .user-management-edit-confirm-btn:hover {
+    background-color: #218838;
+}
+/* Styles personnalisés pour la page des habitats */
+.habitat-container {
+    background: linear-gradient(to right, #ffffff, #ccedb6);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.habitat-title {
+    text-align: center;
+    color: #006400;
+    margin-bottom: 20px;
+}
+
+.habitat-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.habitat-card {
+    width: 400px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.habitat-card-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 2px solid #006400;
+}
+
+.habitat-card-body {
+    padding: 15px;
+    text-align: center;
+}
+
+.habitat-card-title {
+    font-size: 18px;
+    color: #006400;
+    margin-bottom: 10px;
+}
+
+.habitat-card-description {
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.habitat-comment-form {
+    margin-top: 10px;
+}
+
+.habitat-comment-input {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.habitat-comment-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.habitat-comment-button:hover {
+    background-color: #218838;
+}
+
+.habitat-comments {
+    margin-top: 10px;
+    text-align: left;
+}
+
+.habitat-comment {
+    background-color: #f1f1f1;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 5px;
 }

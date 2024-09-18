@@ -45,8 +45,9 @@ class UserService implements UserServiceInterface {
 
     public function verifyPasswordResetToken($token) {
         $userId = $this->userRepository->getUserIdByPasswordResetToken($token);
-        return $userId !== false;
+        return $userId ? $userId : false; // Renvoie l'ID de l'utilisateur ou false
     }
+    
 
     public function resetPassword($token, $newPassword) {
         $userId = $this->userRepository->getUserIdByPasswordResetToken($token);

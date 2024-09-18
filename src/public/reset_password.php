@@ -24,7 +24,7 @@ $userController = new \Controllers\UserController($userService);
 
 // Vérifier si le token est valide avant de continuer
 $userId = $userService->verifyPasswordResetToken($token);
-if (!$userId) {
+if ($userId === false) { // Vérifiez explicitement que $userId est faux
     die("Token invalide ou expiré.");
 }
 
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($newPassword && $newPassword === $confirmPassword) {
         $result = $userController->resetPassword($token, $newPassword);
 
-        if ($result && $result['success']) {  // S'assurer que $result est bien un tableau
+        if ($result && is_array($result) && $result['success']) {  // Vérifiez que $result est un tableau et que 'success' est présent
             $_SESSION['message'] = $result['message'];
             $_SESSION['message_type'] = "success";
             header('Location: login.php');
@@ -63,22 +63,7 @@ include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
 
-<style>
-h1, h2, h3 {
-    text-align: center;
-}
-
-body {
-    background-image: url('../../assets/image/background.jpg');
-    padding-top: 48px;
-}
-.mt-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1 class="my-4">Réinitialiser le mot de passe</h1>
@@ -104,17 +89,17 @@ body {
 <footer id="footerId" class="bg-light text-center text-lg-start mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link text-secondary" href="contact.php"><img src="../../assets/image/lettre.png" width="32px" height="32px"></img> Nous contacter</a>
+            <a class="nav-link text-secondary" href="contact.php"><img src="/Zoo-Arcadia-New/assets/image/lettre.png" width="32px" height="32px"></img> Nous contacter</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-secondary" href="index.php#openhours"><img src="../../assets/image/ouvert.png" width="32px" height="32px"></img> Nos horaires</a>
+            <a class="nav-link text-secondary" href="index.php#openhours"><img src="/Zoo-Arcadia-New/assets/image/ouvert.png" width="32px" height="32px"></img> Nos horaires</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-secondary" href="index.php#apropos"><img src="../../assets/image/a-propos-de-nous.png" width="32px" height="32px"></img> A propos de nous</a>
+            <a class="nav-link text-secondary" href="index.php#apropos"><img src="/Zoo-Arcadia-New/assets/image/a-propos-de-nous.png" width="32px" height="32px"></img> A propos de nous</a>
         </li>
     </ul>
     <div class="container p-4">
-        <p class="text-secondary"><img src="../../assets/image/favicon.jpg" width="32px" height="32px"></img> &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
+        <p class="text-secondary"><img src="/Zoo-Arcadia-New/assets/image/favicon.jpg" width="32px" height="32px"></img> &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
     </div>
 </footer>
 
@@ -122,6 +107,6 @@ body {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="../../assets/js/scripts.js"></script>
+<script src="/Zoo-Arcadia-New/assets/js/scripts.js"></script>
 </body>
 </html>

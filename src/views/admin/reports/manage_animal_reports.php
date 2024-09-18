@@ -55,19 +55,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
             $animal_id = filter_input(INPUT_GET, 'animal_id', FILTER_VALIDATE_INT);
             $reports = $reportController->getReports($visit_date, $animal_id);
 
+            // Affichage des rapports sous forme de carte de style lettre
             foreach ($reports as $report) {
-                echo '<tr>';
-                echo '<td>' . htmlspecialchars($report['animal_name']) . '</td>';
-                echo '<td>' . htmlspecialchars($report['visit_date']) . '</td>';
-                echo '<td>' . htmlspecialchars($report['health_status']) . '</td>';
-                echo '<td>' . htmlspecialchars($report['food_given']) . '</td>';
-                echo '<td>' . htmlspecialchars($report['food_quantity']) . '</td>';
-                echo '<td>' . htmlspecialchars($report['details']) . '</td>';
-                echo '<td>';
+                echo '<div class="card report-card mb-4 shadow-sm">';
+                echo '<div class="card-body">';
+                echo '<h5 class="card-title">Rapport du vétérinaire</h5>';
+                echo '<p class="card-text"><strong>Animal :</strong> ' . htmlspecialchars($report['animal_name']) . '</p>';
+                echo '<p class="card-text"><strong>Date de Visite :</strong> ' . htmlspecialchars($report['visit_date']) . '</p>';
+                echo '<p class="card-text"><strong>État de Santé :</strong> ' . htmlspecialchars($report['health_status']) . '</p>';
+                echo '<p class="card-text"><strong>Nourriture Donnée :</strong> ' . htmlspecialchars($report['food_given']) . '</p>';
+                echo '<p class="card-text"><strong>Quantité de Nourriture :</strong> ' . htmlspecialchars($report['food_quantity']) . ' grammes</p>';
+                echo '<p class="card-text"><strong>Détails :</strong> ' . htmlspecialchars_decode($report['details']) . '</p>';
+                echo '<div class="d-flex justify-content-between align-items-center">';
+                echo '<div class="btn-group">';
                 echo '<a href="#" class="btn btn-warning btn-sm btn-edit" data-id="' . htmlspecialchars($report['id']) . '" data-animal_id="' . htmlspecialchars($report['animal_name']) . '" data-visit_date="' . htmlspecialchars($report['visit_date']) . '" data-health_status="' . htmlspecialchars($report['health_status']) . '" data-food_given="' . htmlspecialchars($report['food_given']) . '" data-food_quantity="' . htmlspecialchars($report['food_quantity']) . '" data-details="' . htmlspecialchars($report['details']) . '" data-toggle="modal" data-target="#editReportModal">Modifier</a>';
                 echo '<a href="javascript:void(0);" class="btn btn-danger btn-sm btn-delete" data-id="' . htmlspecialchars($report['id']) . '" data-csrf-token="' . htmlspecialchars($_SESSION['csrf_token']) . '">Supprimer</a>';
-                echo '</td>';
-                echo '</tr>';
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
             }
             exit;
         } elseif ($action === 'edit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -107,24 +113,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     }
 }
 
+$scriptRepository = new Repositories\ScriptRepository;
+$script = $scriptRepository->manageReportAdminScript();
+
 include_once '../../../../src/views/templates/header.php';
 include_once '../navbar_admin.php';
 ?>
 
-<style>
-h1,h2,h3 {
-    text-align: center;
-}
-body {
-    background-image: url('../../../../assets/image/background.jpg');
-}
-.mt-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
     <h1 class="my-4">Gérer les Rapports des Animaux</h1>
@@ -155,23 +151,8 @@ body {
         <button type="button" class="btn btn-success" id="filterButton">Filtrer</button>
     </form>
     <br>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Animal</th>
-                    <th>Date de Passage</th>
-                    <th>État</th>
-                    <th>Nourriture</th>
-                    <th>Grammage (en grammes)</th>
-                    <th>Détails</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Le contenu du tableau sera chargé ici via AJAX -->
-            </tbody>
-        </table>
+    <div id="reportContainer">
+        <!-- Les rapports seront chargés ici via AJAX -->
     </div>
 </div>
 
@@ -228,105 +209,9 @@ body {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script>
-$(document).ready(function() {
-    function refreshReportsTable() {
-        $.ajax({
-            url: 'manage_animal_reports.php?action=list',
-            type: 'GET',
-            success: function(data) {
-                $('tbody').html(data);
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    }
 
-    $('#editReportForm').on('submit', function(event) {
-        event.preventDefault();
-        var formData = $(this).serialize();
-
-        $.ajax({
-            url: 'manage_animal_reports.php?action=edit',
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                $('#editResponseMessage').html(response);
-                $('#editReportModal').modal('hide');
-                refreshReportsTable();
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-            },
-            error: function(xhr, status, error) {
-                $('#editResponseMessage').html("Erreur: " + error);
-            }
-        });
-    });
-
-    $(document).on('click', '.btn-edit', function() {
-        var reportId = $(this).data('id');
-        $.ajax({
-            url: 'manage_animal_reports.php?action=get',
-            type: 'GET',
-            data: { id: reportId },
-            success: function(data) {
-                var report = JSON.parse(data);
-                $('#editReportId').val(report.id);
-                $('#editAnimal').val(report.animal_id);
-                $('#editDate').val(report.visit_date);
-                $('#editHealthStatus').val(report.health_status);
-                $('#editFoodGiven').val(report.food_given);
-                $('#editFoodQuantity').val(report.food_quantity);
-                $('#editDetails').val(report.details);
-                $('#editReportModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    });
-
-    $(document).on('click', '.btn-delete', function(event) {
-        event.preventDefault();
-        var reportId = $(this).data('id');
-        var csrfToken = $(this).data('csrf-token');
-        if (confirm('Êtes-vous sûr de vouloir supprimer ce rapport ?')) {
-            $.ajax({
-                url: 'manage_animal_reports.php?action=delete&id=' + reportId + '&csrf_token=' + csrfToken,
-                type: 'GET',
-                success: function(response) {
-                    alert(response);
-                    refreshReportsTable();
-                },
-                error: function(xhr, status, error) {
-                    alert("Erreur: " + error);
-                }
-            });
-        }
-    });
-
-    refreshReportsTable();
-
-    $('#filterButton').on('click', function() {
-        var visitDate = $('#filterDate').val();
-        var animalId = $('#filterAnimal').val();
-        $.ajax({
-            url: 'manage_animal_reports.php?action=list',
-            type: 'GET',
-            data: {
-                visit_date: visitDate,
-                animal_id: animalId
-            },
-            success: function(data) {
-                $('tbody').html(data);
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    });
-});
-</script>
+<?php 
+echo $script;
+?>
 
 <?php include '../../../../src/views/templates/footerconnected.php'; ?>

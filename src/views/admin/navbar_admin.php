@@ -1,5 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
-    <a class="navbar-brand" href="../../../public/index.php"><img src="../../../../assets/favicon.ico" width="32px" height="32px"> Zoo Arcadia</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+    <a class="navbar-brand" href="../../../public/index.php"><img src="/Zoo-Arcadia-New/assets/favicon.ico" width="32px" height="32px"> Zoo Arcadia</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>

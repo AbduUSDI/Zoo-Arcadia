@@ -39,21 +39,6 @@ include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
 
-<style>
-h1,h2,h3 {
-    text-align: center;
-}
-
-body {
-    background-image: url('../../assets/image/background.jpg');
-    padding-top: 48px;
-}
-.mt-5, .mb-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
 <div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
@@ -62,14 +47,14 @@ body {
     <br>
     <div class="row">
         <?php foreach ($services as $service): ?>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="card mb-4 text-black bg-light border-success">
                     <?php if (!empty($service['image'])): ?>
                         <img src="../../assets/uploads/<?php echo htmlspecialchars($service['image'], ENT_QUOTES, 'UTF-8'); ?>" class="card-img-top" alt="Image du Service">
                     <?php endif; ?>
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($service['name'], ENT_QUOTES, 'UTF-8'); ?></h5>
-                        <p class="card-text"><?php echo htmlspecialchars($service['description'], ENT_QUOTES, 'UTF-8'); ?></p>
+                        <p class="card-text"><?php echo htmlspecialchars_decode($service['description']); ?></p>
                     </div>
                 </div>
             </div>

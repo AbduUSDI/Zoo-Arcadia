@@ -1,15 +1,16 @@
 <?php
-
 session_start();
 
 // Durée de vie de la session en secondes (30 minutes)
 $sessionLifetime = 1800;
 
+// Vérification de l'authentification de l'utilisateur
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
     header('Location: ../../public/login.php');
     exit;
 }
 
+// Vérification de l'expiration de la session
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();
     session_destroy();
@@ -60,115 +61,77 @@ include '../../../views/templates/header.php';
 include '../navbar_employee.php';
 ?>
 
-<style>
-h1, h2, h3 {
-    text-align: center;
-}
-
-body {
-    background-image: url('../../../../assets/image/background.jpg');
-}
-.mt-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-.accordion {
-    max-height: 200px;
-    overflow-y: auto;
-}
-</style>
-
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
-    <br>
-    <hr>
-    <h1 class="my-4">Animaux</h1>
-    <hr>
-    <br>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Espèce</th>
-                    <th>Habitat</th>
-                    <th>Image</th>
-                    <th>Commentaires</th>
-                    <th>Nourriture Donnée</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($animals as $animal): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><?php echo htmlspecialchars($animal['name'], ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><?php echo htmlspecialchars($animal['species'], ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><?php echo htmlspecialchars($animal['habitat_name'], ENT_QUOTES, 'UTF-8'); ?></td>
-                    <td><img src="../../../../assets/uploads/<?php echo htmlspecialchars($animal['image'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($animal['name'], ENT_QUOTES, 'UTF-8'); ?>" style="width: 100px;"></td>
-                    <td>
-                        <div class="accordion" id="accordionExample-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="headingOne-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                    <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapseComments-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" aria-expanded="false" aria-controls="collapseComments">
-                                        Voir les commentaires
-                                    </button>
-                                </h2>
-                                <div id="collapseComments-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" class="collapse" aria-labelledby="headingOne-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" data-parent="#accordionExample-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                    <div class="accordion-body">
-                                        <ul class="list-group">
-                                            <?php
-                                            try {
-                                                $comments = $animalController->getAnimalReviews($animal['id']);
-                                                foreach ($comments as $comment): ?>
-                                                    <li class="list-group-item">
-                                                        <strong><?php echo htmlspecialchars($comment['visitor_name'], ENT_QUOTES, 'UTF-8'); ?>:</strong> <?php echo htmlspecialchars($comment['review_text'], ENT_QUOTES, 'UTF-8'); ?>
-                                                    </li>
-                                                <?php endforeach;
-                                            } catch (Exception $e) {
-                                                echo '<li class="list-group-item text-danger">Erreur lors de la récupération des commentaires : ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</li>';
-                                            }
-                                            ?>
-                                        </ul>
-                                    </div>
+<div class="container animal-selection-container mt-5">
+    <h1 class="text-center my-4">Animaux</h1>
+    <div class="animal-list">
+        <?php foreach ($animals as $animal): ?>
+            <div class="animal-card">
+                <div class="animal-image">
+                    <img src="../../../../assets/uploads/<?= htmlspecialchars($animal['image'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($animal['name'], ENT_QUOTES, 'UTF-8') ?>">
+                </div>
+                <div class="animal-info">
+                    <h5><?= htmlspecialchars($animal['name'], ENT_QUOTES, 'UTF-8') ?></h5>
+                    <p><strong>Espèce:</strong> <?= htmlspecialchars_decode($animal['species'], ENT_QUOTES) ?></p>
+                    <p><strong>Habitat:</strong> <?= htmlspecialchars($animal['habitat_name'], ENT_QUOTES) ?></p>
+                    <div class="accordion" id="accordionExample-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapseComments-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" aria-expanded="false" aria-controls="collapseComments">
+                                    Voir les commentaires
+                                </button>
+                            </h2>
+                            <div id="collapseComments-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" class="collapse" aria-labelledby="headingOne-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" data-parent="#accordionExample-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="accordion-body">
+                                    <ul class="list-group">
+                                        <?php
+                                        try {
+                                            $comments = $animalController->getAnimalReviews($animal['id']);
+                                            foreach ($comments as $comment): ?>
+                                                <li class="list-group-item">
+                                                    <strong><?php echo htmlspecialchars($comment['visitor_name'], ENT_QUOTES, 'UTF-8'); ?>:</strong> <?php echo htmlspecialchars($comment['review_text'], ENT_QUOTES, 'UTF-8'); ?>
+                                                </li>
+                                            <?php endforeach;
+                                        } catch (Exception $e) {
+                                            echo '<li class="list-group-item text-danger">Erreur lors de la récupération des commentaires : ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</li>';
+                                        }
+                                        ?>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
-                    </td>
-                    <td>
-                        <div class="accordion" id="accordionExampleFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="headingFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                    <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapseFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" aria-expanded="false" aria-controls="collapseFood">
-                                        Voir les nourritures
-                                    </button>
-                                </h2>
-                                <div id="collapseFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" class="collapse" aria-labelledby="headingFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" data-parent="#accordionExampleFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                    <div class="accordion-body">
-                                        <ul class="list-group">
-                                            <?php
-                                            try {
-                                                $foods = $animalController->getAnimalFoodRecords($animal['id']);
-                                                foreach ($foods as $food): ?>
-                                                    <li class="list-group-item">
-                                                        <strong>Nourriture:</strong> <?php echo htmlspecialchars($food['food_given'], ENT_QUOTES, 'UTF-8'); ?><br>
-                                                        <strong>Quantité:</strong> <?php echo htmlspecialchars($food['food_quantity'], ENT_QUOTES, 'UTF-8'); ?>g<br>
-                                                        <strong>Date:</strong> <?php echo htmlspecialchars($food['date_given'], ENT_QUOTES, 'UTF-8'); ?>
-                                                    </li>
-                                                <?php endforeach;
-                                            } catch (Exception $e) {
-                                                echo '<li class="list-group-item text-danger">Erreur lors de la récupération des enregistrements de nourriture : ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</li>';
-                                            }
-                                            ?>
-                                        </ul>
-                                    </div>
+                    </div>
+                    <div class="accordion" id="accordionExampleFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapseFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" aria-expanded="false" aria-controls="collapseFood">
+                                    Voir les nourritures
+                                </button>
+                            </h2>
+                            <div id="collapseFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" class="collapse" aria-labelledby="headingFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>" data-parent="#accordionExampleFood-<?php echo htmlspecialchars($animal['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="accordion-body">
+                                    <ul class="list-group">
+                                        <?php
+                                        try {
+                                            $foods = $animalController->getAnimalFoodRecords($animal['id']);
+                                            foreach ($foods as $food): ?>
+                                                <li class="list-group-item">
+                                                    <strong>Nourriture:</strong> <?php echo htmlspecialchars($food['food_given'], ENT_QUOTES, 'UTF-8'); ?><br>
+                                                    <strong>Quantité:</strong> <?php echo htmlspecialchars($food['food_quantity'], ENT_QUOTES, 'UTF-8'); ?>g<br>
+                                                    <strong>Date:</strong> <?php echo htmlspecialchars($food['date_given'], ENT_QUOTES, 'UTF-8'); ?>
+                                                </li>
+                                            <?php endforeach;
+                                        } catch (Exception $e) {
+                                            echo '<li class="list-group-item text-danger">Erreur lors de la récupération des enregistrements de nourriture : ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</li>';
+                                        }
+                                        ?>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
 

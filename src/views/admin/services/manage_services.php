@@ -49,31 +49,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     if ($action) {
         if ($action === 'list') {
             $services = $serviceController->getServices();
-                // Ajout du conteneur du tableau ici
-                echo '<table class="table table-bordered table-striped table-hover">';
-                echo '<thead  class="thead-dark">';
-                echo '<tr>';
-                echo '<th>Nom</th>';
-                echo '<th>Description</th>';
-                echo '<th>Image</th>';
-                echo '<th>Actions</th>';
-                echo '</tr>';
-                echo '</thead>';
-                echo '<tbody>';
             foreach ($services as $service) {
-                echo '<tr>';
-                echo '<td>' . htmlspecialchars($service['name']) . '</td>';
-                echo '<td>' . htmlspecialchars($service['description']) . '</td>';
-                echo '<td>';
-                if (!empty($service['image'])) {
-                    echo '<img src="../../../../assets/uploads/' . htmlspecialchars($service['image']) . '" alt="Image du service" style="width: 250px;">';
-                }
-                echo '</td>';
-                echo '<td>';
+                echo '<div class="col-md-6">';
+                echo '<div class="card mb-4 shadow-sm">';
+                echo '<img src="../../../../assets/uploads/' . htmlspecialchars($service['image']) . '" class="card-img-top" alt="Image du service">';
+                echo '<div class="card-body">';
+                echo '<h5 class="card-title">' . htmlspecialchars($service['name']) . '</h5>';
+                echo '<p class="card-text">' . htmlspecialchars_decode($service['description']) . '</p>';
                 echo '<a href="#" class="btn btn-warning btn-sm btn-edit" data-id="' . htmlspecialchars($service['id']) . '" data-name="' . htmlspecialchars($service['name']) . '" data-description="' . htmlspecialchars($service['description']) . '" data-image="' . htmlspecialchars($service['image']) . '" data-toggle="modal" data-target="#editServiceModal">Modifier</a>';
                 echo '<a href="javascript:void(0);" class="btn btn-danger btn-sm btn-delete" data-id="' . htmlspecialchars($service['id']) . '">Supprimer</a>';
-                echo '</td>';
-                echo '</tr>';
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
             }
             exit;
         } elseif ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -108,10 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
 
             try {
                 if ($image['error'] === UPLOAD_ERR_NO_FILE) {
-                    // Mise à jour sans modification de l'image
                     $serviceController->updateServiceWithoutImage($id, $name, $description);
                 } else {
-                    // Traitement de l'image uploadée et mise à jour avec l'image
                     $imageName = $serviceController->addServiceImage($image);
                     $serviceController->updateServiceWithImage($id, $name, $description, $imageName);
                 }
@@ -147,35 +132,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     }
 }
 
+$scriptRepository = new Repositories\ScriptRepository();
+
+$script = $scriptRepository->manageServiceScript();
+
 include '../../../views/templates/header.php';
 include '../navbar_admin.php';
 ?>
-<style>
-    h1,h2,h3 {
-        text-align: center;
-    }
 
-    body {
-        background-image: url('../../../../assets/image/background.jpg');
-    }
-    .mt-4 {
-        background: whitesmoke;
-        border-radius: 15px;
-    }
-</style>
-</head>
 <body>
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
-    <div class="table-responsive">
-        <br>
-        <hr>
-        <h1 class="my-4">Gérer les services</h1>
-        <hr>
-        <br>
-        <a href="#" class="btn btn-success mb-4" data-toggle="modal" data-target="#addServiceModal">Ajouter un service</a>
-        <div id="servicesTable">
-            <!-- La table sera remplie ici par AJAX -->
+<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+    <!-- Bouton pour ajouter un service -->
+    <div class="row button-row">
+        <div class="col-md-12 text-center">
+            <a href="#" class="btn btn-success mb-4" data-toggle="modal" data-target="#addServiceModal">Ajouter un service</a>
         </div>
+    </div>
+    
+    <!-- Conteneur des cartes de services -->
+    <div class="row" id="servicesTable">
+        <!-- Les cartes des services seront injectées ici par AJAX -->
     </div>
 </div>
 
@@ -245,114 +221,14 @@ include '../navbar_admin.php';
         </div>
     </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script>
-$(document).ready(function() {
-    // Fonction pour rafraîchir la table des services
-    function refreshServiceTable() {
-        $.ajax({
-            url: 'manage_services.php?action=list',
-            type: 'GET',
-            success: function(data) {
-                $('#servicesTable').html(data);
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    }
 
-    // Initialisation de la table des services
-    refreshServiceTable();
+<?php 
 
-    // Formulaire pour ajouter un service
-    $('#addServiceForm').on('submit', function(event) {
-        event.preventDefault();
-        var formData = new FormData(this);
+echo $script;
 
-        $.ajax({
-            url: 'manage_services.php?action=add',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                $('#responseMessage').html(response);
-                $('#addServiceModal').modal('hide');
-                refreshServiceTable();
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-            },
-            error: function(xhr, status, error) {
-                $('#responseMessage').html("Erreur: " + error);
-            }
-        });
-    });
-
-    // Formulaire pour modifier un service
-    $(document).on('submit', '#editServiceForm', function(event) {
-        event.preventDefault();
-        var formData = new FormData(this);
-
-        $.ajax({
-            url: 'manage_services.php?action=edit',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                $('#editResponseMessage').html(response);
-                $('#editServiceModal').modal('hide');
-                refreshServiceTable();
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-            },
-            error: function(xhr, status, error) {
-                $('#editResponseMessage').html("Erreur: " + error);
-            }
-        });
-    });
-
-    // Fonction pour remplir le formulaire de modification
-    $(document).on('click', '.btn-edit', function() {
-        var serviceId = $(this).data('id');
-        $.ajax({
-            url: 'manage_services.php?action=get',
-            type: 'GET',
-            data: { id: serviceId },
-            success: function(data) {
-                var service = JSON.parse(data);
-                $('#editServiceId').val(service.id);
-                $('#editName').val(service.name);
-                $('#editDescription').val(service.description);
-                $('#editServiceModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    });
-
-    // Fonction pour supprimer un service
-    $(document).on('click', '.btn-delete', function(event) {
-        event.preventDefault();
-        var serviceId = $(this).data('id');
-        if (confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) {
-            $.ajax({
-                url: 'manage_services.php?action=delete&id=' + serviceId + '&csrf_token=<?php echo $_SESSION['csrf_token']; ?>',
-                type: 'GET',
-                success: function(response) {
-                    alert(response);
-                    refreshServiceTable();
-                },
-                error: function(xhr, status, error) {
-                    alert("Erreur: " + error);
-                }
-            });
-        }
-    });
-});
-</script>
+?>
 
 <?php include '../../../views/templates/footerconnected.php'; ?>

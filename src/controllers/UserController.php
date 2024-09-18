@@ -85,7 +85,7 @@ class UserController {
 
     private function sendPasswordResetEmail($email, $token) {
         $mail = new PHPMailer(true);
-
+    
         try {
             // Configurer SMTP
             $mail->isSMTP();
@@ -95,11 +95,11 @@ class UserController {
             $mail->Password = 'Abdufufu2525+'; // Remplacez par votre mot de passe
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
-
+    
             // Destinataire
             $mail->setFrom('Karausdi77@outlook.fr', 'Zoo Arcadia');
             $mail->addAddress($email); // Utiliser l'email fourni dans le formulaire
-
+    
             // Contenu de l'email
             $mail->isHTML(true);
             $mail->CharSet = 'UTF-8';  // Ajoutez cette ligne pour forcer l'encodage UTF-8
@@ -107,8 +107,25 @@ class UserController {
             
             // Lien de réinitialisation
             $resetLink = 'http://localhost/Zoo-Arcadia-New/src/public/reset_password.php?token=' . urlencode($token);
-            $mail->Body = "Bonjour,<br><br>Pour réinitialiser votre mot de passe, veuillez cliquer sur ce lien : <a href=\"$resetLink\">Réinitialiser mot de passe</a>";
-
+    
+            // Corps de l'e-mail avec du style en ligne
+            $mail->Body = "
+                <div style='font-family: Arial, sans-serif; color: #333; background-color: #f2f2f2; padding: 20px;'>
+                    <div style='max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden;'>
+                        <div style='padding: 20px;'>
+                            <h2 style='color: #006400;'>Réinitialisation de mot de passe</h2>
+                            <p>Bonjour,</p>
+                            <p>Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien ci-dessous :</p>
+                            <a href=\"$resetLink\" style='display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #28a745; color: #ffffff; text-decoration: none; border-radius: 5px;'>Réinitialiser mot de passe</a>
+                            <p style='margin-top: 20px;'>Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet email.</p>
+                            <p style='color: #888;'>Merci,<br>L'équipe de Zoo Arcadia</p>
+                        </div>
+                    </div>
+                </div>
+            ";
+    
+            $mail->AltBody = "Bonjour,\n\nPour réinitialiser votre mot de passe, veuillez cliquer sur ce lien : $resetLink\n\nSi vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet email.\n\nMerci,\nL'équipe de Zoo Arcadia";
+    
             // Envoyer l'email
             $mail->send();
         } catch (Exception $e) {
@@ -116,4 +133,5 @@ class UserController {
             error_log("Erreur lors de l'envoi de l'email : {$mail->ErrorInfo}");
         }
     }
+    
 }

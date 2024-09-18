@@ -18,4 +18,12 @@ class ClickService implements ClickServiceInterface {
     public function getClicks($animalId) {
         return $this->clickRepository->getClicks($animalId);
     }
+    public function getTopThreeAnimalsByClicks() {
+        // Requête MongoDB pour récupérer les trois premiers animaux triés par clics
+        $options = ['sort' => ['clicks' => -1], 'limit' => 3];
+        $topAnimals = $this->clickRepository->find([], $options);
+        
+        return iterator_to_array($topAnimals);
+    }
+    
 }

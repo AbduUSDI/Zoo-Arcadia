@@ -53,20 +53,6 @@ include '../views/templates/header.php';
 include '../views/templates/navbar_visitor.php';
 ?>
 
-<style>
-h1, h2, h3 {
-    text-align: center;
-}
-body {
-    background-image: url('../../assets/image/background.jpg');
-    padding-top: 48px;
-}
-.mt-5 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
 <div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
@@ -84,7 +70,7 @@ body {
     }
     ?>
 
-    <form method="POST" class="mt-4">
+    <form method="POST" class="mt-5">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <div class="mb-3">
             <label for="name" class="form-label">Nom</label>

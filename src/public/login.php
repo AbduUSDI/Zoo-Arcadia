@@ -26,6 +26,8 @@ $db = (new \Database\DatabaseConnection())->connect();
 
 // Initialisation des repositories
 $userRepository = new \Repositories\UserRepository($db);
+$styleRepository = new Repositories\StyleRepository();
+$scriptRepository = new Repositories\ScriptRepository();
 
 // Initialisation des services
 $userService = new \Services\UserService($userRepository);
@@ -96,34 +98,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['forgotEmail'])) {
     exit;
 }
 
+$style = $styleRepository->loginStyle();
+$script = $scriptRepository->loginScript();
+
 include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
-
-<style>
-h1, h2, h3 {
-    text-align: center;
-}
-
-body {
-    background-image: url('../../assets/image/background.jpg');
-    padding-top: 68px; /* Un padding pour régler le décalage à cause de la class fixed-top de la navbar */
-}
-.mt-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
-    <br>
-    <hr>
-    <h1 class="my-4">Connexion</h1>
-    <hr>
-    <br>
+<div class="container custom" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
+    
+    <!-- Formulaire de connexion -->
     <form action="login.php" method="POST">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <div class="form-group">
@@ -139,11 +125,11 @@ body {
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary" name="login">Se connecter</button>
+        <button type="submit" class="btn btn-success" name="login">Se connecter</button>
     </form>
-    <hr>
-    <button class="btn btn-outline-danger" data-toggle="modal" data-target="#forgotPasswordModal">Mot de passe oublié ?</button>
-    <hr>
+
+    <!-- Lien pour mot de passe oublié -->
+    <button class="btn btn-outline-danger mt-3" data-toggle="modal" data-target="#forgotPasswordModal">Mot de passe oublié ?</button>
 </div>
 
 <!-- Modale pour la réinitialisation du mot de passe -->
@@ -169,42 +155,25 @@ body {
         </div>
     </div>
 </div>
+<?php 
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
+echo $script;
 
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-
-        const eyeIcon = this.querySelector('i');
-        if (type === 'password') {
-            eyeIcon.classList.remove('fa-eye');
-            eyeIcon.classList.add('fa-eye-slash');
-        } else {
-            eyeIcon.classList.remove('fa-eye-slash');
-            eyeIcon.classList.add('fa-eye');
-        }
-    });
-});
-</script>
-
-<footer id="footerId" class="bg-light text-center text-lg-start mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
+?>
+<footer id="footerId" class="bg-light text-center text-lg-start mt-5 fixed-bottom" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link text-secondary" href="contact.php"><img src="../../assets/image/lettre.png" width="32px" height="32px"></img> Nous contacter</a>
+            <a class="nav-link text-secondary" href="contact.php"><img src="/Zoo-Arcadia-New/assets/image/lettre.png" width="32px" height="32px"></img> Nous contacter</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-secondary" href="index.php#openhours"><img src="../../assets/image/ouvert.png" width="32px" height="32px"></img> Nos horaires</a>
+            <a class="nav-link text-secondary" href="index.php#openhours"><img src="/Zoo-Arcadia-New/assets/image/ouvert.png" width="32px" height="32px"></img> Nos horaires</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-secondary" href="index.php#apropos"><img src="../../assets/image/a-propos-de-nous.png" width="32px" height="32px"></img> A propos de nous</a>
+            <a class="nav-link text-secondary" href="index.php#apropos"><img src="/Zoo-Arcadia-New/assets/image/a-propos-de-nous.png" width="32px" height="32px"></img> A propos de nous</a>
         </li>
     </ul>
-    <div class="container p-4">
-        <p class="text-secondary"><img src="../../assets/image/favicon.jpg" width="32px" height="32px"></img> &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
+    <div class="containerr p-4">
+        <p class="text-secondary"><img src="/Zoo-Arcadia-New/assets/image/favicon.jpg" width="32px" height="32px"></img> &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
     </div>
 </footer>
 
@@ -220,6 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Inclusion de AXIOS -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-<script src="../../assets/js/scripts.js"></script>
+<script src="/Zoo-Arcadia-New/assets/js/scripts.js"></script>
 </body>
 </html>

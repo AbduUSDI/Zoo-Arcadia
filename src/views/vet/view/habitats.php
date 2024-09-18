@@ -72,66 +72,39 @@ include '../../../../src/views/templates/header.php';
 include '../navbar_vet.php';
 ?>
 
-<style>
-h1, h2, h3 {
-    text-align: center;
-}
-body {
-    background-image: url('../../../../assets/image/background.jpg');
-}
-.mt-5, .mb-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
-<div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
-    <br>
-    <hr>
-    <h1 class="my-4">Habitats</h1>
-    <hr>
-    <br>
+<div class="habitat-container mt-5 container">
+    <h1 class="habitat-title my-4">Habitats</h1>
 
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Description</th>
-                    <th>Image</th>
-                    <th>Commentaires</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($habitats as $habitat): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($habitat['id']); ?></td>
-                        <td><?php echo htmlspecialchars($habitat['name']); ?></td>
-                        <td><?php echo htmlspecialchars($habitat['description']); ?></td>
-                        <td><img src="../../../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" alt="<?php echo htmlspecialchars($habitat['name']); ?>" width="250"></td>
-                        <td>
-                            <form action="" method="post">
-                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
-                                <input type="hidden" name="habitat_id" value="<?php echo htmlspecialchars($habitat['id']); ?>">
-                                <textarea name="comment" required></textarea>
-                                <button type="submit" class="btn btn-success">Soumettre un commentaire</button>
-                            </form>
-                            <?php
-                            $comments = $habitatController->getApprovedComments($habitat['id']);
-                            foreach ($comments as $comment) {
-                                echo "<div class=\"alert alert-success\">" . htmlspecialchars($comment['comment'], ENT_QUOTES, 'UTF-8') . "</div>";
-                            }
-                            ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    <div class="habitat-cards">
+        <?php foreach ($habitats as $habitat): ?>
+            <div class="habitat-card">
+                <div class="habitat-card-image">
+                    <img src="../../../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
+                </div>
+                <div class="habitat-card-body">
+                    <h5 class="habitat-card-title"><?php echo htmlspecialchars($habitat['name']); ?></h5>
+                    <p class="habitat-card-description"><?php echo htmlspecialchars_decode($habitat['description']); ?></p>
+                    <form action="" method="post" class="habitat-comment-form">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                        <input type="hidden" name="habitat_id" value="<?php echo htmlspecialchars($habitat['id']); ?>">
+                        <textarea name="comment" class="habitat-comment-input" placeholder="Écrire un commentaire..." required></textarea>
+                        <button type="submit" class="btn btn-success habitat-comment-button">Soumettre un commentaire</button>
+                    </form>
+                    <div class="habitat-comments">
+                        <?php
+                        $comments = $habitatController->getApprovedComments($habitat['id']);
+                        foreach ($comments as $comment) {
+                            echo "<div class=\"habitat-comment\">" . htmlspecialchars($comment['comment'], ENT_QUOTES, 'UTF-8') . "</div>";
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
 

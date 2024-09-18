@@ -64,21 +64,6 @@ include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
 
-<style>
-h1, h2, h3 {
-    text-align: center;
-}
-
-body {
-    background-image: url('../../assets/image/background.jpg');
-    padding-top: 68px;
-}
-.mt-5, .mb-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
 <div class="container mb-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
@@ -86,18 +71,18 @@ body {
     <hr>
     <br>
     <img src="../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
-    <p><?php echo htmlspecialchars($habitat['description']); ?></p>
+    <p class="lead"><?php echo htmlspecialchars_decode($habitat['description']); ?></p>
     <br>
     <hr>
-    <h2>Commentaires sur l'habitat</h2>
+    <h2>Commentaires sur l'Habitat</h2>
     <hr>
     <br>
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-hover">
             <thead class="thead-dark">
                 <tr>
-                    <th>Nom du vétérinaire</th>
-                    <th>Date du commentaire</th>
+                    <th>Nom du Vétérinaire</th>
+                    <th>Date du Commentaire</th>
                     <th>Commentaire</th>
                 </tr>
             </thead>
@@ -105,13 +90,13 @@ body {
                 <?php foreach ($vetComments as $comment): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($comment['username']); ?></td>
-                        <td><?php echo htmlspecialchars($comment['created_at']); ?></td>
+                        <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($comment['created_at']))); ?></td>
                         <td><?php echo htmlspecialchars($comment['comment']); ?></td>
                     </tr>
                 <?php endforeach; ?>
                 <?php if (empty($vetComments)): ?>
                     <tr>
-                        <td colspan="3">Aucun commentaire disponible pour cet habitat.</td>
+                        <td colspan="3" class="text-center">Aucun commentaire disponible pour cet habitat.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -127,7 +112,7 @@ body {
             <div class="col-md-4">
                 <div class="card mb-4">
                     <img class="card-img-top" src="../../assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" alt="<?php echo htmlspecialchars($animal['name']); ?>">
-                    <div class="card-body">
+                    <div class="card-body text-center">
                         <h5 class="card-title"><?php echo htmlspecialchars($animal['name']); ?></h5>
                         <button onclick="registerClick(<?php echo htmlspecialchars($animal['id']); ?>)" class="btn btn-success">Plus de détails</button>
                     </div>

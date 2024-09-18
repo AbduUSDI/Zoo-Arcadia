@@ -100,22 +100,6 @@ include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
 
-<style>
-body {
-    background-image: url('../../assets/image/background.jpg');
-    padding-top: 48px;
-}
-
-h1 {
-    text-align: center;
-}
-
-.mt-5, .mb-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
-
 <div class="container mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <br>
     <hr>
@@ -123,7 +107,7 @@ h1 {
     <hr>
     <br>
     <img src="../../assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($animal['name']); ?>">
-    <p>Race: <?php echo htmlspecialchars($animal['species']); ?></p>
+    <p>Race: <?php echo htmlspecialchars_decode($animal['species']); ?></p>
     <p>Habitat: <?php echo htmlspecialchars($habitat['name']); ?></p>
     <p>Likes: <?php echo $animal['likes']; ?></p>
     <form action="animal.php?id=<?php echo $animal_id; ?>" method="POST">
@@ -181,29 +165,20 @@ h1 {
     <hr>
     <hr>
     <h2>Rapports du Vétérinaire</h2>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Date de Visite</th>
-                    <th>État de Santé</th>
-                    <th>Nourriture Donnée</th>
-                    <th>Quantité de Nourriture (en grammes)</th>
-                    <th>Détails</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($reports as $report): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($report['visit_date']); ?></td>
-                        <td><?php echo htmlspecialchars($report['health_status']); ?></td>
-                        <td><?php echo htmlspecialchars($report['food_given']); ?></td>
-                        <td><?php echo htmlspecialchars($report['food_quantity']); ?></td>
-                        <td><?php echo htmlspecialchars($report['details']); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    <div class="row">
+        <?php foreach ($reports as $report): ?>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Date de Visite: <?php echo htmlspecialchars($report['visit_date']); ?></h5>
+                        <p class="card-text"><strong>État de Santé:</strong> <?php echo htmlspecialchars($report['health_status']); ?></p>
+                        <p class="card-text"><strong>Nourriture Donnée:</strong> <?php echo htmlspecialchars($report['food_given']); ?></p>
+                        <p class="card-text"><strong>Quantité de Nourriture:</strong> <?php echo htmlspecialchars($report['food_quantity']); ?> grammes</p>
+                        <p class="card-text"><strong>Détails:</strong> <?php echo htmlspecialchars_decode($report['details']); ?></p>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
 

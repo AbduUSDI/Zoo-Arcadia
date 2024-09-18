@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 // Durée de vie de la session en secondes (30 minutes)
@@ -109,34 +108,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     }
 }
 
+$scriptRepository = new Repositories\ScriptRepository;
+$script = $scriptRepository->manageUserScript();
+
 $users = $userController->getAllUsers();
 
 include_once '../../../../src/views/templates/header.php';
 include_once '../navbar_admin.php';
 ?>
-<style>
-h1,h2,h3 {
-    text-align: center;
-}
-body {
-    background-image: url('../../../../assets/image/background.jpg');
-}
-.mt-4 {
-    background: whitesmoke;
-    border-radius: 15px;
-}
-</style>
 
-<div class="container mt-4" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
-    <br>
-    <hr>
-    <h1 class="my-4">Gérer les utilisateurs</h1>
-    <hr>
-    <br>
-    <div class="table-responsive">
-        <a href="javascript:void(0);" class="btn btn-success mb-4" data-toggle="modal" data-target="#addUserModal">Ajouter un utilisateur</a>
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="thead-dark">
+<div class="user-management-container mt-5 container">
+    <h1 class="user-management-title">Gérer les utilisateurs</h1>
+    <div class="user-management-table-wrapper table-responsive">
+        <a href="javascript:void(0);" class="btn btn-success user-management-add-btn" data-toggle="modal" data-target="#addUserModal">Ajouter un utilisateur</a>
+        <table class="user-management-table">
+            <thead class="user-management-table-header">
                 <tr>
                     <th>Email</th>
                     <th>Rôle</th>
@@ -149,8 +135,8 @@ body {
                         <td><?php echo htmlspecialchars($user['email']); ?></td>
                         <td><?php echo htmlspecialchars($user['role_id'] == 1 ? 'Admin' : ($user['role_id'] == 2 ? 'Employé' : 'Vétérinaire')); ?></td>
                         <td>
-                            <a href="javascript:void(0);" class="btn btn-warning btn-sm btn-edit" data-id="<?php echo $user['id']; ?>" data-toggle="modal" data-target="#editUserModal">Modifier</a>
-                            <a href="javascript:void(0);" class="btn btn-danger btn-sm btn-delete" data-id="<?php echo $user['id']; ?>" data-csrf_token="<?php echo $_SESSION['csrf_token']; ?>">Supprimer</a>
+                            <a href="javascript:void(0);" class="btn btn-warning btn-sm user-management-edit-btn" data-id="<?php echo $user['id']; ?>" data-toggle="modal" data-target="#editUserModal">Modifier</a>
+                            <a href="javascript:void(0);" class="btn btn-danger btn-sm user-management-delete-btn" data-id="<?php echo $user['id']; ?>" data-csrf_token="<?php echo $_SESSION['csrf_token']; ?>">Supprimer</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -174,12 +160,12 @@ body {
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     <div class="form-group">
                         <label for="addEmail">Email</label>
-                        <input type="email" class="form-control" id="addEmail" name="email" required>
+                        <input type="email" class="form-control user-management-input" id="addEmail" name="email" required>
                     </div>
                     <div class="form-group">
                         <label for="addPassword">Mot de passe</label>
                         <div class="input-group">
-                            <input type="password" class="form-control" id="addPassword" name="password" required>
+                            <input type="password" class="form-control user-management-input" id="addPassword" name="password" required>
                             <div class="input-group-append">
                                 <button class="btn btn-outline-secondary toggle-password" type="button">
                                     <i class="fa fa-eye"></i>
@@ -189,17 +175,17 @@ body {
                     </div>
                     <div class="form-group">
                         <label for="addUsername">Nom d'utilisateur</label>
-                        <input type="text" class="form-control" id="addUsername" name="username" required>
+                        <input type="text" class="form-control user-management-input" id="addUsername" name="username" required>
                     </div>
                     <div class="form-group">
                         <label for="addRole">Rôle</label>
-                        <select class="form-control" id="addRole" name="role_id" required>
+                        <select class="form-control user-management-input" id="addRole" name="role_id" required>
                             <option value="1">Admin</option>
                             <option value="2">Employé</option>
                             <option value="3">Vétérinaire</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-success">Ajouter</button>
+                    <button type="submit" class="btn btn-success user-management-add-confirm-btn">Ajouter</button>
                 </form>
             </div>
         </div>
@@ -221,12 +207,12 @@ body {
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     <div class="form-group">
                         <label for="editEmail">Email</label>
-                        <input type="email" class="form-control" id="editEmail" name="email" required>
+                        <input type="email" class="form-control user-management-input" id="editEmail" name="email" required>
                     </div>
                     <div class="form-group">
                         <label for="editPassword">Mot de passe</label>
                         <div class="input-group">
-                            <input type="password" class="form-control" id="editPassword" name="password">
+                            <input type="password" class="form-control user-management-input" id="editPassword" name="password">
                             <div class="input-group-append">
                                 <button class="btn btn-outline-secondary toggle-password" type="button">
                                     <i class="fa fa-eye"></i>
@@ -236,101 +222,25 @@ body {
                     </div>
                     <div class="form-group">
                         <label for="editUsername">Nom d'utilisateur</label>
-                        <input type="text" class="form-control" id="editUsername" name="username" required>
+                        <input type="text" class="form-control user-management-input" id="editUsername" name="username" required>
                     </div>
                     <div class="form-group">
                         <label for="editRole">Rôle</label>
-                        <select class="form-control" id="editRole" name="role_id" required>
+                        <select class="form-control user-management-input" id="editRole" name="role_id" required>
                             <option value="1">Admin</option>
                             <option value="2">Employé</option>
                             <option value="3">Vétérinaire</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-warning">Modifier</button>
+                    <button type="submit" class="btn btn-warning user-management-edit-confirm-btn">Modifier</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-// Gestion des formulaires Ajouter et Modifier utilisateur
-document.addEventListener('DOMContentLoaded', function () {
-    const addUserForm = document.getElementById('addUserForm');
-    const editUserForm = document.getElementById('editUserForm');
-
-    addUserForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const formData = new FormData(addUserForm);
-        fetch('manage_users.php?action=add', {
-            method: 'POST',
-            body: formData
-        }).then(response => response.text())
-          .then(data => {
-              alert(data);
-              location.reload();
-          });
-    });
-
-    editUserForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const formData = new FormData(editUserForm);
-        fetch('manage_users.php?action=edit', {
-            method: 'POST',
-            body: formData
-        }).then(response => response.text())
-          .then(data => {
-              alert(data);
-              location.reload();
-          });
-    });
-
-    document.querySelectorAll('.btn-edit').forEach(button => {
-        button.addEventListener('click', function () {
-            const userId = this.getAttribute('data-id');
-            fetch(`manage_users.php?action=get&id=${userId}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('editUserId').value = data.id;
-                    document.getElementById('editEmail').value = data.email;
-                    document.getElementById('editUsername').value = data.username;
-                    document.getElementById('editRole').value = data.role_id;
-                });
-        });
-    });
-
-    document.querySelectorAll('.btn-delete').forEach(button => {
-        button.addEventListener('click', function () {
-            const userId = this.getAttribute('data-id');
-            const csrfToken = this.getAttribute('data-csrf_token');
-            if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-                fetch(`manage_users.php?action=delete&id=${userId}&csrf_token=${csrfToken}`)
-                    .then(response => response.text())
-                    .then(data => {
-                        alert(data);
-                        location.reload();
-                    });
-            }
-        });
-    });
-
-    document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function () {
-            const passwordField = this.closest('.input-group').querySelector('input');
-            const icon = this.querySelector('i');
-            
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        });
-    });
-});
-</script>
+<?php
+echo $script;
+?>
 
 <?php include '../../../../src/views/templates/footerconnected.php'; ?>

@@ -83,4 +83,21 @@ class AnimalController {
     public function getTotalClicks($animals) {
         return $this->animalService->getTotalClicks($animals);
     }
+    public function getTopThreeAnimalsByClicks() {
+        // Obtenir les 3 animaux les plus cliqués de MongoDB
+        $topAnimalsClicks = $this->clickService->getTopThreeAnimalsByClicks();
+    
+        $topAnimals = [];
+        
+        // Récupérer les informations des animaux de MySQL en utilisant leurs IDs
+        foreach ($topAnimalsClicks as $animalClick) {
+            $animalDetails = $this->animalService->getDetailsAnimal($animalClick['animal_id']); // Utilise la méthode du service
+            if ($animalDetails) {
+                $animalDetails['clicks'] = $animalClick['clicks']; // Ajouter le nombre de clics aux détails de l'animal
+                $topAnimals[] = $animalDetails;
+            }
+        }
+    
+        return $topAnimals;
+    }
 }
