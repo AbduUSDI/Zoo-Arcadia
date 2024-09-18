@@ -132,6 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     }
 }
 
+$scriptRepository = new \Repositories\ScriptRepository;
+$script = $scriptRepository->vetReportScript();
+
 include_once '../../../../src/views/templates/header.php';
 include_once '../navbar_vet.php';
 ?>
@@ -278,138 +281,7 @@ include_once '../navbar_vet.php';
 <!-- Inclusion des scripts JavaScript nécessaires -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script>
-$(document).ready(function() {
-    function refreshReportsTable() {
-        $.ajax({
-            url: 'manage_animal_reports.php?action=list',
-            type: 'GET',
-            success: function(data) {
-                $('#reportContainer').html(data);
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    }
 
-    // Gestion de l'ajout d'un rapport
-    $('#addReportForm').on('submit', function(event) {
-        event.preventDefault();
-        var formData = $(this).serialize();
-
-        $.ajax({
-            url: 'manage_animal_reports.php?action=add',
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                $('#addResponseMessage').html(response);
-                $('#addReportModal').modal('hide');
-                refreshReportsTable();
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-            },
-            error: function(xhr, status, error) {
-                $('#addResponseMessage').html("Erreur: " + error);
-            }
-        });
-    });
-
-    // Réinitialiser le formulaire d'ajout lors de l'ouverture du modal
-    $('#addReportModal').on('show.bs.modal', function () {
-        $(this).find('form')[0].reset();
-        $('#addResponseMessage').html('');
-    });
-
-    // Gestion de la modification d'un rapport
-    $('#editReportForm').on('submit', function(event) {
-        event.preventDefault();
-        var formData = $(this).serialize();
-
-        $.ajax({
-            url: 'manage_animal_reports.php?action=edit',
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                $('#editResponseMessage').html(response);
-                $('#editReportModal').modal('hide');
-                refreshReportsTable();
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-            },
-            error: function(xhr, status, error) {
-                $('#editResponseMessage').html("Erreur: " + error);
-            }
-        });
-    });
-
-    // Charger les données dans le formulaire de modification
-    $(document).on('click', '.btn-edit', function() {
-        var reportId = $(this).data('id');
-        $.ajax({
-            url: 'manage_animal_reports.php?action=get',
-            type: 'GET',
-            data: { id: reportId },
-            success: function(data) {
-                var report = JSON.parse(data);
-                $('#editReportId').val(report.id);
-                $('#editAnimal').val(report.animal_id);
-                $('#editDate').val(report.visit_date);
-                $('#editHealthStatus').val(report.health_status);
-                $('#editFoodGiven').val(report.food_given);
-                $('#editFoodQuantity').val(report.food_quantity);
-                $('#editDetails').val(report.details);
-                $('#editReportModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    });
-
-    // Gestion de la suppression d'un rapport
-    $(document).on('click', '.btn-delete', function(event) {
-        event.preventDefault();
-        var reportId = $(this).data('id');
-        var csrfToken = $(this).data('csrf-token');
-        if (confirm('Êtes-vous sûr de vouloir supprimer ce rapport ?')) {
-            $.ajax({
-                url: 'manage_animal_reports.php?action=delete&id=' + reportId + '&csrf_token=' + csrfToken,
-                type: 'GET',
-                success: function(response) {
-                    alert(response);
-                    refreshReportsTable();
-                },
-                error: function(xhr, status, error) {
-                    alert("Erreur: " + error);
-                }
-            });
-        }
-    });
-
-    // Initialiser le tableau des rapports
-    refreshReportsTable();
-
-    // Gestion du filtrage des rapports
-    $('#filterButton').on('click', function() {
-        var visitDate = $('#filterDate').val();
-        var animalId = $('#filterAnimal').val();
-        $.ajax({
-            url: 'manage_animal_reports.php?action=list',
-            type: 'GET',
-            data: {
-                visit_date: visitDate,
-                animal_id: animalId
-            },
-            success: function(data) {
-                $('#reportContainer').html(data);
-            },
-            error: function(xhr, status, error) {
-                console.log("Erreur: " + error);
-            }
-        });
-    });
-});
-</script>
+<?php echo $script ?>
 
 <?php include '../../../../src/views/templates/footerconnected.php'; ?>

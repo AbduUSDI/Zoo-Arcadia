@@ -31,7 +31,8 @@ $pages = [
     'contact',
     'services',
     'logout',
-    'habitat'
+    'habitat',
+    'aproposdenous'
 ];
 
 // Vérifier si la page demandée est dans la liste des pages autorisées

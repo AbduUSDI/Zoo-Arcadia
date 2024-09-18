@@ -78,6 +78,12 @@
                     $breadcrumbs[] = ['Habitats', 'index.php?page=habitats'];
                     $breadcrumbs[] = ['Détails de l\'habitat', 'index.php?page=habitat'];
                     break;
+                case 'login':
+                    $breadcrumbs[] = ['Connexion', 'index.php?page=login'];
+                    break;
+                case 'aproposdenous':
+                    $breadcrumbs[] = ['A propos de nous', 'index.php?page=aproposdenous'];
+                    break;
             }
         }
 

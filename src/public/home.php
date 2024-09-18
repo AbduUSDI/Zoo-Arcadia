@@ -112,7 +112,7 @@ include '../../src/views/templates/navbar_visitor.php';
                         <div class="card-body">
                             <h5 class="card-title"><?php echo htmlspecialchars($habitat['name']); ?></h5>
                             <p class="card-text"><?php echo $habitat['description']; ?></p>
-                            <a href="habitat.php?id=<?php echo $habitat['id']; ?>" class="btn btn-success btn-block">Voir les habitants</a>
+                            <a href="index.php?page=habitat&id=<?php echo $habitat['id']; ?>" class="btn btn-success btn-block">Voir les habitants</a>
                         </div>
                     </div>
                 </div>
@@ -131,45 +131,42 @@ include '../../src/views/templates/navbar_visitor.php';
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($animal['name']); ?></h5>
                         <p class="card-text">Nombre de clics : <?php echo htmlspecialchars($animal['clicks']); ?></p>
-                        <a href="animal.php?id=<?php echo $animal['id']; ?>" class="btn btn-success btn-block" onclick="registerClick(<?php echo $animal['id']; ?>)">En savoir plus</a>
+                        <a href="index.php?page=animal&id=<?php echo $animal['id']; ?>" class="btn btn-success btn-block" onclick="registerClick(<?php echo $animal['id']; ?>)">En savoir plus</a>
+                        </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<!-- Section Horaires d'ouverture -->
+<div>
+    <h1 id="openhours" style="color: transparent">.</h1>
+    <br>
+    <hr>
+    <h2 class="text-center">Horaires d'ouverture du Zoo</h2>
+    <hr>
+    <div class="row">
+        <?php foreach ($hours as $hour): ?>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title"><?php echo htmlspecialchars($hour['day']); ?></h5>
+                        <p class="card-text">
+                            <?php 
+                            if ($hour['open_time'] === '00:00:00' && $hour['close_time'] === '00:00:00') {
+                                echo '<span class="badge badge-danger">Fermé</span>';
+                            } else {
+                                echo '<span class="badge badge-success">Ouvert</span><br>';
+                                echo '<strong>' . htmlspecialchars(substr($hour['open_time'], 0, 5)) . ' - ' . htmlspecialchars(substr($hour['close_time'], 0, 5)) . '</strong>';
+                            }
+                            ?>
+                        </p>
                     </div>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
 </div>
-    <!-- Section Horaires d'ouverture -->
-    <div>
-        <hr>
-        <h2 class="text-center">Horaires d'ouverture du Zoo</h2>
-        <hr>
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Jour</th>
-                        <th>Heures d'ouverture</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($hours as $hour): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($hour['day']); ?></td>
-                        <td>
-                            <?php 
-                            if ($hour['open_time'] === '00:00:00' && $hour['close_time'] === '00:00:00') {
-                                echo 'Fermé';
-                            } else {
-                                echo htmlspecialchars(substr($hour['open_time'], 0, 5) . ' - ' . substr($hour['close_time'], 0, 5)); 
-                            }
-                            ?>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
 
     <!-- Section Laissez un Avis -->
     <div>
