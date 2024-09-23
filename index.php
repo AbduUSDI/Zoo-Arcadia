@@ -1,3 +1,3 @@
 <?php
-header('Location: src/public/index.php?page=home');
+header('Location: /Zoo-Arcadia-New/home');
 exit;

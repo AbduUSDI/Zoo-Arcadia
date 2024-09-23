@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['message_type'] = "danger";
     }
 
-    header('Location: ' . $_SERVER['PHP_SELF']);
+    header('Location: /Zoo-Arcadia-New/contact');
     exit;
 }
 
