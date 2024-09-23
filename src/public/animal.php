@@ -7,7 +7,7 @@ $sessionLifetime = 1800;
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();  
     session_destroy(); 
-    header('Location: login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -34,6 +34,7 @@ use Controllers\HabitatController;
 // Connexion à la base de données
 $databaseConnection = new DatabaseConnection();
 $db = $databaseConnection->connect();
+
 // Connexion à la base de données MongoDB
 $mongoConnection = new MongoDBConnection();
 $clickCollection = $mongoConnection->getCollection('clicks');
@@ -55,7 +56,7 @@ $habitatController = new HabitatController($habitatService);
 $animal_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 if (!$animal_id) {
-    header("Location: animals.php");
+    header("Location: /Zoo-Arcadia-New/animals");
     exit;
 }
 
@@ -63,7 +64,7 @@ $animal = $animalController->getAnimalDetails($animal_id);
 $reports = $animalController->getReportsByAnimalId($animal_id);
 
 if (!$animal) {
-    header("Location: animals.php");
+    header("Location: /Zoo-Arcadia-New/animals");
     exit;
 }
 
@@ -106,18 +107,18 @@ include '../../src/views/templates/navbar_visitor.php';
     <h1 class="my-4"><?php echo htmlspecialchars($animal['name']); ?></h1>
     <hr>
     <br>
-    <img src="../../assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($animal['name']); ?>">
+    <img src="/Zoo-Arcadia-New/assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($animal['name']); ?>">
     <p>Race: <?php echo htmlspecialchars_decode($animal['species']); ?></p>
     <p>Habitat: <?php echo htmlspecialchars($habitat['name']); ?></p>
     <p>Likes: <?php echo $animal['likes']; ?></p>
-    <form action="animal.php?id=<?php echo $animal_id; ?>" method="POST">
+    <form action="/Zoo-Arcadia-New/animal/<?php echo $animal_id; ?>" method="POST">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <button type="submit" name="like" class="btn btn-success">👍 Like</button>
     </form>
     <hr>
     <div class="my-4">
         <h2>Ajouter un avis</h2>
-        <form action="animal.php?id=<?php echo $animal_id; ?>" method="POST">
+        <form action="/Zoo-Arcadia-New/animal/<?php echo $animal_id; ?>" method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <div class="mb-3">
                 <label for="visitor_name" class="form-label">Nom</label>
@@ -163,7 +164,6 @@ include '../../src/views/templates/navbar_visitor.php';
         </div>
     </div>
     <hr>
-    <hr>
     <h2>Rapports du Vétérinaire</h2>
     <div class="row">
         <?php foreach ($reports as $report): ?>
@@ -171,7 +171,7 @@ include '../../src/views/templates/navbar_visitor.php';
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Date de Visite: <?php echo htmlspecialchars($report['visit_date']); ?></h5>
-                        <p class="card-text"><strong>État de Santé:</strong> <?php echo htmlspecialchars($report['health_status']); ?></p>
+                        <p class="card-text"><strong>État de Santé:</strong> <?php echo htmlspecialchars_decode($report['health_status']); ?></p>
                         <p class="card-text"><strong>Nourriture Donnée:</strong> <?php echo htmlspecialchars($report['food_given']); ?></p>
                         <p class="card-text"><strong>Quantité de Nourriture:</strong> <?php echo htmlspecialchars($report['food_quantity']); ?> grammes</p>
                         <p class="card-text"><strong>Détails:</strong> <?php echo htmlspecialchars_decode($report['details']); ?></p>

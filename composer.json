@@ -11,7 +11,8 @@
             "Services\\": "src/Services/",
             "Controllers\\": "src/Controllers/",
             "Models\\": "src/Models/",
-            "Interfaces\\": "src/Interfaces/"
+            "Interfaces\\": "src/Interfaces/",
+            "Config\\":"Config/"
         }
     }
 }

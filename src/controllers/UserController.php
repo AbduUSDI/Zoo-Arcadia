@@ -106,7 +106,7 @@ class UserController {
             $mail->Subject = '=?UTF-8?B?' . base64_encode('Réinitialisation de mot de passe') . '?=';
             
             // Lien de réinitialisation
-            $resetLink = 'http://localhost/Zoo-Arcadia-New/src/public/reset_password.php?token=' . urlencode($token);
+            $resetLink = 'http://localhost/Zoo-Arcadia-New/reset_password?token=' . urlencode($token);
     
             // Corps de l'e-mail avec du style en ligne
             $mail->Body = "

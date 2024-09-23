@@ -7,7 +7,7 @@ $sessionLifetime = 1800;
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();
     session_destroy();
-    header('Location: login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -43,7 +43,7 @@ $habitatController = new HabitatController($habitatService);
 $habitatId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 if (!$habitatId) {
-    header("Location: habitats.php");
+    header("Location: /Zoo-Arcadia-New/habitats");
     exit;
 }
 
@@ -60,6 +60,9 @@ try {
     die("Erreur : " . htmlspecialchars($e->getMessage()));
 }
 
+$scriptRepository = new \Repositories\ScriptRepository;
+$script = $scriptRepository->habitatScript();
+
 include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
@@ -70,7 +73,7 @@ include '../../src/views/templates/navbar_visitor.php';
     <h1 class="my-4"><?php echo htmlspecialchars($habitat['name']); ?></h1>
     <hr>
     <br>
-    <img src="../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
+    <img src="/Zoo-Arcadia-New/assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" class="img-fluid mb-4" alt="<?php echo htmlspecialchars($habitat['name']); ?>">
     <p class="lead"><?php echo htmlspecialchars_decode($habitat['description']); ?></p>
     <br>
     <hr>
@@ -111,7 +114,7 @@ include '../../src/views/templates/navbar_visitor.php';
         <?php foreach ($animals as $animal): ?>
             <div class="col-md-4">
                 <div class="card mb-4">
-                    <img class="card-img-top" src="../../assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" alt="<?php echo htmlspecialchars($animal['name']); ?>">
+                    <img class="card-img-top" src="/Zoo-Arcadia-New/assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" alt="<?php echo htmlspecialchars($animal['name']); ?>">
                     <div class="card-body text-center">
                         <h5 class="card-title"><?php echo htmlspecialchars($animal['name']); ?></h5>
                         <button onclick="registerClick(<?php echo htmlspecialchars($animal['id']); ?>)" class="btn btn-success">Plus de détails</button>
@@ -122,20 +125,8 @@ include '../../src/views/templates/navbar_visitor.php';
     </div>
 </div>
 
-<script>
-// Utilisation de FETCH pour enregistrer le clic dans MongoDB grâce au fichier "record_click.php"
-function registerClick(animalId) {
-    console.log("Tentative d'enregistrement du clic pour l'animal ID:", animalId);
-    fetch('record_click.php?animal_id=' + encodeURIComponent(animalId))
-        .then(response => response.text())
-        .then(data => {
-            console.log("Données reçues:", data);
-            window.location.href = 'index.php?page=animal&id=' + encodeURIComponent(animalId);
-        })
-        .catch(error => {
-            console.error("Erreur lors de l'enregistrement du clic:", error);
-        });
-}
-</script>
+<?php
+echo $script
+?>
 
 <?php include '../../src/views/templates/footer.php'; ?>

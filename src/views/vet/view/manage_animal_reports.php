@@ -64,8 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
                 echo '<h5 class="card-title">Rapport du vétérinaire</h5>';
                 echo '<p class="card-text"><strong>Animal :</strong> ' . htmlspecialchars($report['animal_name']) . '</p>';
                 echo '<p class="card-text"><strong>Date de Visite :</strong> ' . htmlspecialchars($report['visit_date']) . '</p>';
-                echo '<p class="card-text"><strong>État de Santé :</strong> ' . htmlspecialchars($report['health_status']) . '</p>';
-                echo '<p class="card-text"><strong>Nourriture Donnée :</strong> ' . htmlspecialchars($report['food_given']) . '</p>';
+                echo '<p class="card-text"><strong>État de Santé :</strong> ' . htmlspecialchars_decode($report['health_status']) . '</p>';
+                echo '<p class="card-text"><strong>Nourriture Donnée :</strong> ' . htmlspecialchars_decode($report['food_given']) . '</p>';
                 echo '<p class="card-text"><strong>Quantité de Nourriture :</strong> ' . htmlspecialchars($report['food_quantity']) . ' grammes</p>';
                 echo '<p class="card-text"><strong>Détails :</strong> ' . htmlspecialchars_decode($report['details']) . '</p>';
                 echo '<div class="d-flex justify-content-between align-items-center">';

@@ -29,12 +29,12 @@ $habitatsList = $habitatController->getAllHabitats();
 foreach ($habitatsList as $habitat): ?>
     <div class="col-md-6">
         <div class="card mb-4 shadow-sm">
-            <img src="../../../../assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" class="card-img-top" alt="Image de l'habitat">
+            <img src="/Zoo-Arcadia-New/assets/uploads/<?php echo htmlspecialchars($habitat['image']); ?>" class="card-img-top" alt="Image de l'habitat">
             <div class="card-body">
                 <h5 class="card-title"><?php echo htmlspecialchars($habitat['name']); ?></h5>
                 <p class="card-text"><?php echo htmlspecialchars_decode($habitat['description']); ?></p>
                 <a href="#" class="btn btn-warning btn-edit" data-id="<?php echo $habitat['id']; ?>">Modifier</a>
-                <a href="manage_habitats.php?action=delete&id=<?php echo $habitat['id']; ?>&csrf_token=<?php echo $_SESSION['csrf_token']; ?>" class="btn btn-danger btn-delete">Supprimer</a>
+                <a href="/Zoo-Arcadia-New/admin/habitats?action=delete&id=<?php echo $habitat['id']; ?>&csrf_token=<?php echo $_SESSION['csrf_token']; ?>" class="btn btn-danger btn-delete">Supprimer</a>
             </div>
         </div>
     </div>

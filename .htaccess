@@ -1,1 +1,73 @@
-DirectoryIndex index.php
+# Activer le module de réécriture
+RewriteEngine On
+RewriteBase /Zoo-Arcadia-New/
+
+# Redirection de toutes les erreurs vers une page 404 personnalisée
+ErrorDocument 404 /Zoo-Arcadia-New/404.php
+
+# Gérer l'accès direct aux fichiers dans les dossiers comme assets, uploads, vendor, etc.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Réécriture des URLs pour les pages principales (par exemple, /home, /contact, etc.)
+RewriteRule ^home$ src/public/index.php?page=home [L,QSA]
+RewriteRule ^contact$ src/public/index.php?page=contact [L,QSA]
+RewriteRule ^services$ src/public/index.php?page=services [L,QSA]
+RewriteRule ^login$ src/public/index.php?page=login [L,QSA]
+RewriteRule ^logout$ src/public/index.php?page=logout [L,QSA]
+RewriteRule ^aproposdenous$ src/public/index.php?page=aproposdenous [L,QSA]
+RewriteRule ^forgot_password$ src/public/index.php?page=forgot_password [L,QSA]
+RewriteRule ^reset_password$ src/public/index.php?page=reset_password [L,QSA]
+
+# Réécriture pour les pages dynamiques avec des IDs (par exemple, /animal/1, /habitat/2)
+RewriteRule ^animal/([0-9]+)$ src/public/index.php?page=animal&id=$1 [L,QSA]
+RewriteRule ^habitat/([0-9]+)$ src/public/index.php?page=habitat&id=$1 [L,QSA]
+
+# Réécriture pour la gestion des clics d'animaux (ex: /record_click/1)
+RewriteRule ^record_click/([0-9]+)$ src/public/record_click.php?animal_id=$1 [L,QSA]
+
+
+# Réécriture pour les pages d'animaux et d'habitats sans ID
+RewriteRule ^animals$ src/public/index.php?page=animals [L,QSA]
+RewriteRule ^habitats$ src/public/index.php?page=habitats [L,QSA]
+
+# Réécriture pour les vues de l'administration (exemple: /admin, /admin/animals, etc.)
+RewriteRule ^admin$ src/views/admin/index.php [L]
+RewriteRule ^admin/animals$ src/views/admin/animals/manage_animals.php [L]
+RewriteRule ^admin/habitats$ src/views/admin/habitats/manage_habitats.php [L]
+RewriteRule ^admin/fetch_habitats$ src/views/admin/habitats/fetch_habitats.php [L]
+RewriteRule ^admin/horaires$ src/views/admin/horaires/zoo_hours.php [L]
+RewriteRule ^admin/reports$ src/views/admin/reports/manage_animal_reports.php [L]
+RewriteRule ^admin/services$ src/views/admin/services/manage_services.php [L]
+RewriteRule ^admin/users$ src/views/admin/users/manage_users.php [L]
+
+# Réécriture pour les vues des employés
+RewriteRule ^employee$ src/views/employee/index.php [L]
+RewriteRule ^employee/food$ src/views/employee/food_record/manage_food.php [L]
+RewriteRule ^employee/reviews$ src/views/employee/reviews/manage_reviews.php [L]
+RewriteRule ^employee/services$ src/views/employee/services/manage_services.php [L]
+RewriteRule ^employee/view_animals$ src/views/employee/view/view_animals.php [L]
+RewriteRule ^employee/view_habitats$ src/views/employee/view/view_habitats.php [L]
+
+# Réécriture pour les vues des vétérinaires
+RewriteRule ^vet$ src/views/vet/index.php [L]
+RewriteRule ^vet/habitats$ src/views/vet/view/habitats.php [L]
+RewriteRule ^vet/reports$ src/views/vet/view/manage_animal_reports.php [L]
+RewriteRule ^vet/animals$ src/views/vet/view/manage_animals.php [L]
+
+# Gestion des fichiers statiques (images, scripts, styles, etc.)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^assets/(.*)$ assets/$1 [L]
+
+# Gestion des fichiers téléchargés (uploads)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^uploads/(.*)$ assets/uploads/$1 [L]
+
+# Gestion des fichiers dans vendor
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^vendor/(.*)$ vendor/$1 [L]
+
+# Redirection par défaut pour toute autre page (si aucun fichier ou dossier n'est trouvé)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ src/public/index.php?page=$1 [L,QSA]

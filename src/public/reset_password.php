@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result && is_array($result) && $result['success']) {  // Vérifiez que $result est un tableau et que 'success' est présent
             $_SESSION['message'] = $result['message'];
             $_SESSION['message_type'] = "success";
-            header('Location: login.php');
+            header('Location: /Zoo-Arcadia-New/login');
             exit;
         } else {
             $error = $result['message'] ?? 'Une erreur est survenue lors de la réinitialisation du mot de passe.';
@@ -72,7 +72,7 @@ include '../../src/views/templates/navbar_visitor.php';
     <?php if (isset($error)): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
-    <form action="reset_password.php?token=<?php echo urlencode($token); ?>" method="POST">
+    <form action="/Zoo-Arcadia-New/reset_password?token=<?php echo urlencode($token); ?>" method="POST">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <div class="form-group">
             <label for="new_password">Nouveau mot de passe</label>
@@ -89,17 +89,17 @@ include '../../src/views/templates/navbar_visitor.php';
 <footer id="footerId" class="bg-light text-center text-lg-start mt-5" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link text-secondary" href="index.php?page=contact"><img src="/Zoo-Arcadia-New/assets/image/lettre.png" width="32px" height="32px"></img> Nous contacter</a>
+            <a class="nav-link text-secondary" href="/Zoo-Arcadia-New/contact"><img src="/Zoo-Arcadia-New/assets/image/lettre.png" width="32px" height="32px" alt="Nous contacter"> Nous contacter</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-secondary" href="index.php?page=home#openhours"><img src="/Zoo-Arcadia-New/assets/image/ouvert.png" width="32px" height="32px"></img> Nos horaires</a>
+            <a class="nav-link text-secondary" href="/Zoo-Arcadia-New/home#openhours"><img src="/Zoo-Arcadia-New/assets/image/ouvert.png" width="32px" height="32px" alt="Nos horaires"> Nos horaires</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-secondary" href="index.php?page=aproposdenous"><img src="/Zoo-Arcadia-New/assets/image/a-propos-de-nous.png" width="32px" height="32px"></img> A propos de nous</a>
+            <a class="nav-link text-secondary" href="/Zoo-Arcadia-New/aproposdenous"><img src="/Zoo-Arcadia-New/assets/image/a-propos-de-nous.png" width="32px" height="32px" alt="A propos de nous"> A propos de nous</a>
         </li>
     </ul>
     <div class="container p-4">
-        <p class="text-secondary"><img src="/Zoo-Arcadia-New/assets/image/favicon.jpg" width="32px" height="32px"></img> &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
+        <p class="text-secondary"><img src="/Zoo-Arcadia-New/assets/image/favicon.jpg" width="32px" height="32px" alt="Zoo Arcadia Favicon"> &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
     </div>
 </footer>
 

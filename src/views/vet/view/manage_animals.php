@@ -6,7 +6,7 @@ $sessionLifetime = 1800;
 
 // Vérification de l'authentification de l'utilisateur
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 3) {
-    header('Location: ../../public/login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -14,7 +14,7 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 3) {
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();
     session_destroy();
-    header('Location: ../../public/login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -68,7 +68,7 @@ include '../navbar_vet.php';
         <?php foreach ($animals as $animal): ?>
             <div class="animal-card">
                 <div class="animal-image">
-                    <img src="../../../../assets/uploads/<?= htmlspecialchars($animal['image'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($animal['name'], ENT_QUOTES, 'UTF-8') ?>">
+                    <img src="/Zoo-Arcadia-New/assets/uploads/<?= htmlspecialchars($animal['image'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($animal['name'], ENT_QUOTES, 'UTF-8') ?>">
                 </div>
                 <div class="animal-info">
                     <h5><?= htmlspecialchars($animal['name'], ENT_QUOTES, 'UTF-8') ?></h5>
@@ -97,7 +97,7 @@ include '../navbar_vet.php';
                             </div>
                         </div>
                     </div>
-                    <a href="../view/manage_animal_reports.php?action=add" class="btn btn-success mt-2">Ajouter un rapport</a>
+                    <a href="/Zoo-Arcadia-New/vet/reports?action=add" class="btn btn-success mt-2">Ajouter un rapport</a>
                 </div>
             </div>
         <?php endforeach; ?>

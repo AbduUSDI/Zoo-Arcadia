@@ -5,14 +5,14 @@ session_start();
 $sessionLifetime = 1800;
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
-    header('Location: ../../public/login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();  
     session_destroy(); 
-    header('Location: ../../public/login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Met à jour les heures du zoo
         $zooHoursController->updateHours($openTime, $closeTime, $closed, (int)$id);
     }
-    header("Location: zoo_hours.php");
+    header("Location: /Zoo-Arcadia-New/admin/horaires");
     exit;
 }
 

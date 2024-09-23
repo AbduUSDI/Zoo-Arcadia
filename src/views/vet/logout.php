@@ -1,5 +1,5 @@
 <?php
 session_start();
 session_destroy();
-header('Location: ../../public/index.php?page=login');
+header('Location: /Zoo-Arcadia-New/login');
 exit;

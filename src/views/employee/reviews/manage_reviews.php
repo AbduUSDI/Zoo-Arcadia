@@ -4,14 +4,14 @@ session_start();
 $sessionLifetime = 1800;
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
-    header('Location: ../../../public/login.php');
+    header('Location: Zoo-Arcadia-New/login');
     exit;
 }
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();
     session_destroy();
-    header('Location: ../../../public/login.php');
+    header('Location: Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "Données invalides. Veuillez vérifier vos entrées.";
         }
     }
-    header('Location: manage_reviews.php');
+    header('Location: reviews');
     exit;
 }
 

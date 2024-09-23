@@ -6,14 +6,14 @@ session_start();
 $sessionLifetime = 1800;
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 1) {
-    header('Location: ../../public/login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();
     session_destroy();
-    header('Location: ../../public/login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
             foreach ($services as $service) {
                 echo '<div class="col-md-6">';
                 echo '<div class="card mb-4 shadow-sm">';
-                echo '<img src="../../../../assets/uploads/' . htmlspecialchars($service['image']) . '" class="card-img-top" alt="Image du service">';
+                echo '<img src="/Zoo-Arcadia-New/assets/uploads/' . htmlspecialchars($service['image']) . '" class="card-img-top" alt="Image du service">';
                 echo '<div class="card-body">';
                 echo '<h5 class="card-title">' . htmlspecialchars($service['name']) . '</h5>';
                 echo '<p class="card-text">' . htmlspecialchars_decode($service['description']) . '</p>';

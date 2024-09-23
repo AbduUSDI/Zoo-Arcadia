@@ -6,11 +6,11 @@ class ScriptRepository {
         return '<script>
 function registerClick(animalId) {
     console.log("Tentative d\'enregistrement du clic pour l\'animal ID:", animalId);
-    fetch("record_click.php?animal_id=" + animalId)
+    fetch("/Zoo-Arcadia-New/record_click/" + animalId)
         .then(response => response.text())
         .then(data => {
             console.log("Données reçues:", data);
-            window.location.href = "index.php?page=animal&id=" + animalId;
+            window.location.href = "/Zoo-Arcadia-New/animal/" + animalId;
         })
         .catch(error => {
             console.error("Erreur lors de l\'enregistrement du clic:", error);
@@ -20,6 +20,26 @@ function registerClick(animalId) {
 </script>
         ';
     }
+
+    public function habitatScript() {
+        return '<script>
+// Utilisation de FETCH pour enregistrer le clic dans MongoDB grâce au fichier "record_click.php"
+function registerClick(animalId) {
+    console.log("Tentative d\'enregistrement du clic pour l\'animal ID:", animalId);
+    fetch("/Zoo-Arcadia-New/record_click/" + encodeURIComponent(animalId))
+        .then(response => response.text())
+        .then(data => {
+            console.log("Données reçues:", data);
+            window.location.href = "/Zoo-Arcadia-New/animal/" + encodeURIComponent(animalId);
+        })
+        .catch(error => {
+            console.error("Erreur lors de l\'enregistrement du clic:", error);
+        });
+}
+</script>
+        ';
+    }
+
     public function loginScript() {
         return '<script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -51,7 +71,7 @@ public function manageServiceScript()
                     $(document).ready(function() {
                         function refreshServiceTable() {
                             $.ajax({
-                                url: 'manage_services.php?action=list',
+                                url: '/Zoo-Arcadia-New/admin/services?action=list',
                                 type: 'GET',
                                 success: function(data) {
                                     $('#servicesTable').html(data);
@@ -74,7 +94,7 @@ public function manageServiceScript()
                             var formData = new FormData(this);
                     
                             $.ajax({
-                                url: 'manage_services.php?action=add',
+                                url: '/Zoo-Arcadia-New/admin/services?action=add',
                                 type: 'POST',
                                 data: formData,
                                 contentType: false,
@@ -98,7 +118,7 @@ public function manageServiceScript()
                             var formData = new FormData(this);
                     
                             $.ajax({
-                                url: 'manage_services.php?action=edit',
+                                url: '/Zoo-Arcadia-New/admin/services?action=edit',
                                 type: 'POST',
                                 data: formData,
                                 contentType: false,
@@ -119,7 +139,7 @@ public function manageServiceScript()
                         $(document).on('click', '.btn-edit', function() {
                             var serviceId = $(this).data('id');
                             $.ajax({
-                                url: 'manage_services.php?action=get',
+                                url: '/Zoo-Arcadia-New/admin/services?action=get',
                                 type: 'GET',
                                 data: { id: serviceId },
                                 success: function(data) {
@@ -146,7 +166,125 @@ public function manageServiceScript()
                             var serviceId = $(this).data('id');
                             if (confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) {
                                 $.ajax({
-                                    url: 'manage_services.php?action=delete&id=' + serviceId + '&csrf_token=$csrfToken',
+                                    url: '/Zoo-Arcadia-New/admin/services?action=delete&id=' + serviceId + '&csrf_token=$csrfToken',
+                                    type: 'GET',
+                                    success: function(response) {
+                                        alert(response);
+                                        refreshServiceTable();
+                                    },
+                                    error: function(xhr, status, error) {
+                                        alert('Erreur lors de la suppression du service.');
+                                    }
+                                });
+                            }
+                        });
+                    });
+                </script>";
+    }
+    public function manageServiceEmployeeScript() 
+    {
+        $csrfToken = htmlspecialchars($_SESSION["csrf_token"], ENT_QUOTES);
+        
+        return "<script>
+                    $(document).ready(function() {
+                        function refreshServiceTable() {
+                            $.ajax({
+                                url: '/Zoo-Arcadia-New/employee/services?action=list',
+                                type: 'GET',
+                                success: function(data) {
+                                    $('#servicesTable').html(data);
+                                },
+                                error: function(xhr, status, error) {
+                                    $('#responseMessage').html('Erreur lors de la récupération des services.');
+                                }
+                            });
+                        }
+                    
+                        refreshServiceTable();
+                    
+                        $('#addServiceModal').on('show.bs.modal', function () {
+                            $(this).find('form')[0].reset();
+                            $('#responseMessage').html('');
+                        });
+                    
+                        $('#addServiceForm').on('submit', function(event) {
+                            event.preventDefault();
+                            var formData = new FormData(this);
+                    
+                            $.ajax({
+                                url: '/Zoo-Arcadia-New/employee/services?action=add',
+                                type: 'POST',
+                                data: formData,
+                                contentType: false,
+                                processData: false,
+                                success: function(response) {
+                                    $('#responseMessage').html(response);
+                                    $('#addServiceModal').modal('hide');
+                                    $('#addServiceForm')[0].reset();
+                                    refreshServiceTable();
+                                    $('body').removeClass('modal-open');
+                                    $('.modal-backdrop').remove();
+                                },
+                                error: function(xhr, status, error) {
+                                    $('#responseMessage').html('Erreur lors de l\'ajout du service.');
+                                }
+                            });
+                        });
+                    
+                        $(document).on('submit', '#editServiceForm', function(event) {
+                            event.preventDefault();
+                            var formData = new FormData(this);
+                    
+                            $.ajax({
+                                url: '/Zoo-Arcadia-New/employee/services?action=edit',
+                                type: 'POST',
+                                data: formData,
+                                contentType: false,
+                                processData: false,
+                                success: function(response) {
+                                    $('#editResponseMessage').html(response);
+                                    $('#editServiceModal').modal('hide');
+                                    refreshServiceTable();
+                                    $('body').removeClass('modal-open');
+                                    $('.modal-backdrop').remove();
+                                },
+                                error: function(xhr, status, error) {
+                                    $('#editResponseMessage').html('Erreur lors de la modification du service.');
+                                }
+                            });
+                        });
+                    
+                        $(document).on('click', '.btn-edit', function() {
+                            var serviceId = $(this).data('id');
+                            $.ajax({
+                                url: '/Zoo-Arcadia-New/employee/services?action=get',
+                                type: 'GET',
+                                data: { id: serviceId },
+                                success: function(data) {
+                                    var service = JSON.parse(data);
+                                    $('#editServiceId').val(service.id);
+                                    $('#editName').val(service.name);
+                                    $('#editDescription').val(decodeHtml(service.description));
+                                    $('#editServiceModal').modal('show');
+                                },
+                                error: function(xhr, status, error) {
+                                    $('#editResponseMessage').html('Erreur lors de la récupération du service.');
+                                }
+                            });
+                        });
+                    
+                        function decodeHtml(html) {
+                            var txt = document.createElement('textarea');
+                            txt.innerHTML = html;
+                            return txt.value;
+                        }
+                    
+                        $(document).on('click', '.btn-delete', function(event) {
+                            event.preventDefault();
+                            var serviceId = $(this).data('id');
+                            if (confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) {
+                                $.ajax({
+                                    url: '/Zoo-Arcadia-New/employee/services?action=delete&id=' + serviceId + '&csrf_token=$csrfToken',
                                     type: 'GET',
                                     success: function(response) {
                                         alert(response);
@@ -170,7 +308,7 @@ $(document).ready(function() {
     // Fonction pour rafraîchir la table des habitats
     function refreshHabitatTable() {
         $.ajax({
-            url: "fetch_habitats.php",
+            url: "/Zoo-Arcadia-New/admin/fetch_habitats",
             type: "GET",
             success: function(data) {
                 $("#habitatsTable").html(data);
@@ -204,7 +342,7 @@ $(document).ready(function() {
         var formData = new FormData(this);
 
         $.ajax({
-            url: "manage_habitats.php?action=add",
+            url: "/Zoo-Arcadia-New/admin/habitats?action=add",
             type: "POST",
             data: formData,
             contentType: false,
@@ -237,7 +375,7 @@ $(document).ready(function() {
         var formData = new FormData(this);
 
         $.ajax({
-            url: "manage_habitats.php?action=edit",
+            url: "/Zoo-Arcadia-New/admin/habitats?action=edit",
             type: "POST",
             data: formData,
             contentType: false,
@@ -259,7 +397,7 @@ $(document).ready(function() {
     $(document).on("click", ".btn-edit", function() {
         var habitatId = $(this).data("id");
         $.ajax({
-            url: "manage_habitats.php?action=get",
+            url: "/Zoo-Arcadia-New/admin/habitats?action=get",
             type: "GET",
             data: { id: habitatId },
             success: function(data) {
@@ -300,94 +438,113 @@ $(document).ready(function() {
     }
     public function manageUserScript() {
         return '
-                <script>
-                    // Gestion des formulaires Ajouter et Modifier utilisateur
-                    document.addEventListener("DOMContentLoaded", function () {
-                        const addUserForm = document.getElementById("addUserForm");
-                        const editUserForm = document.getElementById("editUserForm");
-
-                        addUserForm.addEventListener("submit", function (e) {
-                            e.preventDefault();
-                            const formData = new FormData(addUserForm);
-                            fetch("manage_users.php?action=add", {
-                                method: "POST",
-                                body: formData
-                            }).then(response => response.text())
-                            .then(data => {
-                                alert(data);
-                                location.reload();
-                            });
-                        });
-
-                        editUserForm.addEventListener("submit", function (e) {
-                            e.preventDefault();
-                            const formData = new FormData(editUserForm);
-                            fetch("manage_users.php?action=edit", {
-                                method: "POST",
-                                body: formData
-                            }).then(response => response.text())
-                            .then(data => {
-                                alert(data);
-                                location.reload();
-                            });
-                        });
-
-                        document.querySelectorAll(".user-management-edit-btn").forEach(button => {
-                            button.addEventListener("click", function () {
-                                const userId = this.getAttribute("data-id");
-                                fetch(`manage_users.php?action=get&id=${userId}`)
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        document.getElementById("editUserId").value = data.id;
-                                        document.getElementById("editEmail").value = data.email;
-                                        document.getElementById("editUsername").value = data.username;
-                                        document.getElementById("editRole").value = data.role_id;
-                                    });
-                            });
-                        });
-
-                        document.querySelectorAll(".user-management-delete-btn").forEach(button => {
-                            button.addEventListener("click", function () {
-                                const userId = this.getAttribute("data-id");
-                                const csrfToken = this.getAttribute("data-csrf_token");
-                                if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
-                                    fetch(`manage_users.php?action=delete&id=${userId}&csrf_token=${csrfToken}`)
-                                        .then(response => response.text())
-                                        .then(data => {
-                                            alert(data);
-                                            location.reload();
-                                        });
-                                }
-                            });
-                        });
-
-                        document.querySelectorAll(".toggle-password").forEach(button => {
-                            button.addEventListener("click", function () {
-                                const passwordField = this.closest(".input-group").querySelector("input");
-                                const icon = this.querySelector("i");
-                                
-                                if (passwordField.type === "password") {
-                                    passwordField.type = "text";
-                                    icon.classList.remove("fa-eye");
-                                    icon.classList.add("fa-eye-slash");
-                                } else {
-                                    passwordField.type = "password";
-                                    icon.classList.remove("fa-eye-slash");
-                                    icon.classList.add("fa-eye");
-                                }
-                            });
+            <script>
+                // Gestion des formulaires Ajouter et Modifier utilisateur
+                document.addEventListener("DOMContentLoaded", function () {
+                    const addUserForm = document.getElementById("addUserForm");
+                    const editUserForm = document.getElementById("editUserForm");
+    
+                    // Gestion du formulaire d\'ajout d\'utilisateur
+                    addUserForm.addEventListener("submit", function (e) {
+                        e.preventDefault();
+                        const formData = new FormData(addUserForm);
+                        fetch("/Zoo-Arcadia-New/admin/users?action=add", { // Adaptation de l\'URL
+                            method: "POST",
+                            body: formData
+                        })
+                        .then(response => response.text())
+                        .then(data => {
+                            alert(data);
+                            location.reload();
+                        })
+                        .catch(error => {
+                            console.error("Erreur lors de l\'ajout de l\'utilisateur :", error);
                         });
                     });
-                    </script>
-                ';
-    }
+    
+                    // Gestion du formulaire de modification d\'utilisateur
+                    editUserForm.addEventListener("submit", function (e) {
+                        e.preventDefault();
+                        const formData = new FormData(editUserForm);
+                        fetch("/Zoo-Arcadia-New/admin/users?action=edit", { // Adaptation de l\'URL
+                            method: "POST",
+                            body: formData
+                        })
+                        .then(response => response.text())
+                        .then(data => {
+                            alert(data);
+                            location.reload();
+                        })
+                        .catch(error => {
+                            console.error("Erreur lors de la modification de l\'utilisateur :", error);
+                        });
+                    });
+    
+                    // Pré-remplir le formulaire d\'édition avec les données de l\'utilisateur sélectionné
+                    document.querySelectorAll(".user-management-edit-btn").forEach(button => {
+                        button.addEventListener("click", function () {
+                            const userId = this.getAttribute("data-id");
+                            fetch(`/Zoo-Arcadia-New/admin/users?action=get&id=${userId}`) // Adaptation de l\'URL
+                                .then(response => response.json())
+                                .then(data => {
+                                    document.getElementById("editUserId").value = data.id;
+                                    document.getElementById("editEmail").value = data.email;
+                                    document.getElementById("editUsername").value = data.username;
+                                    document.getElementById("editRole").value = data.role_id;
+                                })
+                                .catch(error => {
+                                    console.error("Erreur lors de la récupération des données utilisateur :", error);
+                                });
+                        });
+                    });
+    
+                    // Suppression d\'un utilisateur
+                    document.querySelectorAll(".user-management-delete-btn").forEach(button => {
+                        button.addEventListener("click", function () {
+                            const userId = this.getAttribute("data-id");
+                            const csrfToken = this.getAttribute("data-csrf_token");
+                            if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
+                                fetch(`/Zoo-Arcadia-New/admin/users?action=delete&id=${userId}&csrf_token=${csrfToken}`) // Adaptation de l\'URL
+                                    .then(response => response.text())
+                                    .then(data => {
+                                        alert(data);
+                                        location.reload();
+                                    })
+                                    .catch(error => {
+                                        console.error("Erreur lors de la suppression de l\'utilisateur :", error);
+                                    });
+                            }
+                        });
+                    });
+    
+                    // Affichage/Masquage du mot de passe
+                    document.querySelectorAll(".toggle-password").forEach(button => {
+                        button.addEventListener("click", function () {
+                            const passwordField = this.closest(".input-group").querySelector("input");
+                            const icon = this.querySelector("i");
+                            
+                            if (passwordField.type === "password") {
+                                passwordField.type = "text";
+                                icon.classList.remove("fa-eye");
+                                icon.classList.add("fa-eye-slash");
+                            } else {
+                                passwordField.type = "password";
+                                icon.classList.remove("fa-eye-slash");
+                                icon.classList.add("fa-eye");
+                            }
+                        });
+                    });
+                });
+            </script>
+        ';
+    }    
     public function manageReportAdminScript() {
         return '
                 <script>
 $(document).ready(function() {
     function refreshReportsTable() {
         $.ajax({
-            url: "manage_animal_reports.php?action=list",
+            url: "/Zoo-Arcadia-New/admin/reports?action=list",
             type: "GET",
             success: function(data) {
                 $("#reportContainer").html(data);
@@ -403,7 +560,7 @@ $(document).ready(function() {
         var formData = $(this).serialize();
 
         $.ajax({
-            url: "manage_animal_reports.php?action=edit",
+            url: "/Zoo-Arcadia-New/admin/reports?action=edit",
             type: "POST",
             data: formData,
             success: function(response) {
@@ -422,7 +579,7 @@ $(document).ready(function() {
     $(document).on("click", ".btn-edit", function() {
         var reportId = $(this).data("id");
         $.ajax({
-            url: "manage_animal_reports.php?action=get",
+            url: "/Zoo-Arcadia-New/admin/reports?action=get",
             type: "GET",
             data: { id: reportId },
             success: function(data) {
@@ -448,7 +605,7 @@ $(document).ready(function() {
         var csrfToken = $(this).data("csrf-token");
         if (confirm("Êtes-vous sûr de vouloir supprimer ce rapport ?")) {
             $.ajax({
-                url: "manage_animal_reports.php?action=delete&id=" + reportId + "&csrf_token=" + csrfToken,
+                url: "/Zoo-Arcadia-New/admin/reports?action=delete&id=" + reportId + "&csrf_token=" + csrfToken,
                 type: "GET",
                 success: function(response) {
                     alert(response);
@@ -467,7 +624,7 @@ $(document).ready(function() {
         var visitDate = $("#filterDate").val();
         var animalId = $("#filterAnimal").val();
         $.ajax({
-            url: "manage_animal_reports.php?action=list",
+            url: "/Zoo-Arcadia-New/admin/reports?action=list",
             type: "GET",
             data: {
                 visit_date: visitDate,
@@ -495,7 +652,7 @@ $(document).ready(function() {
                 // Fonction pour rafraîchir le tableau des animaux
                 function refreshAnimalTable() {
                     $.ajax({
-                        url: 'manage_animals.php?action=list',
+                        url: '/Zoo-Arcadia-New/admin/animals?action=list',
                         type: 'GET',
                         success: function(data) {
                             $('main').html(data);
@@ -521,7 +678,7 @@ $(document).ready(function() {
                     formData.append('csrf_token', '$csrfToken');
     
                     $.ajax({
-                        url: 'manage_animals.php?action=add',
+                        url: '/Zoo-Arcadia-New/admin/animals?action=add',
                         type: 'POST',
                         data: formData,
                         contentType: false,
@@ -549,7 +706,7 @@ $(document).ready(function() {
                     formData.append('csrf_token', '$csrfToken');
     
                     $.ajax({
-                        url: 'manage_animals.php?action=edit',
+                        url: '/Zoo-Arcadia-New/admin/animals?action=edit',
                         type: 'POST',
                         data: formData,
                         contentType: false,
@@ -571,7 +728,7 @@ $(document).ready(function() {
                 $(document).on('click', '.btn-edit', function() {
                     var animalId = $(this).data('id');
                     $.ajax({
-                        url: 'manage_animals.php?action=get',
+                        url: '/Zoo-Arcadia-New/admin/animals?action=get',
                         type: 'GET',
                         data: { id: animalId },
                         success: function(data) {
@@ -591,7 +748,7 @@ $(document).ready(function() {
                 // Gestion de la suppression d'un animal
                 $(document).on('click', '.btn-delete', function(event) {
                     event.preventDefault();
-                    var url = 'manage_animals.php?action=delete&id=' + $(this).data('id') + '&csrf_token=$csrfToken';
+                    var url = '/Zoo-Arcadia-New/admin/animals?action=delete&id=' + $(this).data('id') + '&csrf_token=$csrfToken';
                     if (confirm('Êtes-vous sûr de vouloir supprimer cet animal ?')) {
                         $.ajax({
                             url: url,
@@ -641,7 +798,7 @@ function toggleClosed(checkbox, id) {
     
         function refreshReportsTable() {
             $.ajax({
-                url: "manage_animal_reports.php?action=list",
+                url: "/Zoo-Arcadia-New/vet/reports?action=list",
                 type: "GET",
                 success: function(data) {
                     $("#reportContainer").html(data);
@@ -659,7 +816,7 @@ function toggleClosed(checkbox, id) {
             formData += "&csrf_token=" + csrfToken; // Ajoutez le token CSRF dans les données du formulaire
     
             $.ajax({
-                url: "manage_animal_reports.php?action=add",
+                url: "/Zoo-Arcadia-New/vet/reports?action=add",
                 type: "POST",
                 data: formData,
                 success: function(response) {
@@ -688,7 +845,7 @@ function toggleClosed(checkbox, id) {
             formData += "&csrf_token=" + csrfToken; // Ajoutez le token CSRF dans les données du formulaire
     
             $.ajax({
-                url: "manage_animal_reports.php?action=edit",
+                url: "/Zoo-Arcadia-New/vet/reports?action=edit",
                 type: "POST",
                 data: formData,
                 success: function(response) {
@@ -708,7 +865,7 @@ function toggleClosed(checkbox, id) {
         $(document).on("click", ".btn-edit", function() {
             var reportId = $(this).data("id");
             $.ajax({
-                url: "manage_animal_reports.php?action=get",
+                url: "/Zoo-Arcadia-New/vet/reports?action=get",
                 type: "GET",
                 data: { id: reportId },
                 success: function(data) {
@@ -735,7 +892,7 @@ function toggleClosed(checkbox, id) {
             var csrfToken = "' . $csrfToken . '";
             if (confirm("Êtes-vous sûr de vouloir supprimer ce rapport ?")) {
                 $.ajax({
-                    url: "manage_animal_reports.php?action=delete&id=" + reportId + "&csrf_token=" + csrfToken,
+                    url: "/Zoo-Arcadia-New/vet/reports?action=delete&id=" + reportId + "&csrf_token=" + csrfToken,
                     type: "GET",
                     success: function(response) {
                         alert(response);
@@ -756,7 +913,7 @@ function toggleClosed(checkbox, id) {
             var visitDate = $("#filterDate").val();
             var animalId = $("#filterAnimal").val();
             $.ajax({
-                url: "manage_animal_reports.php?action=list",
+                url: "/Zoo-Arcadia-New/vet/reports?action=list",
                 type: "GET",
                 data: {
                     visit_date: visitDate,

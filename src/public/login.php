@@ -7,7 +7,7 @@ $sessionLifetime = 1800;
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();
     session_destroy();
-    header('Location: login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -26,8 +26,8 @@ $db = (new \Database\DatabaseConnection())->connect();
 
 // Initialisation des repositories
 $userRepository = new \Repositories\UserRepository($db);
-$styleRepository = new Repositories\StyleRepository();
-$scriptRepository = new Repositories\ScriptRepository();
+$styleRepository = new \Repositories\StyleRepository();
+$scriptRepository = new \Repositories\ScriptRepository();
 
 // Initialisation des services
 $userService = new \Services\UserService($userRepository);
@@ -52,13 +52,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         if ($userData && password_verify($password, $userData['password'])) {
             $_SESSION['user'] = $userData;
             if ($userData['role_id'] == 1) {
-                header('Location: ../views/admin/index.php');
+                header('Location: /Zoo-Arcadia-New/admin');
             } elseif ($userData['role_id'] == 2) {
-                header('Location: ../views/employee/index.php');
+                header('Location: /Zoo-Arcadia-New/employee');
             } elseif ($userData['role_id'] == 3) {
-                header('Location: ../views/vet/index.php');
+                header('Location: /Zoo-Arcadia-New/vet');
             } else {
-                header('Location: index.php');
+                header('Location: /Zoo-Arcadia-New/home');
             }
             exit;
         } else {
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['forgotEmail'])) {
         $_SESSION['message_type'] = "danger";
     }
 
-    header('Location: login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -110,7 +110,7 @@ include '../../src/views/templates/navbar_visitor.php';
     <?php endif; ?>
     
     <!-- Formulaire de connexion -->
-    <form action="login.php" method="POST">
+    <form action="/Zoo-Arcadia-New/login" method="POST">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
         <div class="form-group">
             <label for="email">Email</label>
@@ -143,7 +143,7 @@ include '../../src/views/templates/navbar_visitor.php';
                 </button>
             </div>
             <div class="modal-body">
-                <form id="forgotPasswordForm" method="post" action="login.php">
+                <form id="forgotPasswordForm" method="post" action="/Zoo-Arcadia-New/login">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                     <div class="form-group">
                         <label for="forgotEmail">Email</label>
@@ -155,40 +155,32 @@ include '../../src/views/templates/navbar_visitor.php';
         </div>
     </div>
 </div>
+
 <?php 
-
 echo $script;
-
 ?>
+
 <footer id="footerId" class="bg-light text-center text-lg-start mt-5 fixed-bottom" style="background: linear-gradient(to right, #ffffff, #ccedb6);">
     <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link text-secondary" href="index.php?page=contact"><img src="/Zoo-Arcadia-New/assets/image/lettre.png" width="32px" height="32px"></img>   Nous contacter</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-secondary" href="index.php?page=home#openhours"><img src="/Zoo-Arcadia-New/assets/image/ouvert.png" width="32px" height="32px"></img>   Nos horaires</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-secondary" href="index.php?page=aproposdenous"><img src="/Zoo-Arcadia-New/assets/image/a-propos-de-nous.png" width="32px" height="32px"></img>   A propos de nous</a>
-            </li>
-            </ul>
-        <div class="containerr p-4">
-            <p class="text-secondary"><img src="/Zoo-Arcadia-New/assets/image/favicon.jpg" width="32px" height="32px"></img>   &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
-        </div>
-    </footer>
+        <li class="nav-item">
+            <a class="nav-link text-secondary" href="/Zoo-Arcadia-New/contact"><img src="/Zoo-Arcadia-New/assets/image/lettre.png" width="32px" height="32px" alt="Nous contacter"> Nous contacter</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-secondary" href="/Zoo-Arcadia-New/home#openhours"><img src="/Zoo-Arcadia-New/assets/image/ouvert.png" width="32px" height="32px" alt="Nos horaires"> Nos horaires</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-secondary" href="/Zoo-Arcadia-New/aproposdenous"><img src="/Zoo-Arcadia-New/assets/image/a-propos-de-nous.png" width="32px" height="32px" alt="A propos de nous"> A propos de nous</a>
+        </li>
+    </ul>
+    <div class="container p-4">
+        <p class="text-secondary"><img src="/Zoo-Arcadia-New/assets/image/favicon.jpg" width="32px" height="32px" alt="Zoo Arcadia Favicon"> &copy; 2024 Zoo Arcadia. Tous droits réservés.</p>
+    </div>
+</footer>
 
-<!-- Inclusion de jQuery (version complète, pas la version 'slim' qui ne supporte pas AJAX) -->
+<!-- Inclusion de jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<!-- Inclusion de Popper.js -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-
-<!-- Inclusion de Bootstrap JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<!-- Inclusion de AXIOS -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
 <script src="/Zoo-Arcadia-New/assets/js/scripts.js"></script>
 </body>
 </html>

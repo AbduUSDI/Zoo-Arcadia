@@ -7,7 +7,7 @@ $sessionLifetime = 1800;
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();  
     session_destroy(); 
-    header('Location: login.php');
+    header('Location: /Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -71,6 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['like'])) {
     }
 }
 
+$scriptRepository = new \Repositories\ScriptRepository;
+$script = $scriptRepository->habitatScript();
+
 include '../../src/views/templates/header.php';
 include '../../src/views/templates/navbar_visitor.php';
 ?>
@@ -93,7 +96,7 @@ include '../../src/views/templates/navbar_visitor.php';
                 $habitatName = $habitat ? htmlspecialchars($habitat['name']) : 'Habitat indisponible'; ?>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card">
-                        <img src="../../assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" 
+                        <img src="/Zoo-Arcadia-New/assets/uploads/<?php echo htmlspecialchars($animal['image']); ?>" 
                              class="card-img-top" 
                              alt="<?php echo htmlspecialchars($animal['name']); ?>"
                              onclick="registerClick(<?php echo $animal['id']; ?>)">
@@ -102,7 +105,7 @@ include '../../src/views/templates/navbar_visitor.php';
                             <p class="card-text">Espèce : <?php echo htmlspecialchars_decode($animal['species']); ?></p>
                             <p class="card-text">Habitat : <?php echo $habitatName; ?></p>
                             <p class="card-text">Likes : <?php echo $animal['likes']; ?></p>
-                            <form action="animals.php" method="POST">
+                            <form action="/Zoo-Arcadia-New/animals" method="POST">
                                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                 <input type="hidden" name="animal_id" value="<?php echo $animal['id']; ?>">
                                 <button type="submit" name="like" class="btn btn-success btn-block">👍 Like</button>
@@ -117,20 +120,8 @@ include '../../src/views/templates/navbar_visitor.php';
     </div>
 </div>
 
-<script>
-// Utilisation de FETCH pour enregistrer le clic dans MongoDB grâce au fichier "record_click.php"
-function registerClick(animalId) {
-    console.log("Tentative d'enregistrement du clic pour l'animal ID:", animalId);
-    fetch('record_click.php?animal_id=' + animalId)
-        .then(response => response.text())
-        .then(data => {
-            console.log("Données reçues:", data);
-            window.location.href = 'index.php?page=animal&id=' + animalId;
-        })
-        .catch(error => {
-            console.error("Erreur lors de l'enregistrement du clic:", error);
-        });
-}
-</script>
+<?php 
+echo $script;
+?>
 
 <?php include '../../src/views/templates/footer.php'; ?>

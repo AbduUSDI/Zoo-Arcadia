@@ -5,14 +5,14 @@ session_start();
 $sessionLifetime = 1800;
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
-    header('Location: ../../public/login.php');
+    header('Location: Zoo-Arcadia-New/login');
     exit;
 }
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();
     session_destroy();
-    header('Location: ../../public/login.php');
+    header('Location: Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $foodController->addFoodRecord($animal_id, $food_given, $food_quantity, $formatted_date_given);
 
             // Redirection après succès
-            header('Location: manage_food.php');
+            header('Location: food');
             exit;
         } catch (Exception $e) {
             $error = "Erreur lors de l'enregistrement : " . $e->getMessage();

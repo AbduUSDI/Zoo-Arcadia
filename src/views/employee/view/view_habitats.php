@@ -5,14 +5,14 @@ session_start();
 $sessionLifetime = 1800;
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role_id'] != 2) {
-    header('Location: ../../public/login.php');
+    header('Location: Zoo-Arcadia-New/login');
     exit;
 }
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $sessionLifetime)) {
     session_unset();
     session_destroy();
-    header('Location: ../../public/login.php');
+    header('Location: Zoo-Arcadia-New/login');
     exit;
 }
 
@@ -54,7 +54,7 @@ include '../navbar_employee.php';
         <?php foreach ($habitats as $habitat): ?>
             <div class="habitat-card">
                 <div class="habitat-card-image">
-                    <img src="../../../../assets/uploads/<?= htmlspecialchars($habitat['image'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($habitat['name'], ENT_QUOTES, 'UTF-8') ?>">
+                    <img src="/Zoo-Arcadia-New/assets/uploads/<?= htmlspecialchars($habitat['image'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($habitat['name'], ENT_QUOTES, 'UTF-8') ?>">
                 </div>
                 <div class="habitat-card-body">
                     <h5 class="habitat-card-title"><?= htmlspecialchars($habitat['name'], ENT_QUOTES, 'UTF-8') ?></h5>

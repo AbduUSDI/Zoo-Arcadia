@@ -42,7 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['message_type'] = "danger";
     }
 
-    header('Location: index.php?page=home');
+    // Redirection vers l'URL réécrite pour la page d'accueil
+    header('Location: /Zoo-Arcadia-New/home');
     exit;
 }
 
