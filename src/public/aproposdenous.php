@@ -79,9 +79,7 @@ include '../../src/views/templates/navbar_visitor.php';
         <div class="col-md-8">
             <h2 class="text-center mb-4">Vidéo de présentation du Zoo Arcadia</h2>
             <div class="video-container" data-splash="true">
-                <video data-title="titre" controls="controls" wmode="transparent" type="video/mp4" width="100%" height="400" 
-                src="/Zoo-Arcadia-New/assets/image/presentationvideo.mp4" 
-                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></video>
+                <video data-title="titre" controls="controls" wmode="transparent" type="video/mp4" width="100%" src="/Zoo-Arcadia-New/assets/image/presentationvideo.mp4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></video>
             </div>
         </div>
     </div>

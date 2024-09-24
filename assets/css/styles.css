@@ -516,5 +516,24 @@ p {
         font-size: 14px;
     }
 }
+.carousel-control-prev,
+    .carousel-control-next {
+        width: 5%;
+    }
 
+    .carousel-control-prev span,
+    .carousel-control-next span {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+        background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+        border-radius: 50%; /* Cercle autour de l'icône */
+    }
+
+    .carousel-control-prev span:hover,
+    .carousel-control-next span:hover {
+        background-color: rgba(0, 0, 0, 0.8); /* Fond plus sombre au survol */
+    }
 

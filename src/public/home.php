@@ -102,7 +102,7 @@ include '../../src/views/templates/navbar_visitor.php';
     <!-- Section Habitats -->
     <div>
         <hr>
-        <h2 class="text-center">Nos Habitats</h2>
+        <h2 class="text-center">Nos habitats</h2>
         <hr>
         <div class="row">
             <?php foreach ($habitats as $habitat): ?>
@@ -121,7 +121,7 @@ include '../../src/views/templates/navbar_visitor.php';
     </div>
 <!-- Section pour les 3 animaux les plus cliqués -->
 <div class="container my-5" style="background: linear-gradient(to right, #ffffff, #ccedb6); border-radius: 15px; padding: 20px;">
-    <h2 class="text-center">Les top 3 des animaux les plus vus</h2>
+    <h3 class="text-center">Les top 3 des animaux les plus vus</h3>
     <hr>
     <div class="row">
         <?php foreach ($topAnimals as $animal): ?>
@@ -140,10 +140,10 @@ include '../../src/views/templates/navbar_visitor.php';
 </div>
 <br>
 <br>
-<h1 id="openhours" style="color: transparent;">.</h1>
+<p id="openhours" style="color: transparent;">.</p>
 <!-- Section Horaires d'ouverture (affiché sous forme de tableau) -->
 <div class="container my-5">
-    <h2 class="text-center">Horaires d'ouverture du Zoo</h2>
+    <h3 class="text-center">Horaires d'ouverture du Zoo</h3>
     <hr>
     <div class="table-responsive perso">
         <table class="table table-bordered table-hover text-center">
@@ -186,7 +186,7 @@ include '../../src/views/templates/navbar_visitor.php';
     <!-- Section Laissez un Avis -->
     <div>
         <hr>
-        <h2 class="text-center">Laissez un Avis</h2>
+        <h3 class="text-center">Laissez un avis</h3>
         <hr>
         <div id="avis" class="col-md-8 mx-auto">
             <form action="/Zoo-Arcadia-New/submit_review" method="POST" class="mt-5">
@@ -211,24 +211,45 @@ include '../../src/views/templates/navbar_visitor.php';
     <!-- Section Avis des visiteurs -->
     <div>
         <hr>
-        <h2 class="text-center">Avis des Visiteurs</h2>
+        <h3 class="text-center">Avis des visiteurs</h3>
         <hr>
-        <div class="containerr mt-5">
-            <div class="row">
+        <div id="avisCarousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                <?php $isActive = true; ?>
                 <?php foreach ($approvedReviews as $review): ?>
                     <?php if (!empty($review['subject'])): ?>
-                        <div class="col-md-6">
-                            <div class="card mb-4 shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title" style="color: green;"><?php echo htmlspecialchars($review['subject'], ENT_QUOTES, 'UTF-8'); ?></h5>
-                                    <p class="card-text"><?php echo htmlspecialchars($review['review_text'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                    <p class="text-right text-muted"><?php echo htmlspecialchars(date('d/m/Y', strtotime($review['created_at'])), ENT_QUOTES, 'UTF-8'); ?> par <strong><?php echo htmlspecialchars($review['visitor_name'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+                        <div class="carousel-item <?php echo $isActive ? 'active' : ''; ?>">
+                            <div class="row justify-content-center">
+                                <div class="col-md-8">
+                                    <div class="card mb-4 shadow-sm">
+                                        <div class="card-body">
+                                            <h5 class="card-title" style="color: green;">
+                                                <?php echo htmlspecialchars($review['subject'], ENT_QUOTES, 'UTF-8'); ?>
+                                            </h5>
+                                            <p class="card-text">
+                                                <?php echo htmlspecialchars($review['review_text'], ENT_QUOTES, 'UTF-8'); ?>
+                                            </p>
+                                            <p class="text-right text-muted">
+                                                <?php echo htmlspecialchars(date('d/m/Y', strtotime($review['created_at'])), ENT_QUOTES, 'UTF-8'); ?> par 
+                                                <strong><?php echo htmlspecialchars($review['visitor_name'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <?php $isActive = false; ?>
                     <?php endif; ?>
                 <?php endforeach; ?>
             </div>
+            <a class="carousel-control-prev" href="#avisCarousel" role="button" data-slide="prev">
+                <span><i class="fas fa-chevron-left fa-2x" style="color: white;"></i></span>
+                <span class="sr-only">Précédent</span>
+            </a>
+            <a class="carousel-control-next" href="#avisCarousel" role="button" data-slide="next">
+                <span><i class="fas fa-chevron-right fa-2x" style="color: white;"></i></span>
+                <span class="sr-only">Suivant</span>
+            </a>
         </div>
     </div>
 </div>
