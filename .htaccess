@@ -18,6 +18,8 @@ RewriteRule ^logout$ src/public/index.php?page=logout [L,QSA]
 RewriteRule ^aproposdenous$ src/public/index.php?page=aproposdenous [L,QSA]
 RewriteRule ^forgot_password$ src/public/index.php?page=forgot_password [L,QSA]
 RewriteRule ^reset_password$ src/public/index.php?page=reset_password [L,QSA]
+RewriteRule ^mentions-legales$ src/public/index.php?page=mentions-legales [L,QSA]
+RewriteRule ^politique-de-confidentialite$ src/public/index.php?page=politique-confidentialite [L,QSA]
 
 # Réécriture pour les pages dynamiques avec des IDs (par exemple, /animal/1, /habitat/2)
 RewriteRule ^animal/([0-9]+)$ src/public/index.php?page=animal&id=$1 [L,QSA]

@@ -84,6 +84,12 @@
                                 case 'aproposdenous':
                                     $breadcrumbs[] = ['A propos de nous', '/Zoo-Arcadia-New/aproposdenous'];
                                     break;
+                                case 'mentions-legales':
+                                    $breadcrumbs[] = ['Mentions légales', '/Zoo-Arcadia-New/mentions-legales'];
+                                    break;
+                                case 'politique-confidentialite':
+                                    $breadcrumbs[] = ['Politique de confidentialité', '/Zoo-Arcadia-New/politique-de-confidentialite'];
+                                    break;
                             }
                         }
 

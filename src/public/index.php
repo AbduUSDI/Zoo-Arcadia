@@ -37,6 +37,8 @@ $pages = [
     'logout',
     'habitat',
     'aproposdenous',
+    'mentions-legales',
+    'politique-confidentialite',
     '404'
 ];
 
