@@ -2,9 +2,8 @@
 namespace Repositories;
 
 use PDO;
-use Interfaces\AnimalRepositoryInterface;
 
-class AnimalRepository implements AnimalRepositoryInterface {
+class AnimalRepository implements \Interfaces\AnimalRepositoryInterface, \Interfaces\AnimalReviewInterface, \Interfaces\AnimalFoodInterface, \Interfaces\AnimalHabitatInterface {
     private $db;
 
     public function __construct(PDO $db) {
